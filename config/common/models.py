@@ -66,3 +66,21 @@ class TimeStampModel(models.Model):
 
             return queryset
 
+
+
+class NameModel():
+    
+    name_uz = models.CharField(max_length=255)
+    name_ru = models.CharField(max_length=255)
+    name_us = models.CharField(max_length=255)
+    
+    names_list = ["name_uz","name_ru","name_us"]
+    
+        
+        
+class CaptionModel():
+    
+    caption_uz = models.CharField(max_length=255)
+    caption_ru = models.CharField(max_length=255)
+    caption_us = models.CharField(max_length=255)
+    

@@ -6,3 +6,4 @@ docker exec -it django /bin/sh
 
 docker restart $(docker ps -q)
 docker down $(docker ps -q)
+
