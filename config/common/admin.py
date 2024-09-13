@@ -25,6 +25,6 @@ try:
                         list_filter = (model.CustomFilter,)
 
         except admin.sites.AlreadyRegistered as e:
-            pass
+            print(e)
 except Exception as e:
     print(e)
