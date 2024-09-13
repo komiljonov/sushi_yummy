@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 
 from data.category.models import Category
@@ -7,9 +6,9 @@ from data.category.serializers import CategoryCreateSerializer, CategorySerializ
 # Create your views here.
 
 
-class CategoryListAPIView(ListCreateAPIView):
+class CategoryListCreateAPIView(ListCreateAPIView):
 
-    queryset = Category.objects.all()
+    queryset = Category.objects.filter(parent=None)
 
     serializer_class = CategorySerializer
     serializer_class_create = CategoryCreateSerializer
@@ -20,7 +19,7 @@ class CategoryListAPIView(ListCreateAPIView):
         return CategorySerializer
 
 
-class CategoryRetrieveAPIView(RetrieveUpdateDestroyAPIView):
+class CategoryRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
 
     queryset = Category.objects.all()
 

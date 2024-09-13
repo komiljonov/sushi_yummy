@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from datetime import timedelta
 import os
 from pathlib import Path
+import dj_database_url
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -86,12 +88,10 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+    "default": dj_database_url.config(
+        default="postgres://sushi:v5jKTw3jbD7t@postgres:5432/sushi_yummy"
+    )
 }
 
 
@@ -141,7 +141,7 @@ APPEND_SLASH = False
 
 
 STATIC_ROOT = BASE_DIR / "static"
-MEDIA_ROOT = BASE_DIR / "meida"
+MEDIA_ROOT = BASE_DIR / "media"
 
 
 MEDIA_URL = "media/"

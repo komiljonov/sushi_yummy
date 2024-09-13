@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING
 from django.db import models
-from common.models import TimeStampModel, NameModel, CaptionModel
-from django.contrib import admin
+from common.models import TimeStampModel
 from django.core.validators import MinValueValidator
 
 
@@ -11,14 +10,24 @@ if TYPE_CHECKING:
 # Create your models here.
 
 
-class Product(TimeStampModel, NameModel, CaptionModel):
+class Product(TimeStampModel):
+
+    name_uz = models.CharField(max_length=255)
+    name_ru = models.CharField(max_length=255)
+    name_us = models.CharField(max_length=255)
+
+    caption_uz = models.CharField(max_length=255)
+    caption_ru = models.CharField(max_length=255)
+    caption_us = models.CharField(max_length=255)
 
     image = models.ImageField(upload_to="")
 
     price = models.FloatField(
         default=0,
         validators=[
-            MinValueValidator(0, "Kechirasiz narx 0 dan kichik bo'lishi mumkin emas.")
+            MinValueValidator(
+                0, message="Kechirasiz narx 0 dan kichik bo'lishi mumkin emas."
+            )
         ],
     )
 

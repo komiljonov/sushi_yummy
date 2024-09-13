@@ -13,7 +13,7 @@ class SubCategory(ModelSerializer):
 
 class CategorySerializer(ModelSerializer):
 
-    subcategories = SubCategory(many=True)
+    children = SubCategory(many=True, )
 
     products = ProductSerializer(many=True)
 
