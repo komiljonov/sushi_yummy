@@ -1,0 +1,9 @@
+asgiref==3.8.1
+django==5.1.1
+django-cors-headers==4.4.0
+django-simple-history==3.7.0
+djangorestframework==3.15.2
+djangorestframework-simplejwt==5.3.1
+pyjwt==2.9.0
+sqlparse==0.5.1
+tzdata==2024.1
