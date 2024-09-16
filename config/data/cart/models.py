@@ -6,12 +6,13 @@ from django.contrib import admin
 
 if TYPE_CHECKING:
     from data.cartitem.models import CartItem
+    from bot.models import User
 
 # Create your models here.
 
 
 class Cart(TimeStampModel):
-    user = models.ForeignKey(
+    user: "User" = models.ForeignKey(
         "bot.User",
         on_delete=models.SET_NULL,
         null=True,
@@ -29,6 +30,10 @@ class Cart(TimeStampModel):
     )
 
     items: "models.QuerySet[CartItem]"
+    
+    
+    def __str__(self) -> str:
+        return f"Cart( {self.user.tg_name} )"
 
     class Meta:
         ordering = ["-created_at"]

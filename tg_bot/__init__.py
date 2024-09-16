@@ -32,9 +32,7 @@ class Bot(Menu):
             "MainConversation",
             [CommandHandler("start", self.start)],
             {
-                MAIN_MENU: [
-                    self._menu_handlers()
-                ],
+                MAIN_MENU: [self._menu_handlers()],
                 LANG: [MessageHandler(filters.TEXT & EXCLUDE, self.lang)],
             },
             [CommandHandler("start", self.start)],
@@ -69,7 +67,6 @@ class Bot(Menu):
             return LANG
 
         keyboard = await self.main_menu_keyboard(update, context)
-
 
         await tgUser.send_message("Menu", reply_markup=keyboard)
 

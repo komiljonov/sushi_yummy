@@ -1,7 +1,8 @@
 from typing import TYPE_CHECKING
 from django.db import models
-
+from django.contrib import admin
 from common.models import TimeStampModel
+
 
 if TYPE_CHECKING:
     from data.product.models import Product
@@ -32,3 +33,16 @@ class CartItem(TimeStampModel):
         if not self.pk:  # If this is a new object
             self.price = self.product.price if self.product else 0
         super().save(*args, **kwargs)
+
+    
+    
+    
+    class Meta:
+        ordering = ["-created_at"]
+        
+    
+    
+    class Admin(admin.ModelAdmin):
+        
+        
+        list_display = ["cart","product","price","count","created_at"]

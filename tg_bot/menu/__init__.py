@@ -132,8 +132,14 @@ class Menu:
     async def set_product_count(self, update: UPD, context: CTX):
         tgUser, user, temp, i18n = User.get(update)
 
+        cart = user.cart
+
         product = temp.product
 
         count = int(update.message.text)
+
+        cart.items.update_or_create(
+            product=product, defaults=dict(price=product.price, count=count)
+        )
 
         return await self.menu_category(update, context, product.category)

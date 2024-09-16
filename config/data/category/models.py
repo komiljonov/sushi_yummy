@@ -28,7 +28,7 @@ class Category(TimeStampModel):
     class Meta:
         ordering = ["-created_at"]
 
-    class admin(admin.ModelAdmin):
+    class Admin(admin.ModelAdmin):
 
         list_display = ["name_uz", "name_ru", "parent"]
 

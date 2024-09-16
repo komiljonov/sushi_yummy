@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 from django.db import models
 from common.models import TimeStampModel
 from django.core.validators import MinValueValidator
-
+from django.contrib import admin
 
 if TYPE_CHECKING:
     from category.models import Category
@@ -39,3 +39,15 @@ class Product(TimeStampModel):
         blank=True,
         related_name="products",
     )
+    
+    
+    def __str__(self) -> str:
+        return f"Product( {self.name_uz} )"
+
+    
+    
+    class Admin(admin.ModelAdmin):
+        
+        list_display = ["name_uz","name_ru","price","category"]
+        
+        list_filter = ["category"]
