@@ -60,17 +60,17 @@ class Cart:
         keyboard = []
 
         for i, item in enumerate(items, 1):
-            row = []
 
-            row.append(
-                InlineKeyboardButton(
-                    f"{i}. {i18n.get_name(item.product)}",
-                    callback_data=f"set_count:reduce",
-                )
+            keyboard.append(
+                [
+                    InlineKeyboardButton(
+                        f"{i}. {i18n.get_name(item.product)}",
+                        callback_data=f"set_count:reduce",
+                    )
+                ]
             )
 
-            keyboard.append(row)
-            row.clear()
+            row = []
 
             if item.count > 0:
                 row.append(
@@ -129,7 +129,9 @@ class Cart:
         text = i18n.cart.info(products="".join(items_text), total_price=total_price)
 
         await tgUser.send_message(
-            text, parse_mode="HTML", reply_markup=self.cart_keyboard(update, context)
+            text,
+            parse_mode="HTML",
+            reply_markup=await self.cart_keyboard(update, context),
         )
 
         return CART
