@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING, Callable
 from redis import Redis
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import filters
 
 from telegram.ext import CommandHandler, MessageHandler
@@ -50,9 +51,46 @@ class Cart:
                 PRODUCT_INFO: PRODUCT_INFO,
             },
         )
-        
-        
-        
+
+    async def cart_keyboard(self, update: UPD, context: CTX):
+        tgUser, user, temp, i18n = User.get(update)
+
+        items = user.cart.items.all()
+
+        keyboard = []
+
+        for i, item in enumerate(items, 1):
+            row = []
+
+            row.append(
+                InlineKeyboardButton(
+                    f"{i}. {i18n.get_name(item.product)}",
+                    callback_data=f"set_count:reduce",
+                )
+            )
+
+            keyboard.append(row)
+            row.clear()
+
+            if item.count > 0:
+                row.append(
+                    InlineKeyboardButton(
+                        "➖", callback_data=f"set_count:reduce:{item.id}"
+                    )
+                )
+
+            row.append(
+                InlineKeyboardButton(f"{item.count}", callback_data=f"info:{item.id}")
+            )
+
+            row.append(
+                InlineKeyboardButton(
+                    f"➕", callback_data=f"set_count:increase:{item.id}"
+                )
+            )
+            keyboard.append(row)
+
+        return InlineKeyboardMarkup(keyboard)
 
     async def cart(self, update: UPD, context: CTX):
         tgUser, user, temp, i18n = User.get(update)
@@ -90,6 +128,8 @@ class Cart:
 
         text = i18n.cart.info(products="".join(items_text), total_price=total_price)
 
-        await tgUser.send_message(text)
+        await tgUser.send_message(
+            text, parse_mode="HTML", reply_markup=self.cart_keyboard(update, context)
+        )
 
         return CART
