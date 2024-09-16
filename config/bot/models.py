@@ -5,6 +5,7 @@ from django.db import models
 from common.models import TimeStampModel
 from telegram import Update
 
+from data.filial.models import Filial
 from utils.language import multilanguage
 
 
@@ -26,6 +27,7 @@ class User(TimeStampModel):
     lang = models.CharField(max_length=255, null=True, blank=True)
 
     carts: "models.QuerySet[Cart]"
+    locations: "models.QuerySet[Location]"
 
     @classmethod
     def get(cls, update: Update):
@@ -63,3 +65,29 @@ class UserTemp(TimeStampModel):
     product: "Product" = models.ForeignKey(
         "product.Product", on_delete=models.SET_NULL, null=True, blank=True
     )
+
+    location: "Location" = models.ForeignKey(
+        "bot.Location", on_delete=models.SET_NULL, null=True, blank=True
+    )
+
+    filial: "Filial" = models.ForeignKey(
+        "filial.Filial", on_delete=models.SET_NULL, null=True, blank=True
+    )
+
+    cmid = models.IntegerField(null=True, blank=True)
+    cmid2 = models.IntegerField(null=True, blank=True)
+
+
+class Location(TimeStampModel):
+
+    user = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=True, related_name="locations"
+    )
+
+    name = models.CharField(max_length=500)
+
+    latitude = models.FloatField()
+    longtitude = models.FloatField()
+
+    used = models.BooleanField(default=False)
+    special = models.BooleanField(default=False)

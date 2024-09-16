@@ -46,7 +46,6 @@ class Me(APIView):
 
     def get(self, request: Request | HttpRequest, *args, **kwargs):
         user: User = request.user
-        print(type(user))
 
         user_data = {
             "name": user.get_full_name(),  # Assuming the user's name is stored in get_full_name()

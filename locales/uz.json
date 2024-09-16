@@ -21,7 +21,7 @@
         "product": {
             "count": {
                 "ask": "🔢 <b>Miqdorini kiriting yoki tanlang:</b>",
-                "success": "✅ <b>{product_name} savatga muvaffaqiyatli qo'shildi!</b>\n\n🛒 <b>Savatga o'tish uchun: Savat 🛒 tugmasini bosing!</b>"
+                "success": "✅ <b>{product_name} savatga muvaffaqiyatli qo'shildi!\n\nDavom etamizmi yoki yana nimadir yeymizmi?</b>"
             }
         },
         "cart": "🛒 Savatni ko'rish"
@@ -33,9 +33,53 @@
             "<b>🔄 <i>Savatni butunlay tozalash</i></b>"
         ],
         "info": "📥 <b>Savat:</b>\n\n{products}\n\n🧾 <b>Umumiy narx: {total_price} so'm</b>",
-        "item": "{i}. {product_name}\n\t\t\t\t{count} x {price} = {item_price} so'm\n\n"
+        "item": "{i}. {product_name}\n\t\t\t\t{count} x {price} = {item_price} so'm\n\n",
+        "empty": "<b>Sizning savatingiz bo'sh 😔</b>",
+        "done": "Savatni to’ldirdim ✅",
+        "deliver": "🚙 Yetkazib berish",
+        "take_away": "🏃 Olib ketish",
+        "get_method": "Buyurtmani o'zingiz olib keting yoki Yetkazib berishni tanlang"
+    },
+    "deliver": {
+        "location": {
+            "ask": [
+                "Buyurtmangizni qayerga yetkazib berish kerak 🚙?\n\n",
+                "Agar joylashuvingizni yuborsangiz, sizga eng yaqin filialni va yetkazib berish xarajatlarini aniqlaymiz 💵"
+            ],
+            "confirm": [
+                "Sizning manzilingiz: {address}\n\n",
+                "Joylashuv noto'g'rimi?\n",
+                "Qayta yuboring 📍"
+            ],
+            "resend": "📍Joylashuvni qayta yuborish"
+        }
+    },
+    "takeaway": {
+        "filial": {
+            "ask": [
+                "<b>Qayerdasiz 👀?\n\n",
+                "Agar lokatsiyangizni📍 yuborsangiz, sizga eng yaqin filialni aniqlaymiz</b>"
+            ],
+            "check_nearest_filial": "📍 Eng yaqin filialni aniqlash",
+            "filial_info": "<b>Eng yaqin filial - {filial}</b>"
+        }
+    },
+    "time": {
+        "deliver": "Buyurtmani qabul qilish uchun qulay vaqtni tanlang.",
+        "takeaway": "Buyurtmani olib ketish uchun qulay vaqtni tanlang.",
+        "asap": "✅ Iloji boricha tezroq",
+        "later": "⏳ Keyinroq",
+        "times": {
+            "half_hour_later": "Yarim soatdan keyin",
+            "hour_later": "1 soatdan keyin",
+            "hour_later_2": "2 soatdan keyin",
+            "hour_later_3": "3 soatdan keyin"
+        }
     },
     "buttons": {
-        "back": "🔙 Ortga"
+        "back": "🔙 Ortga",
+        "clear": "🔄 Tozalash",
+        "location": "📍 Joylashuvni yuborish",
+        "my_locations": "🗺 Mening manzillarim"
     }
 }

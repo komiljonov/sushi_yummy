@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     "data.product",
     "data.file",
     "data.cart",
-    "data.cartitem"
+    "data.cartitem",
+    "data.filial"
 ]
 
 

@@ -40,9 +40,7 @@ class TranslationAccessor(MultiLanguageTranslations):
         return TranslationAccessor(self.multilanguage, new_path, self._lang)
 
     def __call__(self, **kwargs):
-        # print(self.path, self._lang)
         res = self.multilanguage.get(self.path, language=self._lang, **kwargs)
-        print(res, type(res))
 
         return res
 
@@ -56,7 +54,7 @@ class TranslationAccessor(MultiLanguageTranslations):
     def get_name(self, obj: object) -> str:
         if hasattr(obj, f"name_{self._lang}"):
             return getattr(obj, f"name_{self._lang}")
-        
+
         return str(obj)
 
     def filter_name(self, value: str):
@@ -93,9 +91,7 @@ class MultiLanguage:
                 self.available_languages.add(language_code)
                 file_path = os.path.join(folder, filename)
                 with open(file_path, "r", encoding="utf-8") as file:
-                    # print(file_path)
                     self.translations[language_code] = json.load(file)
-                    
 
     def get_all(self, *text_names, **kwargs):
         all_texts = []
@@ -125,7 +121,6 @@ class MultiLanguage:
         return custom_format(nested_translation, **kwargs)
 
     def __getattr__(self, key):
-        # print(key)
         return TranslationAccessor(self, "", key)
 
     uz: TranslationAccessor

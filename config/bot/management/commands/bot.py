@@ -12,6 +12,5 @@ class Command(BaseCommand):
 
         bot = Bot(token)
         
-        print("Salom")
 
         bot.app.run_polling()
