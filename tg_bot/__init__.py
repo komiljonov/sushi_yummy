@@ -3,12 +3,13 @@ from telegram.ext import filters
 
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler
 from bot.models import User
-from redis_conversation import ConversationHandler
-from tg_bot.constants import CTX, EN, EXCLUDE, LANG, MAIN_MENU, MENU, RU, UPD, UZ
+from tg_bot.menu import Menu
+from tg_bot.redis_conversation import ConversationHandler
+from tg_bot.constants import CTX, EN, EXCLUDE, LANG, MAIN_MENU, RU, UPD, UZ
 from utils import ReplyKeyboardMarkup
 
 
-class Bot:
+class Bot(Menu):
 
     def __init__(self, token: str):
 
@@ -24,12 +25,16 @@ class Bot:
             .build()
         )
 
+        self.app.add_handler(self._main_conversation())
+
     def _main_conversation(self):
         return ConversationHandler(
             "MainConversation",
             [CommandHandler("start", self.start)],
             {
-                MAIN_MENU: [self._menu_handlers()],
+                MAIN_MENU: [
+                    self._menu_handlers()
+                ],
                 LANG: [MessageHandler(filters.TEXT & EXCLUDE, self.lang)],
             },
             [CommandHandler("start", self.start)],
@@ -47,8 +52,10 @@ class Bot:
                 [i18n.main_menu.order_history(), i18n.main_menu.leave_appeal()],
                 [i18n.main_menu.info(), i18n.main_menu.contact()],
                 [i18n.main_menu.settings()],
-            ]
+            ],
+            False,
         )
+        return keyboard
 
     async def start(self, update: UPD, context: CTX):
         tgUser, user, temp, i18n = User.get(update)
@@ -57,11 +64,14 @@ class Bot:
             await tgUser.send_message(
                 i18n.lang.ask(),
                 parse_mode="HTML",
-                reply_markup=ReplyKeyboardMarkup([[UZ, RU], [EN]], True),
+                reply_markup=ReplyKeyboardMarkup([[UZ, RU], [EN]], False),
             )
             return LANG
 
-        keyboard = self.main_menu_keyboard()
+        keyboard = await self.main_menu_keyboard(update, context)
+
+
+        await tgUser.send_message("Menu", reply_markup=keyboard)
 
         return MAIN_MENU
 

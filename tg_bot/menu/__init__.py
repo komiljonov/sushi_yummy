@@ -6,7 +6,7 @@ from telegram.ext import filters
 from telegram.ext import CommandHandler, MessageHandler
 from bot.models import User
 
-from redis_conversation import ConversationHandler
+from tg_bot.redis_conversation import ConversationHandler
 from utils.language import multilanguage
 
 from tg_bot.constants import (
@@ -20,9 +20,9 @@ from tg_bot.constants import (
 )
 from utils import ReplyKeyboardMarkup, distribute
 
+from data.category.models import Category
 
 if TYPE_CHECKING:
-    from data.category.models import Category
     from data.product.models import Product
 
 
@@ -35,7 +35,7 @@ class Menu:
             "MenuConversation",
             [
                 MessageHandler(
-                    filters.Text([multilanguage.get_all("menu.menu")]), self.menu
+                    filters.Text(multilanguage.get_all("main_menu.menu")), self.menu
                 )
             ],
             {
@@ -46,9 +46,7 @@ class Menu:
                     MessageHandler(filters.TEXT & EXCLUDE, self.menu_product)
                 ],
                 PRODUCT_INFO: [
-                    MessageHandler(
-                        filters.TEXT & EXCLUDE,
-                    )
+                    MessageHandler(filters.Regex(r"\d+"), self.set_product_count)
                 ],
             },
             [CommandHandler("start", self.start)],
@@ -59,6 +57,9 @@ class Menu:
 
     async def menu(self, update: UPD, context: CTX):
         tgUser, user, temp, i18n = User.get(update)
+
+        temp.category = None
+        temp.save()
 
         await tgUser.send_message(
             i18n.menu.welcome(),
@@ -78,9 +79,10 @@ class Menu:
     ):
         tgUser, user, temp, i18n = User.get(update)
 
-        category = Category.objects.filter(
-            i18n.filter_name(update.message.text), parent=temp.category
-        ).first()
+        category = (
+            _category
+            or Category.objects.filter(i18n.filter_name(update.message.text)).first()
+        )
 
         if category == None:
             await tgUser.send_message(i18n.menu.category.not_found(), parse_mode="HTML")
@@ -109,12 +111,29 @@ class Menu:
         temp.product = product
         temp.save()
 
-        f = product.image.open("rb")
+        image = product.image
+        caption = i18n.get_value(product, "caption")
+
+        if image == None:
+            await tgUser.send_message(caption, parse_mode="HTML")
+            return PRODUCT_INFO
+
+        f = image.file.open("rb")
 
         await tgUser.send_photo(
             f,
-            i18n.menu.product.info(),
-            reply_markup=ReplyKeyboardMarkup(distribute([i for i in "123456789"])),
+            caption,
+            reply_markup=ReplyKeyboardMarkup(distribute([i for i in "123456789"], 3)),
+            parse_mode="HTML",
         )
 
         return PRODUCT_INFO
+
+    async def set_product_count(self, update: UPD, context: CTX):
+        tgUser, user, temp, i18n = User.get(update)
+
+        product = temp.product
+
+        count = int(update.message.text)
+
+        return await self.menu_category(update, context, product.category)

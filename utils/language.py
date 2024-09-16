@@ -60,10 +60,10 @@ class TranslationAccessor(MultiLanguageTranslations):
         return query
 
     def get_value(self, obj: object, prefix: str = "name_") -> str:
-        if hasattr(obj, f"{prefix}{self._lang}"):
-            return getattr(obj, f"{prefix}{self._lang}")
+        if hasattr(obj, f"{prefix}_{self._lang}"):
+            return getattr(obj, f"{prefix}_{self._lang}")
         else:
-            print(f"{obj} object has no attribute {prefix}{self._lang}")
+            print(f"{obj} object has no attribute {prefix}_{self._lang}")
         return str(obj)
 
     str = property(__str__)

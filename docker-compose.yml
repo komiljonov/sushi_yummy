@@ -35,20 +35,21 @@ services:
             - redis
             - postgres
 
-    # telegram-bot:
-    #     container_name: telegram_bot
-    #     build:
-    #         context: ./config
-    #     command: python manage.py bot
-    #     volumes:
-    #         - ./config:/usr/src/app
-    #         - ./locales:/usr/src/app/locales
-    #         - ./tg_bot:/usr/src/app/tg_bot
-    #     env_file:
-    #         - .env
-    #     depends_on:
-    #         - redis
-    #         - postgres
+    telegram-bot:
+        container_name: telegram_bot
+        build:
+            context: ./config
+        command: python manage.py bot
+        volumes:
+            - ./config:/usr/src/app
+            - ./locales:/usr/src/app/locales
+            - ./tg_bot:/usr/src/app/tg_bot
+            - ./utils:/usr/src/app/utils
+        env_file:
+            - .env
+        depends_on:
+            - redis
+            - postgres
 
     redis-commander:
         image: rediscommander/redis-commander:latest

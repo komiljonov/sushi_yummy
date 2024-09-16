@@ -47,7 +47,9 @@ INSTALLED_APPS = [
     "api",
     "data.category",
     "data.product",
-    "data.file"
+    "data.file",
+    "data.cart",
+    "data.cartitem"
 ]
 
 

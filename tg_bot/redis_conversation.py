@@ -15,7 +15,7 @@ from telegram import Update
 from telegram._utils.logging import get_logger
 from telegram._utils.warnings import warn
 from telegram.ext._application import ApplicationHandlerStop
-from telegram.ext import (
+from telegram.ext import (  
     BaseHandler,
     StringCommandHandler,
     StringRegexHandler,

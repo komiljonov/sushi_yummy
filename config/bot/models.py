@@ -1,10 +1,17 @@
+from typing import TYPE_CHECKING
 from django.db import models
+
 
 from common.models import TimeStampModel
 from telegram import Update
-from data.category.models import Category
-from data.product.models import Product
+
 from utils.language import multilanguage
+
+
+if TYPE_CHECKING:
+    from data.cart.models import Cart
+    from data.category.models import Category
+    from data.product.models import Product
 
 # Create your models here.
 
@@ -17,6 +24,8 @@ class User(TimeStampModel):
     username = models.CharField(max_length=255, null=True, blank=True)
 
     lang = models.CharField(max_length=255, null=True, blank=True)
+
+    carts: "models.QuerySet[Cart]"
 
     @classmethod
     def get(cls, update: Update):
@@ -37,6 +46,10 @@ class User(TimeStampModel):
     @property
     def i18n(self):
         return multilanguage.__getattr__(self.lang if self.lang else "uz")
+
+    @property
+    def cart(self):
+        return self.carts.get_or_create(status="ORDERING")[0]
 
 
 class UserTemp(TimeStampModel):
