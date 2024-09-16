@@ -8,5 +8,5 @@ from data.product.views import (
 
 urlpatterns = [
     path("", ProductListCreateAPIView.as_view()),
-    path("/<int:pk>", ProductRetrieveUpdateDestroyAPIView.as_view()),
+    path("/<str:pk>", ProductRetrieveUpdateDestroyAPIView.as_view()),
 ]

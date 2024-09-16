@@ -1,7 +1,15 @@
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import (
+    ListCreateAPIView,
+    RetrieveUpdateDestroyAPIView,
+    RetrieveAPIView,
+)
 
 from data.category.models import Category
-from data.category.serializers import CategoryCreateSerializer, CategorySerializer
+from data.category.serializers import (
+    CategoryCreateSerializer,
+    CategorySerializer,
+    CategorySerializerWithStats,
+)
 
 # Create your views here.
 
@@ -15,8 +23,15 @@ class CategoryListCreateAPIView(ListCreateAPIView):
 
     def get_serializer_class(self):
         if self.request.method == "POST":
-            return CategoryCreateSerializer
-        return CategorySerializer
+            return self.serializer_class_create
+        return self.serializer_class
+
+
+class CategoryRetrieveAPIView(RetrieveAPIView):
+
+    queryset = Category.objects.all()
+
+    serializer_class = CategorySerializerWithStats
 
 
 class CategoryRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):

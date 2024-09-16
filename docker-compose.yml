@@ -24,8 +24,9 @@ services:
         command: python manage.py runserver 0.0.0.0:8000
         volumes:
             - ./config:/usr/src/app
-            # - ./locales:/usr/src/app/locales
-            # - ./tg_bot:/usr/src/app/tg_bot
+            - ./utils:/usr/src/app/utils
+            - ./locales:/usr/src/app/locales
+            - ./tg_bot:/usr/src/app/tg_bot
         ports:
             - "8000:8000"
         env_file:

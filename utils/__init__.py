@@ -8,7 +8,7 @@ from typing import TypeVar
 T = TypeVar("T")
 
 
-from language import multilanguage, TranslationAccessor
+from .language import multilanguage, TranslationAccessor
 
 
 class ReplyKeyboardMarkup(RKM):

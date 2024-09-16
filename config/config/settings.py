@@ -43,19 +43,19 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "corsheaders",
     "common",
+    "bot",
     "api",
     "data.category",
     "data.product",
+    "data.file"
 ]
 
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # Update with your frontend URL
-]
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "https://sushiyummy.vercel.app"]
 
 
 MIDDLEWARE = [
-    # 'config.middlewares.cookie_auth.JWTAuthenticationMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",

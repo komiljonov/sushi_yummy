@@ -6,6 +6,7 @@ from django.core.validators import MinValueValidator
 
 if TYPE_CHECKING:
     from category.models import Category
+    from data.file.models import File
 
 # Create your models here.
 
@@ -14,13 +15,13 @@ class Product(TimeStampModel):
 
     name_uz = models.CharField(max_length=255)
     name_ru = models.CharField(max_length=255)
-    name_us = models.CharField(max_length=255)
 
     caption_uz = models.CharField(max_length=255)
     caption_ru = models.CharField(max_length=255)
-    caption_us = models.CharField(max_length=255)
 
-    image = models.ImageField(upload_to="")
+    image: "File" = models.ForeignKey(
+        "file.File", on_delete=models.SET_NULL, null=True, blank=True
+    )
 
     price = models.FloatField(
         default=0,
