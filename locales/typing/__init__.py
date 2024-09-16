@@ -1,5 +1,6 @@
 from typing import Callable
 
+from locales.typing.cart import Cart
 from locales.typing.main_menu import MainMenu
 from locales.typing.menu import Menu
 
@@ -24,6 +25,7 @@ class MultiLanguageTranslations:
 
     main_menu: MainMenu
     menu: Menu
+    cart: Cart
 
     uz: dtype
     ru: dtype

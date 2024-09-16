@@ -3,6 +3,7 @@ from telegram.ext import ContextTypes
 from typing import TypeVar
 from telegram import Update
 from telegram.ext.filters import Text
+from utils.language import multilanguage
 
 CTX = TypeVar("CTX", bound=ContextTypes.DEFAULT_TYPE)
 UPD = TypeVar("UPD", bound=Update)
@@ -11,7 +12,14 @@ UPD = TypeVar("UPD", bound=Update)
 PASSWORD = os.getenv("PASSWORD")
 
 
-EXCLUDE = ~Text(["/start", f"/start {PASSWORD}", f"/start basicUser"])
+EXCLUDE = ~Text(
+    [
+        "/start",
+        f"/start {PASSWORD}",
+        f"/start basicUser",
+        *multilanguage.get_all("buttons.back"),
+    ]
+)
 
 
 UZ = "🇺🇿 O'zbekcha"
@@ -28,4 +36,7 @@ LANG = "LANG"
 
 MENU_CATEGORY = "MENU_CATEGORY"
 MENU_PRODUCT = "MENU_PRODUCT"
-PRODUCT_INFO ="PRODUCT_INFO"
+PRODUCT_INFO = "PRODUCT_INFO"
+
+
+CART = "CART"

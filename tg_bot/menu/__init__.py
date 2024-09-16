@@ -1,17 +1,18 @@
 from typing import TYPE_CHECKING
 from redis import Redis
-from telegram import Update
 from telegram.ext import filters
 
 from telegram.ext import CommandHandler, MessageHandler
 from bot.models import User
 
+from tg_bot.menu.back import MenuBack
 from tg_bot.redis_conversation import ConversationHandler
 from utils.language import multilanguage
 
 from tg_bot.constants import (
     CTX,
     EXCLUDE,
+    MAIN_MENU,
     MENU,
     MENU_CATEGORY,
     MENU_PRODUCT,
@@ -26,7 +27,7 @@ if TYPE_CHECKING:
     from data.product.models import Product
 
 
-class Menu:
+class Menu(MenuBack):
 
     redis: Redis
 
@@ -40,37 +41,51 @@ class Menu:
             ],
             {
                 MENU_CATEGORY: [
-                    MessageHandler(filters.TEXT & EXCLUDE, self.menu_category)
+                    self._cart_handlers(self.menu),
+                    MessageHandler(filters.TEXT & EXCLUDE, self.menu_category),
+                    self.back(self.start),
                 ],
                 MENU_PRODUCT: [
-                    MessageHandler(filters.TEXT & EXCLUDE, self.menu_product)
+                    self._cart_handlers(self.back_to_menu_product),
+                    MessageHandler(filters.TEXT & EXCLUDE, self.menu_product),
+                    self.back(self.back_from_menu_category),
                 ],
                 PRODUCT_INFO: [
-                    MessageHandler(filters.Regex(r"\d+"), self.set_product_count)
+                    self._cart_handlers(self.back_to_menu_product_info),
+                    MessageHandler(filters.Regex(r"\d+"), self.set_product_count),
+                    self.back(self.back_from_product_info),
                 ],
             },
-            [CommandHandler("start", self.start)],
+            [
+                CommandHandler("start", self.start),
+                MessageHandler(filters.ALL, self.start),
+            ],
             self.redis,
             True,
-            {MENU: MENU},
+            {MENU: MENU, MAIN_MENU: MAIN_MENU},
         )
 
     async def menu(self, update: UPD, context: CTX):
         tgUser, user, temp, i18n = User.get(update)
 
         temp.category = None
+        temp.product = None
         temp.save()
 
         await tgUser.send_message(
             i18n.menu.welcome(),
             reply_markup=ReplyKeyboardMarkup(
-                distribute(
-                    [
-                        i18n.get_name(category)
-                        for category in Category.objects.filter(parent=None)
-                    ]
-                )
+                [
+                    [i18n.menu.cart() if user.cart.items.count() > 0 else ""],
+                    *distribute(
+                        [
+                            i18n.get_name(category)
+                            for category in Category.objects.filter(parent=None)
+                        ],
+                    ),
+                ]
             ),
+            parse_mode="HTML",
         )
         return MENU_CATEGORY
 
@@ -86,6 +101,8 @@ class Menu:
 
         if category == None:
             await tgUser.send_message(i18n.menu.category.not_found(), parse_mode="HTML")
+            if temp.category == None:
+                return await self.menu(update, context)
             return await self.menu_category(update, context, temp.category)
 
         temp.category = category
@@ -94,10 +111,14 @@ class Menu:
         await tgUser.send_message(
             i18n.menu.category.info(name=i18n.get_name(category)),
             reply_markup=ReplyKeyboardMarkup(
-                distribute(
-                    [i18n.get_name(product) for product in category.products.all()]
-                )
+                [
+                    [i18n.menu.cart() if user.cart.items.count() > 0 else ""],
+                    *distribute(
+                        [i18n.get_name(product) for product in category.products.all()],
+                    ),
+                ]
             ),
+            parse_mode="HTML",
         )
         return MENU_PRODUCT
 
@@ -127,6 +148,8 @@ class Menu:
             parse_mode="HTML",
         )
 
+        await tgUser.send_message(i18n.menu.product.count.ask(), parse_mode="HTML")
+
         return PRODUCT_INFO
 
     async def set_product_count(self, update: UPD, context: CTX):
@@ -142,4 +165,22 @@ class Menu:
             product=product, defaults=dict(price=product.price, count=count)
         )
 
+        await tgUser.send_message(
+            i18n.menu.product.count.success(product_name=i18n.get_name(product)),
+            parse_mode="HTML",
+        )
+
         return await self.menu_category(update, context, product.category)
+
+    async def back_to_menu_product(self, update: UPD, context: CTX):
+        tgUser, user, temp, i18n = User.get(update)
+
+        if temp.category == None:
+            return await self.menu(update, context)
+
+        return await self.menu_category(update, context, temp.category)
+
+    async def back_to_menu_product_info(self, update: UPD, context: CTX):
+        tgUser, user, temp, i18n = User.get(update)
+
+        return await self.menu_product(update, context, temp.product)

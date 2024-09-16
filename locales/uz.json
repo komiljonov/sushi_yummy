@@ -1,20 +1,39 @@
 {
     "lang": {
-        "ask": "<b>🇺🇿 Iltimos tilni tanlang.</b>\n\n<b>🇷🇺 Пожалуйста, выберите язык.</b>\n\n<b>🇺🇸 Please select a language.</b>"
+        "ask": "<b>🌍 Iltimos, o'zingizga mos tilni tanlang:</b>\n\n<b>🇷🇺 Выберите язык, пожалуйста:</b>\n\n<b>🇺🇸 Please choose your preferred language:</b>"
     },
     "main_menu": {
-        "menu": "🍽 Menyu",
-        "order_history": "📖 Buyurtmalar tarixi",
-        "leave_appeal": "✍️ Fikr bildirish",
-        "info": "ℹ️ Ma'lumot",
-        "contact": "☎️ Biz bilan aloqa",
-        "settings": "⚙️Sozlamalar"
+        "menu": "🍽 Mazali Menyu",
+        "order_history": "📖 Buyurtmalar Tarixi",
+        "leave_appeal": "✍️ Fikr-mulohaza qoldirish",
+        "info": "ℹ️ Ma'lumotlar",
+        "contact": "☎️ Bog'lanish",
+        "settings": "⚙️ Sozlamalar"
     },
     "menu": {
-        "welcome": "Menuga xush kelibsiz.\n\nNimadan boshlaymiz?",
+        "welcome": [
+            "🍽 <b>Assalomu alaykum! Menyuga xush kelibsiz.</b>\n\n",
+            "✨ Nimadan boshlaymiz?"
+        ],
         "category": {
-            "info": "Nimadan boshlaymiz?"
-        }
+            "info": "🍴 <b>Ovqatga buyurtma berish uchun biror kategoriya tanlang:</b>"
+        },
+        "product": {
+            "count": {
+                "ask": "🔢 <b>Miqdorini kiriting yoki tanlang:</b>",
+                "success": "✅ <b>{product_name} savatga muvaffaqiyatli qo'shildi!</b>\n\n🛒 <b>Savatga o'tish uchun: Savat 🛒 tugmasini bosing!</b>"
+            }
+        },
+        "cart": "🛒 Savatni ko'rish"
+    },
+    "cart": {
+        "instruction": [
+            "<b>❌ <i>Mahsulot nomi</i> - <i>savatdan o'chirish</i></b>\n\n",
+            "<b>➖ va ➕ <i>Mahsulot sonini kamaytirish yoki oshirish</i></b>\n\n",
+            "<b>🔄 <i>Savatni butunlay tozalash</i></b>"
+        ],
+        "info": "📥 <b>Savat:</b>\n\n{products}\n\n🧾 <b>Umumiy narx: {total_price} so'm</b>",
+        "item": "{i}. {product_name}\n\t\t\t\t{count} x {price} = {item_price} so'm\n\n"
     },
     "buttons": {
         "back": "🔙 Ortga"

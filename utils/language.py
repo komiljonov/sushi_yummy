@@ -19,6 +19,12 @@ def custom_format(template_string, **kwargs):
         # otherwise return the placeholder itself in the same format
         return str(kwargs.get(placeholder, match.group(0)))
 
+    template_string = (
+        template_string
+        if isinstance(template_string, str)
+        else "".join(template_string)
+    )
+
     # Use the sub function from re module to replace all matches in the template string
     return re.sub(pattern, replace, template_string)
 
@@ -35,7 +41,10 @@ class TranslationAccessor(MultiLanguageTranslations):
 
     def __call__(self, **kwargs):
         # print(self.path, self._lang)
-        return self.multilanguage.get(self.path, language=self._lang, **kwargs)
+        res = self.multilanguage.get(self.path, language=self._lang, **kwargs)
+        print(res, type(res))
+
+        return res
 
     def __str__(self):
         # Automatically fetch and return the string if no formatting is needed
@@ -47,6 +56,7 @@ class TranslationAccessor(MultiLanguageTranslations):
     def get_name(self, obj: object) -> str:
         if hasattr(obj, f"name_{self._lang}"):
             return getattr(obj, f"name_{self._lang}")
+        
         return str(obj)
 
     def filter_name(self, value: str):
@@ -85,6 +95,7 @@ class MultiLanguage:
                 with open(file_path, "r", encoding="utf-8") as file:
                     # print(file_path)
                     self.translations[language_code] = json.load(file)
+                    
 
     def get_all(self, *text_names, **kwargs):
         all_texts = []
