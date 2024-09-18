@@ -33,6 +33,7 @@ class Cart(TimeStampModel):
     status = models.CharField(
         choices=[
             ("ORDERING", "Buyurtma berilmoqda"),
+            ("PENDING_PAYMENT", "To'lov kutilmoqda"),
             ("PENDING", "Buyurtma berilmoqda"),
         ],
         default="ORDERING",

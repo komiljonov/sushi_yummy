@@ -1,13 +1,14 @@
 import asyncio
+import base64
 from datetime import date, datetime, timedelta
 from typing import Callable
 from redis import Redis
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, Message
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, LabeledPrice, Message
 from telegram.ext import filters, CallbackQueryHandler
 
-from telegram.ext import CommandHandler, MessageHandler
-from bot.models import Location, User
-from geopy.geocoders import Nominatim, Yandex
+from telegram.ext import MessageHandler
+from bot.models import User
+from geopy.geocoders import Nominatim
 from data.filial.models import Filial
 from tg_bot.cart.back import CartBack
 from tg_bot.redis_conversation import ConversationHandler
@@ -24,6 +25,8 @@ from tg_bot.constants import (
     CART_TAKEAWAY_FILIAL,
     CART_TIME,
     CART_TIME_LATER_TIME,
+    CASH,
+    CLICK,
     CTX,
     DELIVERY_LOCATION,
     EXCLUDE,
@@ -32,18 +35,23 @@ from tg_bot.constants import (
     MENU,
     MENU_CATEGORY,
     MENU_PRODUCT,
+    PAYME,
+    PAYMENT_METHOD,
     PRODUCT_INFO,
     UPD,
 )
 from utils import ReplyKeyboardMarkup, distribute, get_later_times
 
 
-class Cart(CartBack):
+class TgBotCart(CartBack):
 
     redis: Redis
+    CLICK_TOKEN: str
+    PAYME_TOKEN: str
+    
 
     def _cart_handlers(self, back_handler: Callable[[UPD, CTX], str] | None = None):
-        # self.back_handler = back_handler
+        
         return ConversationHandler(
             "CartConversation",
             [
@@ -55,6 +63,10 @@ class Cart(CartBack):
                 CART: [
                     MessageHandler(
                         filters.Text(multilanguage.get_all("cart.done")), self.cart_done
+                    ),
+                    MessageHandler(
+                        filters.Text(multilanguage.get_all("buttons.clear")),
+                        self.cart_clear,
                     ),
                     CallbackQueryHandler(self.cart_set_count, pattern=r"set_count"),
                     CallbackQueryHandler(self.cart_remove_item, pattern=r"remove"),
@@ -123,11 +135,11 @@ class Cart(CartBack):
                         self.cart_reject,
                     ),
                 ],
+                PAYMENT_METHOD: [
+                    MessageHandler(filters.TEXT & EXCLUDE, self.cart_payment_method)
+                ]
             },
-            [
-                CommandHandler("start", self.start),
-                MessageHandler(filters.ALL, self.start),
-            ],
+            self.ANYTHING,
             self.redis,
             True,
             {
@@ -241,6 +253,17 @@ class Cart(CartBack):
             await message.edit_text(text, parse_mode="HTML", reply_markup=keyboard)
 
         return CART
+
+    async def cart_clear(self, update: UPD, context: CTX):
+        tgUser, user, temp, i18n = User.get(update)
+
+        cart = user.cart
+
+        items = cart.items.all()
+
+        items.delete()
+
+        return await self.cart(update, context)
 
     async def cart_set_count(self, update: UPD, context: CTX):
         tgUser, user, temp, i18n = User.get(update)
@@ -602,11 +625,11 @@ class Cart(CartBack):
             )
 
         await tgUser.send_message(
-            i18n.order.info(
+            i18n.order.info.base(
                 name=user.name,
                 number=cart.phone_number,
                 delivery_method=cart.delivery,
-                comment=cart.comment,
+                comment=i18n.order.info.comment(comment=cart.comment) if cart.comment else "",
                 filial=i18n.get_name(cart.filial),
                 total_price=cart.price,
                 orders="\n".join(products_text),
@@ -618,12 +641,84 @@ class Cart(CartBack):
 
         return CART_CONFIRM
 
-    async def cart_confirm(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
-
-        await tgUser.send_message("Qabul qilindi.")
+    
 
     async def cart_reject(self, update: UPD, context: CTX):
         tgUser, user, temp, i18n = User.get(update)
 
         await tgUser.send_message("Rad etildi qilindi.")
+
+        return await self.cart(update, context)
+
+
+
+    async def cart_confirm(self, update: UPD, context: CTX):
+        tgUser, user, temp, i18n = User.get(update)
+
+        # await tgUser.send_message("Qabul qilindi.")
+        
+        
+        await tgUser.send_message(
+            i18n.payment.method.ask(),
+            reply_markup=ReplyKeyboardMarkup([
+                [
+                    i18n.payment.click(),
+                    i18n.payment.payme()
+                ],
+                [
+                    i18n.payment.cash()
+                ]
+            ])
+        )
+        return PAYMENT_METHOD   
+    
+    
+    
+    async def cart_payment_method(self, update: UPD, context: CTX):
+        tgUser, user, temp, i18n = User.get(update)
+        
+        
+        
+        methods = {
+            i18n.payment.click(): CLICK,
+            i18n.payment.payme(): PAYME,
+            i18n.payment.cash(): CASH
+        }
+        
+        method = methods.get(update.message.text)
+        
+        
+        if method == None:
+            await tgUser.send_message(i18n.payment.method.not_found(),reply_markup=ReplyKeyboardMarkup([
+                [
+                    i18n.payment.click(),
+                    i18n.payment.payme()
+                ],
+                [
+                    i18n.payment.cash()
+                ]
+            ]))
+            
+            return PAYMENT_METHOD
+        
+        
+        cart = user.cart
+        
+        products = [
+            LabeledPrice(i18n.get_name(item.product), int((item.count * item.price) * 100)) for item in cart.items.all()
+        ]
+        
+        if method in [CLICK, PAYME]: 
+            cart.status = "PENDING_PAYMENT"
+            cart.save()
+            await tgUser.send_invoice(
+                i18n.payment.title(),
+                i18n.payment.description(),
+                f"cart:{base64.b64encode(f"{cart.id}".encode()).decode()}",
+                self.CLICK_TOKEN if method == CLICK else self.PAYME_TOKEN,
+                "UZS",
+                products,
+            )
+            return -1
+        else:
+            await tgUser.send_message(i18n.payment.done())

@@ -50,6 +50,7 @@ services:
         depends_on:
             - redis
             - postgres
+            - tgbotapi
 
     redis-commander:
         image: rediscommander/redis-commander:latest

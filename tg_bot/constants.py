@@ -26,6 +26,9 @@ UZ = "🇺🇿 O'zbekcha"
 RU = "🇷🇺 Русский"
 EN = "🇺🇸 English"
 
+CLICK = "CLICK"
+PAYME = "PAYME"
+CASH = "CASH"
 
 MENU = "MENU"
 
@@ -62,3 +65,6 @@ CART_COMMENT = "CART_COMMENT"
 CART_COUPON = "CART_COUPON"
 
 CART_CONFIRM = "CART_CONFIRM"
+
+
+PAYMENT_METHOD = "PAYMENT_METHOD"

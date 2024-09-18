@@ -1,10 +1,17 @@
+import base64
+import os
 from redis import Redis
 from telegram import KeyboardButton
 from telegram.ext import filters
 
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler
+from telegram.ext import (
+    ApplicationBuilder,
+    CommandHandler,
+    MessageHandler,
+    PreCheckoutQueryHandler,
+)
 from bot.models import User
-from tg_bot.cart import Cart
+from tg_bot.cart import TgBotCart
 from tg_bot.menu import Menu
 from tg_bot.redis_conversation import ConversationHandler
 from tg_bot.constants import (
@@ -21,15 +28,24 @@ from tg_bot.constants import (
 )
 from utils import ReplyKeyboardMarkup
 from utils.language import multilanguage
+from data.cart.models import Cart
 
 
-class Bot(Menu, Cart):
+class Bot(Menu, TgBotCart):
 
     def __init__(self, token: str):
 
         self.token = token
 
         self.redis = Redis.from_url("redis://redis:6379/0")
+
+        self.CLICK_TOKEN = os.getenv("CLICK_TOKEN")
+        self.PAYME_TOKEN = os.getenv("PAYME_TOKEN")
+
+        self.ANYTHING = [
+            CommandHandler("start", self.start),
+            MessageHandler(filters.ALL & ~filters.SUCCESSFUL_PAYMENT, self.start),
+        ]
 
         self.app = (
             ApplicationBuilder()
@@ -43,12 +59,18 @@ class Bot(Menu, Cart):
         self.app.add_handler(CommandHandler("load", self.reload_locale))
         self.app.add_handler(self._main_conversation())
 
+        self.app.add_handler(PreCheckoutQueryHandler(self.pre_checkout_query_handler))
+
+        self.app.add_handler(
+            MessageHandler(filters.SUCCESSFUL_PAYMENT, self.successful_payment)
+        )
+
     def _main_conversation(self):
         return ConversationHandler(
             "MainConversation",
             [
                 CommandHandler("start", self.start),
-                MessageHandler(filters.ALL, self.start),
+                MessageHandler(filters.ALL & ~filters.SUCCESSFUL_PAYMENT, self.start),
             ],
             {
                 LANG: [MessageHandler(filters.TEXT & EXCLUDE, self.lang)],
@@ -64,10 +86,7 @@ class Bot(Menu, Cart):
                 ],
                 MAIN_MENU: [self._menu_handlers(), self._cart_handlers(self.start)],
             },
-            [
-                CommandHandler("start", self.start),
-                MessageHandler(filters.ALL, self.start),
-            ],
+            self.ANYTHING,
             redis=self.redis,
         )
 
@@ -171,3 +190,53 @@ class Bot(Menu, Cart):
     async def reload_locale(self, update: UPD, context: CTX):
         tgUser, user, temp, i18n = User.get(update)
         multilanguage.load_translations("locales")
+
+    async def pre_checkout_query_handler(self, update: UPD, context: CTX):
+        tgUser, user, temp, i18n = User.get(update)
+
+        _, _cartId = update.pre_checkout_query.invoice_payload.split(":")
+
+        cartId = base64.b64decode(_cartId.encode()).decode()
+
+        cart = Cart.objects.filter(id=cartId).first()
+
+        if cart == None:
+            await update.pre_checkout_query.answer(
+                False, "Kechirasiz buyurtma topilmadi."
+            )
+
+            return
+
+        if cart.status != "ORDERING":
+            await update.pre_checkout_query.answer(
+                False, "Kechirasiz buyurtma berib bo'lingan."
+            )
+
+            return
+
+        await update.pre_checkout_query.answer(True)
+
+    async def successful_payment(self, update: UPD, context: CTX):
+        tgUser, user, temp, i18n = User.get(update)
+
+        payment = update.message.successful_payment
+
+        _, _cartId = payment.invoice_payload.split(":")
+
+        cartId = base64.b64decode(_cartId.encode()).decode()
+
+        cart = Cart.objects.filter(id=cartId).first()
+
+        if cart == None:
+
+            return
+
+        cart.status = "PENDING"
+        cart.save()
+
+        await context.bot.send_message(
+            cart.user.chat_id,
+            i18n.payment.successfull(),
+        )
+
+        return await self.start(update, context)

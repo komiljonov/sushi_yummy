@@ -1,22 +1,11 @@
-import asyncio
-from datetime import date, datetime, timedelta
-from typing import Callable
-from redis import Redis
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, Message
-from telegram.ext import filters, CallbackQueryHandler
+from telegram import KeyboardButton
 
-from telegram.ext import CommandHandler, MessageHandler
-from bot.models import Location, User
-from geopy.geocoders import Nominatim, Yandex
+from bot.models import  User
+from geopy.geocoders import Nominatim
 from data.filial.models import Filial
-from tg_bot.redis_conversation import ConversationHandler
-from utils.language import multilanguage
 
 from tg_bot.constants import (
-    CART,
     CART_COMMENT,
-    CART_CONFIRM,
-    CART_COUPON,
     CART_DELIVER_LOCATION_CONFIRM,
     CART_GET_METHOD,
     CART_PHONE_NUMBER,
@@ -25,13 +14,6 @@ from tg_bot.constants import (
     CART_TIME_LATER_TIME,
     CTX,
     DELIVERY_LOCATION,
-    EXCLUDE,
-    LANG,
-    MAIN_MENU,
-    MENU,
-    MENU_CATEGORY,
-    MENU_PRODUCT,
-    PRODUCT_INFO,
     UPD,
 )
 from utils import ReplyKeyboardMarkup, distribute, get_later_times

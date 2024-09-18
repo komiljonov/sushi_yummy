@@ -56,10 +56,7 @@ class Menu(MenuBack):
                     self.back(self.back_from_product_info),
                 ],
             },
-            [
-                CommandHandler("start", self.start),
-                MessageHandler(filters.ALL, self.start),
-            ],
+            self.ANYTHING,
             self.redis,
             True,
             {MENU: MENU, MAIN_MENU: MAIN_MENU},

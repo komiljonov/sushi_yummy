@@ -8,12 +8,12 @@
             "ask": "Iltimos ismingizni yuboring."
         },
         "number": {
-            "ask": "Telefon raqamingizni yuboring yoki pastdagi Raqamni yuborish tugmasini bosish orqali yuboring."
+            "ask": "📞 Biz siz bilan bog'lanish imkoniga ega bo'lishimiz uchun telefon raqamingizni yuboring yoki pastdagi tugmani bosing."
         }
     },
     "main_menu": {
         "menu": "🍽 Mazali Menyu",
-        "order_history": "📖 Buyurtmalar Tarixi",
+        "order_history": "📖 Buyurtmalar tarixingiz",
         "leave_appeal": "✍️ Fikr-mulohaza qoldirish",
         "info": "ℹ️ Ma'lumotlar",
         "contact": "☎️ Bog'lanish",
@@ -85,15 +85,18 @@
         "wrong": "Kechirasiz quyidagilardan birini tanlang."
     },
     "order": {
-        "info": [
-            "Sizning buyurtmangiz:\n\n",
-            "Ism: {name}\n",
-            "Telefon: {number}\n",
-            "Buyurtma turi: {delivery_method}\n",
-            "Izoh: {comment}\n",
-            "{orders}\n",
-            "Umumiy: {total_price} so'm"
-        ],
+        "info": {
+            "base": [
+                "Sizning buyurtmangiz:\n\n",
+                "Ism: {name}\n",
+                "Telefon: {number}\n",
+                "Buyurtma turi: {delivery_method}\n",
+                "{comment}\n",
+                "{orders}\n\n",
+                "Umumiy: {total_price} so'm"
+            ],
+            "comment": "Izoh: {comment}\n"
+        },
         "coupon": {
             "ask": "Kupon bo'lsa kirgazing"
         },
@@ -107,6 +110,20 @@
         },
         "comment": {
             "ask": "Izoh qoldiring"
+        }
+    },
+    "payment": {
+        "cash": "Naqd 💰",
+        "click": "Click",
+        "payme": "Payme",
+        "title": "Sushi Yummy To'lov",
+        "description": "Sushi yummyga xush kelibsiz.",
+        "done": "Buyurtmangiz qabul qilindi",
+        "method": {
+            "ask": [
+                "To'lov turini tanlang."
+            ],
+            "not_found": "TO'lov turi topilmadi."
         }
     },
     "buttons": {
