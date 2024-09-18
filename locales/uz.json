@@ -1,6 +1,8 @@
 {
-    "lang": {
-        "ask": "<b>🌍 Iltimos, o'zingizga mos tilni tanlang:</b>\n\n<b>🇷🇺 Выберите язык, пожалуйста:</b>\n\n<b>🇺🇸 Please choose your preferred language:</b>"
+    "register": {
+        "lang": {
+            "ask": "<b>🌍 Iltimos, o'zingizga mos tilni tanlang:</b>\n\n<b>🇷🇺 Выберите язык, пожалуйста:</b>\n\n<b>🇺🇸 Please choose your preferred language:</b>"
+        }
     },
     "main_menu": {
         "menu": "🍽 Mazali Menyu",
@@ -69,17 +71,17 @@
         "takeaway": "Buyurtmani olib ketish uchun qulay vaqtni tanlang.",
         "asap": "✅ Iloji boricha tezroq",
         "later": "⏳ Keyinroq",
-        "times": {
-            "half_hour_later": "Yarim soatdan keyin",
-            "hour_later": "1 soatdan keyin",
-            "hour_later_2": "2 soatdan keyin",
-            "hour_later_3": "3 soatdan keyin"
-        }
+        "ask_later_deliver": "Buyurtmani yetkazib berish vaqtini tanlang.",
+        "ask_later_takeaway": "Buyurtmani olib ketish vaqtini tanlang."
+    },
+    "order": {
+        "info": "Sizning buyurtmangiz:\n\nIsm: {name}\nTelefon: {number}\nTo'lov usuli: {payment}\nBuyurtma turi: {delivery_method}\nIzoh: {comment}\n"
     },
     "buttons": {
         "back": "🔙 Ortga",
         "clear": "🔄 Tozalash",
         "location": "📍 Joylashuvni yuborish",
-        "my_locations": "🗺 Mening manzillarim"
+        "my_locations": "🗺 Mening manzillarim",
+        "phone_number": "Raqamni yuborish 📞"
     }
 }

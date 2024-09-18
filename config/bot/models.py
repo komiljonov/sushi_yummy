@@ -20,6 +20,9 @@ if TYPE_CHECKING:
 class User(TimeStampModel):
 
     chat_id = models.BigIntegerField()
+    
+    name = models.CharField(max_length=255, null=True,blank=True)
+    number = models.CharField(max_length=255,null=True,blank=True)
 
     tg_name = models.CharField(max_length=255)
     username = models.CharField(max_length=255, null=True, blank=True)
@@ -76,6 +79,10 @@ class UserTemp(TimeStampModel):
 
     cmid = models.IntegerField(null=True, blank=True)
     cmid2 = models.IntegerField(null=True, blank=True)
+
+    delivery_method = models.IntegerField(default=1)
+
+    time = models.DateTimeField(null=True, blank=True)
 
 
 class Location(TimeStampModel):

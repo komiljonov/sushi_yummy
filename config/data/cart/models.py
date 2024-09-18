@@ -40,6 +40,8 @@ class Cart(TimeStampModel):
         default="DELIVER",
     )
 
+    time = models.TimeField(null=True, blank=True)
+
     filial: "Filial" = models.ForeignKey(
         "filial.Filial",
         on_delete=models.SET_NULL,

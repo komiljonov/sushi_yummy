@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from itertools import islice
 from typing import Sequence
 from telegram import ReplyKeyboardMarkup as RKM
@@ -45,3 +46,21 @@ def distribute(data: list[T], chunk_size: int = 2) -> list[T]:
         list(islice(it, chunk_size))
         for _ in range((len(data) + chunk_size - 1) // chunk_size)
     ]
+
+
+def get_later_times(start_time=None):
+    if start_time is None:
+        start_time = datetime.now() + timedelta(hours=1)
+    else:
+        start_time = start_time + timedelta(hours=1)
+
+    # Set the start time to the next occurrence of the hour with minutes set to 30
+    if start_time.minute >= 30:
+        start_time = start_time.replace(minute=30, second=0, microsecond=0)
+
+    else:
+        start_time = start_time.replace(minute=30, second=0, microsecond=0)
+
+    # Generate intervals for the next 3 hours
+    intervals = [start_time + timedelta(minutes=i * 30) for i in range(0, 6)]
+    return intervals

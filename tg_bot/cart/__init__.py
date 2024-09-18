@@ -1,4 +1,5 @@
 import asyncio
+from datetime import date, datetime, timedelta
 from typing import Callable
 from redis import Redis
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, Message
@@ -21,6 +22,7 @@ from tg_bot.constants import (
     CTX,
     DELIVERY_LOCATION,
     EXCLUDE,
+    LANG,
     MAIN_MENU,
     MENU,
     MENU_CATEGORY,
@@ -28,7 +30,7 @@ from tg_bot.constants import (
     PRODUCT_INFO,
     UPD,
 )
-from utils import ReplyKeyboardMarkup, distribute
+from utils import ReplyKeyboardMarkup, distribute, get_later_times
 
 
 class Cart:
@@ -80,6 +82,9 @@ class Cart:
                     ),
                     MessageHandler(filters.TEXT & EXCLUDE, self.cart_takeaway_filial),
                 ],
+                CART_TIME: [
+                    MessageHandler(filters.TEXT & EXCLUDE, self.cart_time_later)
+                ],
                 CART_TIME_LATER_TIME: [
                     MessageHandler(filters.TEXT & EXCLUDE, self.cart_time_later_time)
                 ],
@@ -96,6 +101,7 @@ class Cart:
                 MENU_CATEGORY: MENU_CATEGORY,
                 MENU_PRODUCT: MENU_PRODUCT,
                 PRODUCT_INFO: PRODUCT_INFO,
+                LANG: LANG,
             },
         )
 
@@ -266,6 +272,7 @@ class Cart:
             reply_markup=ReplyKeyboardMarkup(
                 [[i18n.cart.deliver(), i18n.cart.take_away()]]
             ),
+            parse_mode="HTML",
         )
         await self.delete_messages(update, context)
 
@@ -273,6 +280,11 @@ class Cart:
 
     async def cart_get_method_deliver(self, update: UPD, context: CTX):
         tgUser, user, temp, i18n = User.get(update)
+
+        cart = user.cart
+
+        cart.delivery = "DELIVER"
+        cart.save()
 
         await tgUser.send_message(
             i18n.deliver.location.ask(),
@@ -282,6 +294,7 @@ class Cart:
                     [i18n.buttons.my_locations()],
                 ]
             ),
+            parse_mode="HTML",
         )
         return DELIVERY_LOCATION
 
@@ -315,6 +328,7 @@ class Cart:
                     [i18n.buttons.confirm()],
                 ]
             ),
+            parse_mode="HTML",
         )
 
         return CART_DELIVER_LOCATION_CONFIRM
@@ -322,10 +336,32 @@ class Cart:
     async def cart_deliver_location_confirm(self, update: UPD, context: CTX):
         tgUser, user, temp, i18n = User.get(update)
 
-        # TODO: Continue ordering
+        cart = user.cart
+
+        cart.location = temp.location
+        cart.save()
+
+        await tgUser.send_message(
+            i18n.time.deliver(),
+            reply_markup=ReplyKeyboardMarkup(
+                [
+                    [
+                        i18n.time.asap(),
+                    ],
+                    [i18n.time.later()],
+                ]
+            ),
+            parse_mode="HTML",
+        )
+        return CART_TIME
 
     async def cart_get_method_take_away(self, update: UPD, context: CTX):
         tgUser, user, temp, i18n = User.get(update)
+
+        cart = user.cart
+
+        cart.delivery = "TAKEAWAY"
+        cart.save()
 
         filials = Filial.objects.filter(active=True)
 
@@ -337,6 +373,7 @@ class Cart:
                     *distribute([i18n.get_name(filial) for filial in filials]),
                 ]
             ),
+            parse_mode="HTML",
         )
 
         return CART_TAKEAWAY_FILIAL
@@ -358,6 +395,7 @@ class Cart:
                     *distribute([i18n.get_name(filial) for filial in filials]),
                 ]
             ),
+            parse_mode="HTML",
         )
 
     async def cart_takeaway_filial(self, update: UPD, context: CTX):
@@ -366,11 +404,15 @@ class Cart:
         filial = Filial.objects.filter(i18n.filter_name(update.message.text)).first()
 
         if filial == None:
-            await tgUser.send_message(i18n.takeaway.filial.not_found())
+            await tgUser.send_message(
+                i18n.takeaway.filial.not_found(), parse_mode="HTML"
+            )
             return await self.cart_get_method_take_away(update, context)
 
-        temp.filial = filial
-        temp.save()
+        cart = user.cart
+
+        cart.filial = filial
+        cart.save()
 
         await tgUser.send_message(
             i18n.time.takeaway(),
@@ -382,33 +424,55 @@ class Cart:
                     [i18n.time.later()],
                 ]
             ),
+            parse_mode="HTML",
         )
         return CART_TIME
-
-    async def cart_time_asap(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
-
-        # TODO: Implement payment ask
-
-        await tgUser.send_message("ASAP")
 
     async def cart_time_later(self, update: UPD, context: CTX):
         tgUser, user, temp, i18n = User.get(update)
 
-        await tgUser.send_message(
-            i18n.time.ask(),
-            reply_markup=ReplyKeyboardMarkup(
-                [
-                    [
-                        i18n.time.times.half_hour_later(),
-                        i18n.time.times.hour_later(),
-                    ],
-                    [i18n.time.times.hour_later_2(), i18n.time.times.hour_later_3()],
-                ]
-            ),
+        times = get_later_times()
+        text = (
+            i18n.time.ask_later_deliver()
+            if temp.delivery_method == 1
+            else i18n.time.ask_later_takeaway()
         )
 
+        await tgUser.send_message(
+            text,
+            reply_markup=ReplyKeyboardMarkup(
+                distribute([time.strftime("%H:%M") for time in times])
+            ),
+            parse_mode="HTML",
+        )
         return CART_TIME_LATER_TIME
 
     async def cart_time_later_time(self, update: UPD, context: CTX):
         tgUser, user, temp, i18n = User.get(update)
+
+        time_t = update.message.text
+
+        # Parse the time string into a datetime object, ensuring it's interpreted as today's date
+        time = datetime.combine(date.today(), datetime.strptime(time_t, "%H:%M").time())
+
+        time = time if time > datetime.now() else time + timedelta(days=1)
+
+        print(time)
+
+        # temp.time = time
+        # temp.save()
+        cart = user.cart
+        cart.time = time
+        cart.save()
+
+        # TODO: Implement payment
+
+    async def cart_time_asap(self, update: UPD, context: CTX):
+        tgUser, user, temp, i18n = User.get(update)
+
+        await tgUser.send_message("ASAP")
+        
+        
+        await tgUser.send_message(i18n.order.info(
+            
+        ))

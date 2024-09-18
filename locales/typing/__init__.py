@@ -3,6 +3,7 @@ from typing import Callable
 from locales.typing.cart import Cart
 from locales.typing.main_menu import MainMenu
 from locales.typing.menu import Menu
+from locales.typing.register import Register
 
 dtype = Callable[[], str]
 
@@ -26,6 +27,7 @@ class MultiLanguageTranslations:
     main_menu: MainMenu
     menu: Menu
     cart: Cart
+    register: Register
 
     uz: dtype
     ru: dtype
