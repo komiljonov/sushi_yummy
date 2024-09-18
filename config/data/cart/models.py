@@ -6,6 +6,7 @@ from common.models import TimeStampModel
 from django.contrib import admin
 
 from data.filial.models import Filial
+from django.db.models import F, Sum
 
 if TYPE_CHECKING:
     from data.cartitem.models import CartItem
@@ -25,6 +26,10 @@ class Cart(TimeStampModel):
         related_name="carts",
     )
 
+    phone_number = models.CharField(max_length=255, null=True, blank=True)
+
+    comment = models.CharField(max_length=1024, null=True, blank=True)
+
     status = models.CharField(
         choices=[
             ("ORDERING", "Buyurtma berilmoqda"),
@@ -40,7 +45,7 @@ class Cart(TimeStampModel):
         default="DELIVER",
     )
 
-    time = models.TimeField(null=True, blank=True)
+    time = models.DateTimeField(null=True, blank=True)
 
     filial: "Filial" = models.ForeignKey(
         "filial.Filial",
@@ -70,3 +75,9 @@ class Cart(TimeStampModel):
         list_display = ["user", "status"]
 
         list_filter = ["status"]
+
+    @property
+    def price(self):
+        return self.items.annotate(t_price=F("count") * F("price")).aggregate(
+            total_price=Sum("t_price")
+        )["total_price"]

@@ -36,7 +36,7 @@ class User(TimeStampModel):
     def get(cls, update: Update):
         tgUser = update.effective_user
 
-        user = cls.objects.get_or_create(
+        user = cls.objects.prefetch_related("carts").get_or_create(
             chat_id=tgUser.id, tg_name=tgUser.full_name, username=tgUser.username
         )[0]
 
@@ -80,8 +80,6 @@ class UserTemp(TimeStampModel):
     cmid = models.IntegerField(null=True, blank=True)
     cmid2 = models.IntegerField(null=True, blank=True)
 
-    delivery_method = models.IntegerField(default=1)
-
     time = models.DateTimeField(null=True, blank=True)
 
 
@@ -94,7 +92,7 @@ class Location(TimeStampModel):
     name = models.CharField(max_length=500)
 
     latitude = models.FloatField()
-    longtitude = models.FloatField()
+    longitude = models.FloatField()
 
     used = models.BooleanField(default=False)
     special = models.BooleanField(default=False)

@@ -9,13 +9,18 @@ from telegram.ext import CommandHandler, MessageHandler
 from bot.models import Location, User
 from geopy.geocoders import Nominatim, Yandex
 from data.filial.models import Filial
+from tg_bot.cart.back import CartBack
 from tg_bot.redis_conversation import ConversationHandler
 from utils.language import multilanguage
 
 from tg_bot.constants import (
     CART,
+    CART_COMMENT,
+    CART_CONFIRM,
+    CART_COUPON,
     CART_DELIVER_LOCATION_CONFIRM,
     CART_GET_METHOD,
+    CART_PHONE_NUMBER,
     CART_TAKEAWAY_FILIAL,
     CART_TIME,
     CART_TIME_LATER_TIME,
@@ -33,7 +38,7 @@ from tg_bot.constants import (
 from utils import ReplyKeyboardMarkup, distribute, get_later_times
 
 
-class Cart:
+class Cart(CartBack):
 
     redis: Redis
 
@@ -67,7 +72,8 @@ class Cart:
                     self.back(self.cart),
                 ],
                 DELIVERY_LOCATION: [
-                    MessageHandler(filters.LOCATION, self.cart_delivery_location)
+                    MessageHandler(filters.LOCATION, self.cart_delivery_location),
+                    self.back(self.back_from_cart_delivery_location),
                 ],
                 CART_DELIVER_LOCATION_CONFIRM: [
                     MessageHandler(filters.LOCATION, self.cart_delivery_location),
@@ -75,18 +81,47 @@ class Cart:
                         filters.Text(multilanguage.get_all("buttons.confirm")),
                         self.cart_deliver_location_confirm,
                     ),
+                    self.back(self.back_from_cart_delivery_location_confirm),
                 ],
                 CART_TAKEAWAY_FILIAL: [
                     MessageHandler(
                         filters.LOCATION, self.cart_takeaway_filial_location
                     ),
                     MessageHandler(filters.TEXT & EXCLUDE, self.cart_takeaway_filial),
+                    self.back(self.back_from_cart_takeaway_filial),
                 ],
                 CART_TIME: [
-                    MessageHandler(filters.TEXT & EXCLUDE, self.cart_time_later)
+                    MessageHandler(filters.TEXT & EXCLUDE, self.cart_time),
+                    self.back(self.back_from_cart_time),
                 ],
                 CART_TIME_LATER_TIME: [
-                    MessageHandler(filters.TEXT & EXCLUDE, self.cart_time_later_time)
+                    MessageHandler(filters.TEXT & EXCLUDE, self.cart_time_later_time),
+                    self.back(self.back_from_cart_time_later_time),
+                ],
+                CART_PHONE_NUMBER: [
+                    MessageHandler(
+                        filters.CONTACT | (filters.TEXT & EXCLUDE),
+                        self.cart_phone_number,
+                    ),
+                    self.back(self.back_from_cart_phone_number),
+                ],
+                CART_COMMENT: [
+                    MessageHandler(filters.TEXT & EXCLUDE, self.cart_comment),
+                    self.back(self.back_from_cart_comment),
+                ],
+                CART_COUPON: [
+                    MessageHandler(filters.TEXT & EXCLUDE, self.cart_coupon),
+                    self.back(self.back_from_cart_coupon),
+                ],
+                CART_CONFIRM: [
+                    MessageHandler(
+                        filters.Text(multilanguage.get_all("buttons.confirm")),
+                        self.cart_confirm,
+                    ),
+                    MessageHandler(
+                        filters.Text(multilanguage.get_all("buttons.cancel")),
+                        self.cart_reject,
+                    ),
                 ],
             },
             [
@@ -310,7 +345,7 @@ class Cart:
         new_location = user.locations.create(
             name=str(address),
             latitude=location.latitude,
-            longtitude=location.longitude,
+            longitude=location.longitude,
         )
 
         temp.location = new_location
@@ -369,7 +404,12 @@ class Cart:
             i18n.takeaway.filial.ask(),
             reply_markup=ReplyKeyboardMarkup(
                 [
-                    [i18n.takeaway.filial.check_nearest_filial()],
+                    [
+                        KeyboardButton(
+                            i18n.takeaway.filial.check_nearest_filial(),
+                            request_location=True,
+                        )
+                    ],
                     *distribute([i18n.get_name(filial) for filial in filials]),
                 ]
             ),
@@ -428,23 +468,44 @@ class Cart:
         )
         return CART_TIME
 
-    async def cart_time_later(self, update: UPD, context: CTX):
+    async def cart_time(self, update: UPD, context: CTX):
         tgUser, user, temp, i18n = User.get(update)
 
-        times = get_later_times()
-        text = (
-            i18n.time.ask_later_deliver()
-            if temp.delivery_method == 1
-            else i18n.time.ask_later_takeaway()
-        )
+        cart = user.cart
 
-        await tgUser.send_message(
-            text,
-            reply_markup=ReplyKeyboardMarkup(
-                distribute([time.strftime("%H:%M") for time in times])
-            ),
-            parse_mode="HTML",
-        )
+        if update.message.text == i18n.time.later():
+            times = get_later_times()
+            text = (
+                i18n.time.ask_later_deliver()
+                if cart.delivery == "DELIVER"
+                else i18n.time.ask_later_takeaway()
+            )
+
+            await tgUser.send_message(
+                text,
+                reply_markup=ReplyKeyboardMarkup(
+                    distribute([time.strftime("%H:%M") for time in times])
+                ),
+                parse_mode="HTML",
+            )
+            return CART_TIME_LATER_TIME
+
+        if update.message.text == i18n.time.asap():
+            await tgUser.send_message(
+                i18n.data.phone_number.ask(),
+                reply_markup=ReplyKeyboardMarkup(
+                    [
+                        [
+                            KeyboardButton(
+                                i18n.buttons.phone_number(), request_contact=True
+                            )
+                        ]
+                    ]
+                ),
+            )
+            return CART_PHONE_NUMBER
+
+        await tgUser.send_message(i18n.time.wrong())
         return CART_TIME_LATER_TIME
 
     async def cart_time_later_time(self, update: UPD, context: CTX):
@@ -467,12 +528,102 @@ class Cart:
 
         # TODO: Implement payment
 
+        await tgUser.send_message(
+            i18n.data.phone_number.ask(),
+            reply_markup=ReplyKeyboardMarkup(
+                [[KeyboardButton(i18n.buttons.phone_number(), request_contact=True)]]
+            ),
+        )
+        return CART_PHONE_NUMBER
+
     async def cart_time_asap(self, update: UPD, context: CTX):
         tgUser, user, temp, i18n = User.get(update)
 
-        await tgUser.send_message("ASAP")
-        
-        
-        await tgUser.send_message(i18n.order.info(
-            
-        ))
+        await tgUser.send_message(
+            i18n.data.phone_number.ask(),
+            reply_markup=ReplyKeyboardMarkup(
+                [[KeyboardButton(i18n.buttons.phone_number(), request_contact=True)]]
+            ),
+        )
+        return CART_PHONE_NUMBER
+
+    async def cart_phone_number(self, update: UPD, context: CTX):
+        tgUser, user, temp, i18n = User.get(update)
+
+        phone = (
+            update.message.contact.phone_number
+            if update.message.contact
+            else update.message.text
+        )
+
+        print(phone)
+
+        cart = user.cart
+        cart.phone_number = phone
+        cart.save()
+
+        await tgUser.send_message(
+            i18n.order.comment.ask(),
+            reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
+        )
+        return CART_COMMENT
+
+    async def cart_comment(self, update: UPD, context: CTX):
+        tgUser, user, temp, i18n = User.get(update)
+
+        cart = user.cart
+        cart.comment = (
+            update.message.text if update.message.text != i18n.buttons.skip() else None
+        )
+
+        cart.save()
+
+        await tgUser.send_message(
+            i18n.order.coupon.aks(),
+            reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
+        )
+
+        return CART_COUPON
+
+    async def cart_coupon(self, update: UPD, context: CTX):
+        tgUser, user, temp, i18n = User.get(update)
+
+        cart = user.cart
+
+        products_text = []
+
+        for i, item in enumerate(cart.items.all(), 1):
+
+            products_text.append(
+                (
+                    f"{i}. {i18n.get_name(obj=item.product)}\n"
+                    f"{item.count} x {item.price} = {item.count * item.price}"
+                )
+            )
+
+        await tgUser.send_message(
+            i18n.order.info(
+                name=user.name,
+                number=cart.phone_number,
+                delivery_method=cart.delivery,
+                comment=cart.comment,
+                filial=i18n.get_name(cart.filial),
+                total_price=cart.price,
+                orders="\n".join(products_text),
+            ),
+            reply_markup=ReplyKeyboardMarkup(
+                [[i18n.buttons.confirm(), i18n.buttons.cancel()]]
+            ),
+        )
+
+        return CART_CONFIRM
+
+    async def cart_confirm(self, update: UPD, context: CTX):
+        tgUser, user, temp, i18n = User.get(update)
+
+        await tgUser.send_message("Qabul qilindi.")
+
+    async def cart_reject(self, update: UPD, context: CTX):
+        tgUser, user, temp, i18n = User.get(update)
+
+        await tgUser.send_message("Rad etildi qilindi.")

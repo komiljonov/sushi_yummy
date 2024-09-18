@@ -72,10 +72,19 @@
         "asap": "✅ Iloji boricha tezroq",
         "later": "⏳ Keyinroq",
         "ask_later_deliver": "Buyurtmani yetkazib berish vaqtini tanlang.",
-        "ask_later_takeaway": "Buyurtmani olib ketish vaqtini tanlang."
+        "ask_later_takeaway": "Buyurtmani olib ketish vaqtini tanlang.",
+        "wrong": "Kechirasiz quyidagilardan birini tanlang."
     },
     "order": {
-        "info": "Sizning buyurtmangiz:\n\nIsm: {name}\nTelefon: {number}\nTo'lov usuli: {payment}\nBuyurtma turi: {delivery_method}\nIzoh: {comment}\n"
+        "info": [
+            "Sizning buyurtmangiz:\n\n",
+            "Ism: {name}\n",
+            "Telefon: {number}\n",
+            "Buyurtma turi: {delivery_method}\n",
+            "Izoh: {comment}\n",
+            "{orders}\n",
+            "Umumiy: {total_price} so'm"
+        ]
     },
     "buttons": {
         "back": "🔙 Ortga",
