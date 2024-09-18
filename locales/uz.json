@@ -1,7 +1,14 @@
 {
     "register": {
         "lang": {
-            "ask": "<b>🌍 Iltimos, o'zingizga mos tilni tanlang:</b>\n\n<b>🇷🇺 Выберите язык, пожалуйста:</b>\n\n<b>🇺🇸 Please choose your preferred language:</b>"
+            "ask": "<b>🌍 Iltimos, o'zingizga mos tilni tanlang:</b>\n\n<b>🇷🇺 Выберите язык, пожалуйста:</b>\n\n<b>🇺🇸 Please choose your preferred language:</b>",
+            "wrong": "Kechirasiz til topilmadi.\n\nIltimos pastdagi tillardan birini tanlang."
+        },
+        "name": {
+            "ask": "Iltimos ismingizni yuboring."
+        },
+        "number": {
+            "ask": "Telefon raqamingizni yuboring yoki pastdagi Raqamni yuborish tugmasini bosish orqali yuboring."
         }
     },
     "main_menu": {
@@ -18,7 +25,8 @@
             "✨ Nimadan boshlaymiz?"
         ],
         "category": {
-            "info": "🍴 <b>Ovqatga buyurtma berish uchun biror kategoriya tanlang:</b>"
+            "info": "🍴 <b>Ovqatga buyurtma berish uchun biror kategoriya tanlang:</b>",
+            "not_found": "Kechirasiz kategoriya topilmadi."
         },
         "product": {
             "count": {
@@ -63,7 +71,8 @@
                 "Agar lokatsiyangizni📍 yuborsangiz, sizga eng yaqin filialni aniqlaymiz</b>"
             ],
             "check_nearest_filial": "📍 Eng yaqin filialni aniqlash",
-            "filial_info": "<b>Eng yaqin filial - {filial}</b>"
+            "filial_info": "<b>Eng yaqin filial - {filial}</b>",
+            "not_found": "Kechirasiz filial topilmadi."
         }
     },
     "time": {
@@ -84,13 +93,30 @@
             "Izoh: {comment}\n",
             "{orders}\n",
             "Umumiy: {total_price} so'm"
-        ]
+        ],
+        "coupon": {
+            "ask": "Kupon bo'lsa kirgazing"
+        },
+        "comment": {
+            "ask": "Izoh qoldiring"
+        }
+    },
+    "data": {
+        "phone_number": {
+            "ask": "Telefon raqamingizni yuboring yoki pastdagi Raqamni yuborish tugmasini bosish orqali yuboring."
+        },
+        "comment": {
+            "ask": "Izoh qoldiring"
+        }
     },
     "buttons": {
         "back": "🔙 Ortga",
         "clear": "🔄 Tozalash",
         "location": "📍 Joylashuvni yuborish",
         "my_locations": "🗺 Mening manzillarim",
-        "phone_number": "Raqamni yuborish 📞"
+        "phone_number": "Raqamni yuborish 📞",
+        "skip": "O'tkazib yuborish",
+        "confirm": "Tasdiqlash ✅",
+        "cancel": "Bekor qilish ❌"
     }
 }

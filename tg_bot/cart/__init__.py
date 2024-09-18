@@ -579,7 +579,7 @@ class Cart(CartBack):
         cart.save()
 
         await tgUser.send_message(
-            i18n.order.coupon.aks(),
+            i18n.order.coupon.ask(),
             reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
         )
 
