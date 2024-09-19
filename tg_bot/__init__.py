@@ -46,7 +46,6 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
 
         self.ANYTHING = [
             CommandHandler("start", self.start),
-            MessageHandler(filters.ALL & ~filters.SUCCESSFUL_PAYMENT, self.start),
         ]
 
         self.app = (
@@ -151,6 +150,7 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
         await tgUser.send_message(
             i18n.register.name.ask(),
             reply_markup=ReplyKeyboardMarkup(),
+            parse_mode="HTML",
         )
 
         return REGISTER_NAME
@@ -166,6 +166,7 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
             reply_markup=ReplyKeyboardMarkup(
                 [[KeyboardButton(i18n.buttons.phone_number(), request_contact=True)]]
             ),
+            parse_mode="HTML",
         )
         return REGISTER_PHONE
 
@@ -189,6 +190,7 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
         await tgUser.send_message(
             i18n.register.name.ask(),
             reply_markup=ReplyKeyboardMarkup(),
+            parse_mode="HTML",
         )
 
         return REGISTER_NAME
@@ -248,8 +250,7 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
         cart.save()
 
         await context.bot.send_message(
-            cart.user.chat_id,
-            i18n.payment.successful(),
+            cart.user.chat_id, i18n.payment.successful(), parse_mode="HTML"
         )
 
         return await self.start(update, context)

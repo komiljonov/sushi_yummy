@@ -35,12 +35,12 @@ from data.cart.models import Cart
 class TgBotFeedback:
 
     def _feedback_handlers(self):
-
         return ConversationHandler(
             "FeedbackConversation",
             [
                 MessageHandler(
-                    filters.Text(multilanguage.get_all("menu.feedback")), self.cart
+                    filters.Text(multilanguage.get_all("main_menu.feedback")),
+                    self.feedback,
                 )
             ],
             {
@@ -80,6 +80,7 @@ class TgBotFeedback:
                     [i18n.feedback.star.levels.worst()],
                 ]
             ),
+            parse_mode="HTML",
         )
         return FEEDBACK_STAR
 
@@ -97,7 +98,7 @@ class TgBotFeedback:
         level = levels.get(update.message.text)
 
         if level == None:
-            await tgUser.send_message(i18n.feedback.star.not_found())
+            await tgUser.send_message(i18n.feedback.star.not_found(), parse_mode="HTML")
             return FEEDBACK_STAR
 
         temp.star = level
@@ -110,11 +111,14 @@ class TgBotFeedback:
                 reply_markup=ReplyKeyboardMarkup(
                     distribute([i18n.get_name(service) for service in services])
                 ),
+                parse_mode="HTML",
             )
             return FEEDBACK_SERVICE
 
         await tgUser.send_message(
-            i18n.feedback.comment(), reply_markup=ReplyKeyboardMarkup()
+            i18n.feedback.comment(),
+            reply_markup=ReplyKeyboardMarkup(),
+            parse_mode="HTML",
         )
         return FEEDBACK_COMMENT
 
@@ -124,11 +128,15 @@ class TgBotFeedback:
         service = Service.objects.filter(i18n.filter_name(update.message.text)).first()
 
         if service == None:
-            await tgUser.send_message(i18n.feedback.bad_service.not_found())
+            await tgUser.send_message(
+                i18n.feedback.bad_service.not_found(), parse_mode="HTML"
+            )
             return FEEDBACK_SERVICE
 
         await tgUser.send_message(
-            i18n.feedback.comment(), reply_markup=ReplyKeyboardMarkup()
+            i18n.feedback.comment(),
+            reply_markup=ReplyKeyboardMarkup(),
+            parse_mode="HTML",
         )
         return FEEDBACK_COMMENT
 
@@ -139,7 +147,7 @@ class TgBotFeedback:
             user=user, service=temp.service, comment=update.message.text, star=temp.star
         )
 
-        await tgUser.send_message(i18n.feedback.success())
+        await tgUser.send_message(i18n.feedback.success(), parse_mode="HTML")
 
         return -1
 
@@ -153,6 +161,7 @@ class TgBotFeedback:
                 reply_markup=ReplyKeyboardMarkup(
                     distribute([i18n.get_name(service) for service in services])
                 ),
+                parse_mode="HTML",
             )
             return FEEDBACK_SERVICE
 

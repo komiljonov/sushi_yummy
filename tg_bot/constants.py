@@ -17,7 +17,7 @@ EXCLUDE = ~Text(
         "/start",
         f"/start {PASSWORD}",
         f"/start basicUser",
-        *multilanguage.get_all("buttons.back"),
+        *multilanguage.get_all("buttons.back","main_menu.feedback"),
     ]
 )
 

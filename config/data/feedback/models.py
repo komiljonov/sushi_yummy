@@ -15,6 +15,8 @@ class Service(TimeStampModel):
     name_uz = models.CharField(max_length=255)
     name_ru = models.CharField(max_length=255)
 
+    active = models.BooleanField(default=True)
+
 
 class Feedback(TimeStampModel):
     user: "User" = models.ForeignKey(

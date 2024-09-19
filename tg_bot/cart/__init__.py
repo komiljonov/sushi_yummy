@@ -525,10 +525,11 @@ class TgBotCart(CartBack):
                         ]
                     ]
                 ),
+                parse_mode="HTML"
             )
             return CART_PHONE_NUMBER
 
-        await tgUser.send_message(i18n.time.wrong())
+        await tgUser.send_message(i18n.time.wrong(),parse_mode="HTML")
         return CART_TIME_LATER_TIME
 
     async def cart_time_later_time(self, update: UPD, context: CTX):
@@ -556,6 +557,7 @@ class TgBotCart(CartBack):
             reply_markup=ReplyKeyboardMarkup(
                 [[KeyboardButton(i18n.buttons.phone_number(), request_contact=True)]]
             ),
+            parse_mode="HTML"
         )
         return CART_PHONE_NUMBER
 
@@ -567,6 +569,7 @@ class TgBotCart(CartBack):
             reply_markup=ReplyKeyboardMarkup(
                 [[KeyboardButton(i18n.buttons.phone_number(), request_contact=True)]]
             ),
+            parse_mode="HTML"
         )
         return CART_PHONE_NUMBER
 
@@ -588,6 +591,7 @@ class TgBotCart(CartBack):
         await tgUser.send_message(
             i18n.order.comment.ask(),
             reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
+            parse_mode="HTML"
         )
         return CART_COMMENT
 
@@ -604,6 +608,7 @@ class TgBotCart(CartBack):
         await tgUser.send_message(
             i18n.order.coupon.ask(),
             reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
+            parse_mode="HTML"
         )
 
         return CART_COUPON
@@ -637,6 +642,7 @@ class TgBotCart(CartBack):
             reply_markup=ReplyKeyboardMarkup(
                 [[i18n.buttons.confirm(), i18n.buttons.cancel()]]
             ),
+            parse_mode="HTML"
         )
 
         return CART_CONFIRM
@@ -646,7 +652,7 @@ class TgBotCart(CartBack):
     async def cart_reject(self, update: UPD, context: CTX):
         tgUser, user, temp, i18n = User.get(update)
 
-        await tgUser.send_message("Rad etildi qilindi.")
+        await tgUser.send_message("Rad etildi qilindi.",parse_mode="HTML")
 
         return await self.cart(update, context)
 
@@ -668,7 +674,8 @@ class TgBotCart(CartBack):
                 [
                     i18n.payment.cash()
                 ]
-            ])
+            ]),
+            parse_mode="HTML"
         )
         return PAYMENT_METHOD   
     
@@ -697,7 +704,7 @@ class TgBotCart(CartBack):
                 [
                     i18n.payment.cash()
                 ]
-            ]))
+            ]),parse_mode="HTML")
             
             return PAYMENT_METHOD
         
@@ -721,4 +728,4 @@ class TgBotCart(CartBack):
             )
             return -1
         else:
-            await tgUser.send_message(i18n.payment.done())
+            await tgUser.send_message(i18n.payment.done(),parse_mode="HTML")
