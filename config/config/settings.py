@@ -58,7 +58,7 @@ INSTALLED_APPS = [
 ]
 
 
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "https://sushiyummy.vercel.app"]
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "https://sushi-yummy.vercel.app"]
 
 
 MIDDLEWARE = [
