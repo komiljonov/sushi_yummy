@@ -52,7 +52,8 @@ INSTALLED_APPS = [
     "data.cartitem",
     "data.filial",
     "data.payment",
-    'data.feedback'
+    "data.feedback",
+    "data.users"
 ]
 
 
