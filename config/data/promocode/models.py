@@ -8,6 +8,8 @@ from django.contrib import admin
 
 class Promocode(TimeStampModel):
 
+    name = models.CharField(max_length=255)
+
     code = models.CharField(max_length=255)
 
     measurement = models.CharField(
@@ -16,14 +18,28 @@ class Promocode(TimeStampModel):
         default="ABSOLUTE",
     )
 
-    amount = models.BigIntegerField(null=True, blank=True)
-
-    percent = models.FloatField(null=True, blank=True)
+    amount = models.BigIntegerField()
 
     count = models.IntegerField()
 
+    end_date = models.DateField(null=True, blank=True)
+
+    is_limited = models.BooleanField(default=False)
+    is_max_limited = models.BooleanField(default=False)
+
+    min_amount = models.BigIntegerField()
+    max_amount = models.BigIntegerField()
+
     class Admin(admin.ModelAdmin):
-        list_display = ["code", "measurement", "amount", "percent", "count"]
+        list_display = [
+            "code",
+            "measurement",
+            "amount",
+            "count",
+            "end_date",
+            "min_amount",
+            "max_amount",
+        ]
 
         list_filter = ["measurement"]
 
