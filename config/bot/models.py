@@ -5,6 +5,7 @@ from django.db import models
 from common.models import TimeStampModel
 from telegram import Update
 
+from data.feedback.models import Service
 from data.filial.models import Filial
 from utils.language import multilanguage
 
@@ -81,6 +82,11 @@ class UserTemp(TimeStampModel):
     cmid2 = models.IntegerField(null=True, blank=True)
 
     time = models.DateTimeField(null=True, blank=True)
+
+    star = models.IntegerField(null=True, blank=True)
+    service: "Service" = models.ForeignKey(
+        "feedback.Service", on_delete=models.SET_NULL, null=True, blank=True
+    )
 
 
 class Location(TimeStampModel):

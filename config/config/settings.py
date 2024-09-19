@@ -50,7 +50,9 @@ INSTALLED_APPS = [
     "data.file",
     "data.cart",
     "data.cartitem",
-    "data.filial"
+    "data.filial",
+    "data.payment",
+    'data.feedback'
 ]
 
 

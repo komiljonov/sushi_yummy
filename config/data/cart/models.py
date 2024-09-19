@@ -8,6 +8,8 @@ from django.contrib import admin
 from data.filial.models import Filial
 from django.db.models import F, Sum
 
+from data.payment.models import Payment
+
 if TYPE_CHECKING:
     from data.cartitem.models import CartItem
     from bot.models import User
@@ -30,11 +32,15 @@ class Cart(TimeStampModel):
 
     comment = models.CharField(max_length=1024, null=True, blank=True)
 
+    payment: "Payment" = models.ForeignKey(
+        "payment.Payment", on_delete=models.SET_NULL, null=True, blank=True
+    )
+
     status = models.CharField(
         choices=[
             ("ORDERING", "Buyurtma berilmoqda"),
             ("PENDING_PAYMENT", "To'lov kutilmoqda"),
-            ("PENDING", "Buyurtma berilmoqda"),
+            ("PENDING", "Buyurtma kutilmoqda"),
         ],
         default="ORDERING",
         max_length=255,

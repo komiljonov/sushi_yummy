@@ -11,7 +11,9 @@ from telegram.ext import (
     PreCheckoutQueryHandler,
 )
 from bot.models import User
+from data.payment.models import Payment
 from tg_bot.cart import TgBotCart
+from tg_bot.feedback import TgBotFeedback
 from tg_bot.menu import Menu
 from tg_bot.redis_conversation import ConversationHandler
 from tg_bot.constants import (
@@ -31,7 +33,7 @@ from utils.language import multilanguage
 from data.cart.models import Cart
 
 
-class Bot(Menu, TgBotCart):
+class Bot(Menu, TgBotCart, TgBotFeedback):
 
     def __init__(self, token: str):
 
@@ -84,7 +86,11 @@ class Bot(Menu, TgBotCart):
                     ),
                     self.back(self.back_from_register_phone_number),
                 ],
-                MAIN_MENU: [self._menu_handlers(), self._cart_handlers(self.start)],
+                MAIN_MENU: [
+                    self._menu_handlers(),
+                    self._feedback_handlers(),
+                    self._cart_handlers(self.start),
+                ],
             },
             self.ANYTHING,
             redis=self.redis,
@@ -104,7 +110,7 @@ class Bot(Menu, TgBotCart):
                     i18n.main_menu.menu(),
                     i18n.menu.cart() if user.cart.items.count() > 0 else "",
                 ],
-                [i18n.main_menu.order_history(), i18n.main_menu.leave_appeal()],
+                [i18n.main_menu.order_history(), i18n.main_menu.feedback()],
                 [i18n.main_menu.info(), i18n.main_menu.contact()],
                 [i18n.main_menu.settings()],
             ],
@@ -194,12 +200,12 @@ class Bot(Menu, TgBotCart):
     async def pre_checkout_query_handler(self, update: UPD, context: CTX):
         tgUser, user, temp, i18n = User.get(update)
 
-        _, _cartId = update.pre_checkout_query.invoice_payload.split(":")
+        _, _cartId, provider = update.pre_checkout_query.invoice_payload.split(":")
 
         cartId = base64.b64decode(_cartId.encode()).decode()
 
         cart = Cart.objects.filter(id=cartId).first()
-
+        print(cart, update.pre_checkout_query)
         if cart == None:
             await update.pre_checkout_query.answer(
                 False, "Kechirasiz buyurtma topilmadi."
@@ -207,7 +213,7 @@ class Bot(Menu, TgBotCart):
 
             return
 
-        if cart.status != "ORDERING":
+        if cart.status not in ["ORDERING", "PENDING_PAYMENT"]:
             await update.pre_checkout_query.answer(
                 False, "Kechirasiz buyurtma berib bo'lingan."
             )
@@ -221,7 +227,7 @@ class Bot(Menu, TgBotCart):
 
         payment = update.message.successful_payment
 
-        _, _cartId = payment.invoice_payload.split(":")
+        _, _cartId, provider = payment.invoice_payload.split(":")
 
         cartId = base64.b64decode(_cartId.encode()).decode()
 
@@ -231,12 +237,19 @@ class Bot(Menu, TgBotCart):
 
             return
 
+        amount = payment.total_amount
+
+        new_payment = Payment.objects.create(
+            user=user, provider=provider, amount=amount, data=update.to_dict()
+        )
+
         cart.status = "PENDING"
+        cart.payment = new_payment
         cart.save()
 
         await context.bot.send_message(
             cart.user.chat_id,
-            i18n.payment.successfull(),
+            i18n.payment.successful(),
         )
 
         return await self.start(update, context)

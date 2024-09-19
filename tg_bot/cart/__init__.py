@@ -714,7 +714,7 @@ class TgBotCart(CartBack):
             await tgUser.send_invoice(
                 i18n.payment.title(),
                 i18n.payment.description(),
-                f"cart:{base64.b64encode(f"{cart.id}".encode()).decode()}",
+                f"cart:{base64.b64encode(f"{cart.id}".encode()).decode()}:{method}",
                 self.CLICK_TOKEN if method == CLICK else self.PAYME_TOKEN,
                 "UZS",
                 products,
