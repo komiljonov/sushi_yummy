@@ -53,7 +53,8 @@ INSTALLED_APPS = [
     "data.filial",
     "data.payment",
     "data.feedback",
-    "data.users"
+    "data.users",
+    "data.promocode",
 ]
 
 
