@@ -369,6 +369,7 @@ class TgBotCart(CartBack):
             name=str(address),
             latitude=location.latitude,
             longitude=location.longitude,
+            address=str(address)
         )
 
         temp.location = new_location

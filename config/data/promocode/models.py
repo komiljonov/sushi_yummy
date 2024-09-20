@@ -1,7 +1,11 @@
+from typing import TYPE_CHECKING
 from django.db import models
 
 from common.models import TimeStampModel
 from django.contrib import admin
+
+if TYPE_CHECKING:
+    from data.cart.models import Cart
 
 # Create your models here.
 
@@ -29,6 +33,8 @@ class Promocode(TimeStampModel):
 
     min_amount = models.BigIntegerField()
     max_amount = models.BigIntegerField()
+
+    orders: "models.QuerySet[Cart]"
 
     class Admin(admin.ModelAdmin):
         list_display = [

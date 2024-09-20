@@ -14,7 +14,9 @@ urlpatterns = [
     path("categories", include("data.category.urls")),
     path("products", include("data.product.urls")),
     path("files", include("data.file.urls")),
-    path("", include("data.users.urls")),
+    path("orders", include("data.cart.urls")),
+    path("", include("data.admins.urls")),
     path("", include("data.promocode.urls")),
+    path("", include("data.users.urls")),
     # path("", include(router.urls)),
 ]

@@ -21,7 +21,7 @@ class CartItem(TimeStampModel):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="carts",
+        related_name="cart_items",
     )
 
     price = models.FloatField(default=0)
@@ -34,15 +34,9 @@ class CartItem(TimeStampModel):
             self.price = self.product.price if self.product else 0
         super().save(*args, **kwargs)
 
-    
-    
-    
     class Meta:
         ordering = ["-created_at"]
-        
-    
-    
+
     class Admin(admin.ModelAdmin):
-        
-        
-        list_display = ["cart","product","price","count","created_at"]
+
+        list_display = ["cart", "product", "price", "count", "created_at"]

@@ -99,6 +99,7 @@ class Location(TimeStampModel):
 
     latitude = models.FloatField()
     longitude = models.FloatField()
+    address = models.TextField(null=True, blank=True)
 
     used = models.BooleanField(default=False)
     special = models.BooleanField(default=False)

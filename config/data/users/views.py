@@ -1,9 +1,7 @@
-from django.contrib.auth.models import User
-from django.http import HttpRequest
+from bot.models import User
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-from .serializers import UserSerializer
-from rest_framework.request import Request
+from .serializers import UserSerializer,RetrieveUserSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -11,20 +9,10 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]  # Add appropriate permissions as needed
 
-    request: HttpRequest | Request
-
-    def perform_create(self, serializer: UserSerializer):
-        user: User = serializer.save()
-        password = self.request.data.get("password")
-        if password:
-            user.set_password(password)
-        user.is_staff = True
-        user.save()
-
-    def perform_update(self, serializer: UserSerializer):
-        user: User = serializer.save()
-        password = self.request.data.get("password")
-        if password:
-            user.set_password(password)
-        user.is_staff = True
-        user.save()
+    
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return UserSerializer  # Serializer for listing users
+        if self.action == 'retrieve':
+            return RetrieveUserSerializer  # Serializer for retrieving detailed user info
+        return super().get_serializer_class()  # Default behavior
