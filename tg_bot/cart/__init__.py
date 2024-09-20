@@ -10,15 +10,18 @@ from telegram.ext import MessageHandler
 from bot.models import User
 from geopy.geocoders import Nominatim
 from data.filial.models import Filial
+from data.promocode.models import Promocode
 from tg_bot.cart.back import CartBack
 from tg_bot.redis_conversation import ConversationHandler
 from utils.language import multilanguage
+from django.utils import timezone
+
 
 from tg_bot.constants import (
     CART,
     CART_COMMENT,
     CART_CONFIRM,
-    CART_COUPON,
+    CART_PROMOCODE,
     CART_DELIVER_LOCATION_CONFIRM,
     CART_GET_METHOD,
     CART_PHONE_NUMBER,
@@ -121,7 +124,7 @@ class TgBotCart(CartBack):
                     MessageHandler(filters.TEXT & EXCLUDE, self.cart_comment),
                     self.back(self.back_from_cart_comment),
                 ],
-                CART_COUPON: [
+                CART_PROMOCODE: [
                     MessageHandler(filters.TEXT & EXCLUDE, self.cart_coupon),
                     self.back(self.back_from_cart_coupon),
                 ],
@@ -607,17 +610,85 @@ class TgBotCart(CartBack):
         cart.save()
 
         await tgUser.send_message(
-            i18n.order.coupon.ask(),
+            i18n.order.promocode.ask(),
             reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
             parse_mode="HTML"
         )
 
-        return CART_COUPON
+        return CART_PROMOCODE
 
     async def cart_coupon(self, update: UPD, context: CTX):
         tgUser, user, temp, i18n = User.get(update)
-
+        
         cart = user.cart
+        
+        promocode = Promocode.objects.filter(code__iexact=update.message.text, end_date__gte=timezone.now()).first()
+        
+        if promocode == None:
+            await tgUser.send_message(
+                i18n.order.promocode.not_found(),
+                reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
+                parse_mode="HTML"
+            )
+            return CART_PROMOCODE
+        
+        used = user.carts.filter(promocode=promocode).exists()
+        
+        if used:
+            await tgUser.send_message(
+                i18n.order.promocode.used(),
+                reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
+                parse_mode="HTML"
+            )
+            return CART_PROMOCODE
+        
+        
+        if promocode.orders.count() >= promocode.count:
+            await tgUser.send_message(
+                i18n.order.promocode.ended(),
+                reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
+                parse_mode="HTML"
+            )
+            
+            return CART_PROMOCODE
+        
+        
+        if promocode.min_amount != -1 and promocode.min_amount > cart.price:
+            await tgUser.send_message(
+            i18n.order.promocode.min_amount(amount=promocode.min_amount),
+                reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
+                parse_mode="HTML"
+            )
+            return CART_PROMOCODE
+        
+        
+        
+        if promocode.max_amount != -1 and promocode.max_amount < cart.price:
+            await tgUser.send_message(
+            i18n.order.promocode.min_amount(amount=promocode.min_amount),
+                reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
+                parse_mode="HTML"
+            )
+            return CART_PROMOCODE
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+
+
+        
+        
+        
+        
+
+        
 
         products_text = []
 

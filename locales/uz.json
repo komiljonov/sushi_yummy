@@ -97,8 +97,9 @@
             ],
             "comment": "Izoh: {comment}\n"
         },
-        "coupon": {
-            "ask": "Kupon bo'lsa kirgazing"
+        "promocode": {
+            "ask": "Kupon bo'lsa kirgazing",
+            "not_found": "Kechirasiz promokod topilmadi."
         },
         "comment": {
             "ask": "Izoh qoldiring"
