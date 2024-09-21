@@ -710,7 +710,6 @@ class TgBotCart(CartBack, CommonKeysMixin):
     async def cart_confirm(self, update: UPD, context: CTX):
         tg_user, user, temp, i18n = User.get(update)
 
-        # await tg_user.send_message("Qabul qilindi.")
 
         await tg_user.send_message(
             i18n.payment.method.ask(),

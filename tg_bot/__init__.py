@@ -148,7 +148,7 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
 
         lang = {UZ: "uz", RU: "ru", EN: "en"}.get(update.message.text)
 
-        if lang == None:
+        if lang is None:
             await tg_user.send_message(i18n.register.lang.wrong(), parse_mode="HTML")
 
             return await self.start(update, context)
@@ -267,7 +267,8 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
         tg_user, user, temp, i18n = User.get(update)
 
         await tg_user.send_message(
-            i18n.contact()
+            i18n.contact(),
+            parse_mode="HTML"
         )
 
     async def info(self, update: UPD, context: CTX):
@@ -276,7 +277,8 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
             i18n.info.filial.ask(),
             reply_markup=ReplyKeyboardMarkup(
                 distribute([i18n.get_name(filial) for filial in Filial.objects.all()]),
-            )
+            ),
+            parse_mode="HTML"
         )
 
         return INFO_FILIAL

@@ -27,7 +27,6 @@ _CheckUpdateType = Tuple[object, object, BaseHandler[Update, Any], object]
 
 
 class ConversationHandler(BaseHandler[Update, Any]):
-
     __slots__ = (
         "_allow_reentry",
         "_child_conversations",
@@ -46,14 +45,14 @@ class ConversationHandler(BaseHandler[Update, Any]):
     block = True
 
     def __init__(
-        self,
-        name: Optional[str],
-        entry_points: List[BaseHandler[Update, Any]],
-        states: Dict[object, List[BaseHandler[Update, Any]]],
-        fallbacks: List[BaseHandler[Update, Any]],
-        redis: Redis,
-        allow_reentry: bool = False,
-        map_to_parent: Optional[Dict[object, object]] = None,
+            self,
+            name: Optional[str],
+            entry_points: List[BaseHandler[Update, Any]],
+            states: Dict[object, List[BaseHandler[Update, Any]]],
+            fallbacks: List[BaseHandler[Update, Any]],
+            redis: Redis,
+            allow_reentry: bool = False,
+            map_to_parent: Optional[Dict[object, object]] = None,
     ):
         # Setting up an instance-specific logger
         self._logger = logging.getLogger(
@@ -84,13 +83,13 @@ class ConversationHandler(BaseHandler[Update, Any]):
         self._child_conversations = {
             handler
             for handler in entry_points
-            + fallbacks
-            + [h for hs in states.values() for h in hs]
+                           + fallbacks
+                           + [h for hs in states.values() for h in hs]
             if isinstance(handler, ConversationHandler)
         }
 
         for handler in (
-            entry_points + fallbacks + [h for hs in states.values() for h in hs]
+                entry_points + fallbacks + [h for hs in states.values() for h in hs]
         ):
             if isinstance(handler, (StringCommandHandler, StringRegexHandler)):
                 warn(
@@ -103,7 +102,7 @@ class ConversationHandler(BaseHandler[Update, Any]):
                     handler.__class__.__name__,
                 )
             elif isinstance(handler, TypeHandler) and not issubclass(
-                handler.type, Update
+                    handler.type, Update
             ):
                 warn(
                     f"The `ConversationHandler` only handles updates of type `telegram.Update`. "
@@ -216,11 +215,11 @@ class ConversationHandler(BaseHandler[Update, Any]):
         return state, key, handler, check
 
     async def handle_update(
-        self,
-        update: Update,
-        application: "Application[Any, Any, Any, Any, Any, Any]",
-        check_result: "_CheckUpdateType[Any]",
-        context: Any,
+            self,
+            update: Update,
+            application: "Application[Any, Any, Any, Any, Any, Any]",
+            check_result: "_CheckUpdateType[Any]",
+            context: Any,
     ) -> "Optional[object]":
         self._logger.debug("Handling update for conversation.")
         current_state, conversation_key, handler, handler_check_result = check_result
@@ -255,10 +254,10 @@ class ConversationHandler(BaseHandler[Update, Any]):
         return None
 
     def _update_state(
-        self,
-        new_state: object,
-        key: Union[int, Tuple[int, int]],
-        handler: Optional[BaseHandler] = None,
+            self,
+            new_state: object,
+            key: Union[int, Tuple[int, int]],
+            handler: Optional[BaseHandler] = None,
     ) -> None:
         self._logger.debug("Updating conversation state to: %s", new_state)
         if new_state == self.END:
@@ -277,8 +276,6 @@ class ConversationHandler(BaseHandler[Update, Any]):
             self.redis.hset(self.name, key, new_state)
             self._logger.debug("State updated for key: %s", key)
 
-    
-    
     def __repr__(self) -> str:
         """Give a string representation of the handler in the form ``ClassName[callback=...]``.
 

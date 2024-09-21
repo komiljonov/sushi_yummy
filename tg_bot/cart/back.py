@@ -194,5 +194,6 @@ class CartBack:
             reply_markup=ReplyKeyboardMarkup(
                 [[KeyboardButton(i18n.buttons.phone_number(), request_contact=True)]]
             ),
+            parse_mode="HTML"
         )
         return CART_COMMENT
