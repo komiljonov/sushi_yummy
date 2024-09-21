@@ -7,6 +7,7 @@ from tg_bot.constants import (
 
 from tg_bot.common_file import CommonKeysMixin
 
+
 class MenuBack(CommonKeysMixin):
     async def back_from_product_info(self, update: UPD, context: CTX):
         tg_user, user, temp, i18n = User.get(update)

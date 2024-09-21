@@ -1,5 +1,5 @@
-#from collections.abc import Coroutine
-from typing import Coroutine
+from collections.abc import Coroutine
+# from typing import Coroutine
 from redis import Redis
 from telegram.ext import MessageHandler
 from typing import Callable

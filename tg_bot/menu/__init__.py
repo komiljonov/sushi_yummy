@@ -26,11 +26,10 @@ from data.category.models import Category
 if TYPE_CHECKING:
     from data.product.models import Product
 
-
 from tg_bot.common_file import CommonKeysMixin
 
-class Menu(MenuBack, CommonKeysMixin):
 
+class Menu(MenuBack, CommonKeysMixin):
     redis: Redis
 
     def _menu_handlers(self):
@@ -89,18 +88,18 @@ class Menu(MenuBack, CommonKeysMixin):
         return MENU_CATEGORY
 
     async def menu_category(
-        self, update: UPD, context: CTX, _category: "Category | None" = None
+            self, update: UPD, context: CTX, _category: "Category | None" = None
     ):
         tg_user, user, temp, i18n = User.get(update)
 
         category = (
-            _category
-            or Category.objects.filter(i18n.filter_name(update.message.text)).first()
+                _category
+                or Category.objects.filter(i18n.filter_name(update.message.text)).first()
         )
 
-        if category == None:
+        if category is None:
             await tg_user.send_message(i18n.menu.category.not_found(), parse_mode="HTML")
-            if temp.category == None:
+            if temp.category is None:
                 return await self.menu(update, context)
             return await self.menu_category(update, context, temp.category)
 
@@ -183,4 +182,3 @@ class Menu(MenuBack, CommonKeysMixin):
         tg_user, user, temp, i18n = User.get(update)
 
         return await self.menu_product(update, context, temp.product)
-

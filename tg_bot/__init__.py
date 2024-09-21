@@ -13,6 +13,7 @@ from telegram.ext import (
     PreCheckoutQueryHandler,
 )
 from bot.models import User
+from data.filial.models import Filial
 from data.payment.models import Payment
 from tg_bot.cart import TgBotCart
 from tg_bot.feedback import TgBotFeedback
@@ -28,9 +29,9 @@ from tg_bot.constants import (
     REGISTER_PHONE,
     RU,
     UPD,
-    UZ,
+    UZ, INFO_FILIAL,
 )
-from utils import ReplyKeyboardMarkup
+from utils import ReplyKeyboardMarkup, distribute
 from utils.language import multilanguage
 from data.cart.models import Cart
 
@@ -90,7 +91,14 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
                     self._menu_handlers(),
                     self._feedback_handlers(),
                     self._cart_handlers(self.start),
+                    MessageHandler(filters.Text(multilanguage.get_all("main_menu.contact")), self.contact),
+                    MessageHandler(filters.Text(multilanguage.get_all("main_menu.info")), self.info),
                 ],
+
+                INFO_FILIAL: [
+                    MessageHandler(filters.TEXT & EXCLUDE, self.info_filial),
+                    self.back(self.start)
+                ]
             },
             self.ANYTHING,
             redis=self.redis,
@@ -100,7 +108,6 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
         return MessageHandler(
             filters.Text(multilanguage.get_all("buttons.back")), callback
         )
-
 
     async def main_menu_keyboard(self, update: UPD, context: CTX):
         tg_user, user, temp, i18n = User.get(update)
@@ -118,8 +125,6 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
             False,
         )
         return keyboard
-
-
 
     async def start(self, update: UPD, context: CTX):
         tg_user, user, temp, i18n = User.get(update)
@@ -240,7 +245,6 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
         cart = Cart.objects.filter(id=cart_id).first()
 
         if cart is None:
-
             return
 
         amount = payment.total_amount
@@ -255,6 +259,48 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
 
         await context.bot.send_message(
             cart.user.chat_id, i18n.payment.successful(), parse_mode="HTML"
+        )
+
+        return await self.start(update, context)
+
+    async def contact(self, update: UPD, context: CTX):
+        tg_user, user, temp, i18n = User.get(update)
+
+        await tg_user.send_message(
+            i18n.contact()
+        )
+
+    async def info(self, update: UPD, context: CTX):
+        tg_user, user, temp, i18n = User.get(update)
+        await tg_user.send_message(
+            i18n.info.filial.ask(),
+            reply_markup=ReplyKeyboardMarkup(
+                distribute([i18n.get_name(filial) for filial in Filial.objects.all()]),
+            )
+        )
+
+        return INFO_FILIAL
+
+    async def info_filial(self, update: UPD, context: CTX):
+        tg_user, user, temp, i18n = User.get(update)
+
+        filial = Filial.objects.filter(i18n.filter_name(update.message.text)).first()
+
+        if filial is None:
+            await tg_user.send_message(
+                i18n.info.filial.not_found(), parse_mode="HTML"
+            )
+            return INFO_FILIAL
+
+        await tg_user.send_location(
+            filial.location.latitude,
+            filial.location.longitude
+        )
+
+        await tg_user.send_message(
+            i18n.info.filial.info(
+                name=i18n.get_name(filial)
+            ), parse_mode="HTML"
         )
 
         return await self.start(update, context)

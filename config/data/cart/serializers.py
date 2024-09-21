@@ -11,7 +11,6 @@ from data.users.serializers import UserSerializer
 
 
 class CartSerializer(serializers.ModelSerializer):
-
     location = LocationSerializer()
 
     payment = PaymentSerializer()
@@ -22,7 +21,6 @@ class CartSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
-
     # discount_price = serializers.SerializerMethodField()
     products_count = serializers.SerializerMethodField()
     # saving = serializers.SerializerMethodField()
@@ -54,14 +52,11 @@ class OrderSerializer(serializers.ModelSerializer):
     def get_products_count(self, obj: Cart):
         return obj.items.all().aggregate(total_count=Sum("count"))["total_count"]
 
-
-    
-
     def __init__(self, *args, **kwargs):
         # Call the parent constructor
 
         # Fields you want to remove (for example, based on some condition)
-        fields_to_remove = kwargs.pop("remove_fields", None)
+        fields_to_remove: list | None = kwargs.pop("remove_fields", None)
         super(OrderSerializer, self).__init__(*args, **kwargs)
 
         if fields_to_remove:

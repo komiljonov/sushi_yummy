@@ -15,10 +15,8 @@ import os
 from pathlib import Path
 import dj_database_url
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -30,7 +28,6 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = int(os.getenv("DEBUG", "1"))
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
-
 
 # Application definition
 
@@ -58,9 +55,7 @@ INSTALLED_APPS = [
     "data.users",
 ]
 
-
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "https://sushi-yummy.vercel.app"]
-
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "https://127.0.01:3000", "https://sushi-yummy.vercel.app"]
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
@@ -93,7 +88,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 DATABASES = {
@@ -101,7 +95,6 @@ DATABASES = {
         default="postgres://sushi:v5jKTw3jbD7t@postgres:5432/sushi_yummy"
     )
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -121,7 +114,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
@@ -133,7 +125,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
@@ -144,16 +135,12 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-
 APPEND_SLASH = False
-
 
 STATIC_ROOT = BASE_DIR / "static"
 MEDIA_ROOT = BASE_DIR / "media"
 
-
 MEDIA_URL = "media/"
-
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
