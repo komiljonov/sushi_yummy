@@ -15,8 +15,8 @@ class ProductListCreateAPIView(ListCreateAPIView):
 
     def get_serializer_class(self):
         if self.request.method == "POST":
-            return self.serializer_class
-        return self.serializer_class_create
+            return self.serializer_class_create
+        return self.serializer_class
 
 
 class ProductRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
