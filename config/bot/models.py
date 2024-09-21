@@ -35,15 +35,15 @@ class User(TimeStampModel):
 
     @classmethod
     def get(cls, update: Update):
-        tgUser = update.effective_user
+        tg_user = update.effective_user
 
         user = cls.objects.prefetch_related("carts").get_or_create(
-            chat_id=tgUser.id, tg_name=tgUser.full_name, username=tgUser.username
+            chat_id=tg_user.id, tg_name=tg_user.full_name, username=tg_user.username
         )[0]
 
         temp = user.temp if user else None
 
-        return tgUser, user, temp, user.i18n
+        return tg_user, user, temp, user.i18n
 
     @property
     def temp(self):
@@ -78,8 +78,8 @@ class UserTemp(TimeStampModel):
         "filial.Filial", on_delete=models.SET_NULL, null=True, blank=True
     )
 
-    cmid = models.IntegerField(null=True, blank=True)
-    cmid2 = models.IntegerField(null=True, blank=True)
+    message_id = models.IntegerField(null=True, blank=True)
+    message_id2 = models.IntegerField(null=True, blank=True)
 
     time = models.DateTimeField(null=True, blank=True)
 

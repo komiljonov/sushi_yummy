@@ -27,7 +27,9 @@ if TYPE_CHECKING:
     from data.product.models import Product
 
 
-class Menu(MenuBack):
+from tg_bot.common_file import CommonKeysMixin
+
+class Menu(MenuBack, CommonKeysMixin):
 
     redis: Redis
 
@@ -63,13 +65,13 @@ class Menu(MenuBack):
         )
 
     async def menu(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
         temp.category = None
         temp.product = None
         temp.save()
 
-        await tgUser.send_message(
+        await tg_user.send_message(
             i18n.menu.welcome(),
             reply_markup=ReplyKeyboardMarkup(
                 [
@@ -89,7 +91,7 @@ class Menu(MenuBack):
     async def menu_category(
         self, update: UPD, context: CTX, _category: "Category | None" = None
     ):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
         category = (
             _category
@@ -97,7 +99,7 @@ class Menu(MenuBack):
         )
 
         if category == None:
-            await tgUser.send_message(i18n.menu.category.not_found(), parse_mode="HTML")
+            await tg_user.send_message(i18n.menu.category.not_found(), parse_mode="HTML")
             if temp.category == None:
                 return await self.menu(update, context)
             return await self.menu_category(update, context, temp.category)
@@ -105,7 +107,7 @@ class Menu(MenuBack):
         temp.category = category
         temp.save()
 
-        await tgUser.send_message(
+        await tg_user.send_message(
             i18n.menu.category.info(name=i18n.get_name(category)),
             reply_markup=ReplyKeyboardMarkup(
                 [
@@ -120,7 +122,7 @@ class Menu(MenuBack):
         return MENU_PRODUCT
 
     async def menu_product(self, update: UPD, context: CTX, _product: "Product" = None):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
         product = temp.category.products.filter(
             i18n.filter_name(update.message.text)
@@ -133,24 +135,24 @@ class Menu(MenuBack):
         caption = i18n.get_value(product, "caption")
 
         if image == None:
-            await tgUser.send_message(caption, parse_mode="HTML")
+            await tg_user.send_message(caption, parse_mode="HTML")
             return PRODUCT_INFO
 
         f = image.file.open("rb")
 
-        await tgUser.send_photo(
+        await tg_user.send_photo(
             f,
             caption,
             reply_markup=ReplyKeyboardMarkup(distribute([i for i in "123456789"], 3)),
             parse_mode="HTML",
         )
 
-        await tgUser.send_message(i18n.menu.product.count.ask(), parse_mode="HTML")
+        await tg_user.send_message(i18n.menu.product.count.ask(), parse_mode="HTML")
 
         return PRODUCT_INFO
 
     async def set_product_count(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
         cart = user.cart
 
@@ -162,7 +164,7 @@ class Menu(MenuBack):
             product=product, defaults=dict(price=product.price, count=count)
         )
 
-        await tgUser.send_message(
+        await tg_user.send_message(
             i18n.menu.product.count.success(product_name=i18n.get_name(product)),
             parse_mode="HTML",
         )
@@ -170,7 +172,7 @@ class Menu(MenuBack):
         return await self.menu_category(update, context, product.category)
 
     async def back_to_menu_product(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
         if temp.category == None:
             return await self.menu(update, context)
@@ -178,6 +180,6 @@ class Menu(MenuBack):
         return await self.menu_category(update, context, temp.category)
 
     async def back_to_menu_product_info(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
         return await self.menu_product(update, context, temp.product)

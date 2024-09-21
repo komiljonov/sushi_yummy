@@ -5,14 +5,15 @@ from tg_bot.constants import (
     UPD,
 )
 
+from tg_bot.common_file import CommonKeysMixin
 
-class MenuBack:
+class MenuBack(CommonKeysMixin):
     async def back_from_product_info(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
         return await self.menu_category(update, context, temp.category)
 
     async def back_from_menu_category(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
         return await self.menu(update, context)

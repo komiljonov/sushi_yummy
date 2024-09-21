@@ -92,14 +92,19 @@
                 "Telefon: {number}\n",
                 "Buyurtma turi: {delivery_method}\n",
                 "{comment}\n",
+                "{promocode}\n",
                 "{orders}\n\n",
                 "Umumiy: {total_price} so'm"
             ],
-            "comment": "Izoh: {comment}\n"
+            "comment": "Izoh: {comment}\n",
+            "promocode": "Promokod: {name} - {amount} {measurement} chegirma\n"
         },
         "promocode": {
             "ask": "Kupon bo'lsa kirgazing",
-            "not_found": "Kechirasiz promokod topilmadi."
+            "not_found": "Kechirasiz promokod topilmadi.",
+            "min_amount": "Promokodni ishlatish uchun buyurtmaning minimal narxi {amount} so'm bo'lishi kerak.",
+            "max_amount": "Promokodni ishlatish uchun buyurtmaning maksimal narxi {amount} so'm bo'lishi kerak.",
+            "ended": "Promokodlar soni tugagan."
         },
         "comment": {
             "ask": "Izoh qoldiring"

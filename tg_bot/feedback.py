@@ -1,24 +1,13 @@
-import base64
-import os
-from redis import Redis
-from telegram import KeyboardButton
 from telegram.ext import filters
 
 from telegram.ext import (
-    ApplicationBuilder,
-    CommandHandler,
     MessageHandler,
-    PreCheckoutQueryHandler,
 )
 from bot.models import User
 from data.feedback.models import Feedback, Service
-from data.payment.models import Payment
-from tg_bot.cart import TgBotCart
-from tg_bot.menu import Menu
 from tg_bot.redis_conversation import ConversationHandler
 from tg_bot.constants import (
     CTX,
-    EN,
     EXCLUDE,
     FEEDBACK_COMMENT,
     FEEDBACK_SERVICE,
@@ -29,10 +18,10 @@ from tg_bot.constants import (
 )
 from utils import ReplyKeyboardMarkup, distribute
 from utils.language import multilanguage
-from data.cart.models import Cart
+from tg_bot.common_file import CommonKeysMixin
 
 
-class TgBotFeedback:
+class TgBotFeedback(CommonKeysMixin):
 
     def _feedback_handlers(self):
         return ConversationHandler(
@@ -66,10 +55,10 @@ class TgBotFeedback:
             },
         )
 
-    async def feedback(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+    async def feedback(self, update: UPD, context: CTX) -> str | None:
+        tg_user, user, temp, i18n = User.get(update)
 
-        await tgUser.send_message(
+        await tg_user.send_message(
             i18n.feedback.star.ask(),
             reply_markup=ReplyKeyboardMarkup(
                 [
@@ -84,8 +73,8 @@ class TgBotFeedback:
         )
         return FEEDBACK_STAR
 
-    async def feedback_stars(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+    async def feedback_stars(self, update: UPD, context: CTX) -> str | None:
+        tg_user, user, temp, i18n = User.get(update)
 
         levels = {
             i18n.feedback.star.levels.best(): 5,
@@ -98,7 +87,7 @@ class TgBotFeedback:
         level = levels.get(update.message.text)
 
         if level == None:
-            await tgUser.send_message(i18n.feedback.star.not_found(), parse_mode="HTML")
+            await tg_user.send_message(i18n.feedback.star.not_found(), parse_mode="HTML")
             return FEEDBACK_STAR
 
         temp.star = level
@@ -106,7 +95,7 @@ class TgBotFeedback:
 
         if level < 5:
             services = Service.objects.filter(active=True)
-            await tgUser.send_message(
+            await tg_user.send_message(
                 i18n.feedback.bad_service.ask(),
                 reply_markup=ReplyKeyboardMarkup(
                     distribute([i18n.get_name(service) for service in services])
@@ -115,48 +104,48 @@ class TgBotFeedback:
             )
             return FEEDBACK_SERVICE
 
-        await tgUser.send_message(
+        await tg_user.send_message(
             i18n.feedback.comment(),
             reply_markup=ReplyKeyboardMarkup(),
             parse_mode="HTML",
         )
         return FEEDBACK_COMMENT
 
-    async def feedback_service(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+    async def feedback_service(self, update: UPD, context: CTX) -> str | None:
+        tg_user, user, temp, i18n = User.get(update)
 
         service = Service.objects.filter(i18n.filter_name(update.message.text)).first()
 
-        if service == None:
-            await tgUser.send_message(
+        if service is None:
+            await tg_user.send_message(
                 i18n.feedback.bad_service.not_found(), parse_mode="HTML"
             )
             return FEEDBACK_SERVICE
 
-        await tgUser.send_message(
+        await tg_user.send_message(
             i18n.feedback.comment(),
             reply_markup=ReplyKeyboardMarkup(),
             parse_mode="HTML",
         )
         return FEEDBACK_COMMENT
 
-    async def feedback_comment(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+    async def feedback_comment(self, update: UPD, context: CTX) -> str | None | int:
+        tg_user, user, temp, i18n = User.get(update)
 
         new_feedback = Feedback.objects.create(
             user=user, service=temp.service, comment=update.message.text, star=temp.star
         )
 
-        await tgUser.send_message(i18n.feedback.success(), parse_mode="HTML")
+        await tg_user.send_message(i18n.feedback.success(), parse_mode="HTML")
 
         return -1
 
-    async def back_from_feedback_comment(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+    async def back_from_feedback_comment(self, update: UPD, context: CTX) -> str | None:
+        tg_user, user, temp, i18n = User.get(update)
 
         if temp.star < 5:
             services = Service.objects.filter(active=True)
-            await tgUser.send_message(
+            await tg_user.send_message(
                 i18n.feedback.bad_service.ask(),
                 reply_markup=ReplyKeyboardMarkup(
                     distribute([i18n.get_name(service) for service in services])

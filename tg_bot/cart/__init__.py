@@ -1,22 +1,19 @@
 import asyncio
 import base64
 from datetime import date, datetime, timedelta
-from typing import Callable
+from typing import Callable, Coroutine
+
+from django.utils import timezone
+from geopy.geocoders import Nominatim
 from redis import Redis
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, LabeledPrice, Message
+from telegram.ext import MessageHandler
 from telegram.ext import filters, CallbackQueryHandler
 
-from telegram.ext import MessageHandler
 from bot.models import User
-from geopy.geocoders import Nominatim
 from data.filial.models import Filial
 from data.promocode.models import Promocode
 from tg_bot.cart.back import CartBack
-from tg_bot.redis_conversation import ConversationHandler
-from utils.language import multilanguage
-from django.utils import timezone
-
-
 from tg_bot.constants import (
     CART,
     CART_COMMENT,
@@ -43,17 +40,20 @@ from tg_bot.constants import (
     PRODUCT_INFO,
     UPD,
 )
+from tg_bot.redis_conversation import ConversationHandler
 from utils import ReplyKeyboardMarkup, distribute, get_later_times
+from utils.language import multilanguage
+from tg_bot.common_file import CommonKeysMixin
 
 
-class TgBotCart(CartBack):
+class TgBotCart(CartBack,CommonKeysMixin):
 
     redis: Redis
     CLICK_TOKEN: str
     PAYME_TOKEN: str
     
 
-    def _cart_handlers(self, back_handler: Callable[[UPD, CTX], str] | None = None):
+    def _cart_handlers(self, back_handler: Callable[[UPD, CTX], Coroutine] | None = None):
         
         return ConversationHandler(
             "CartConversation",
@@ -156,7 +156,7 @@ class TgBotCart(CartBack):
         )
 
     async def cart_keyboard(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
         items = user.cart.items.all()
 
@@ -196,10 +196,10 @@ class TgBotCart(CartBack):
         return InlineKeyboardMarkup(keyboard)
 
     async def cart(self, update: UPD, context: CTX, edit: bool = False):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
         if not edit:
-            instruction = await tgUser.send_message(
+            instruction = await tg_user.send_message(
                 i18n.cart.instruction(),
                 reply_markup=ReplyKeyboardMarkup(
                     [[i18n.buttons.back(), i18n.buttons.clear()], [i18n.cart.done()]],
@@ -208,13 +208,13 @@ class TgBotCart(CartBack):
                 parse_mode="HTML",
             )
 
-            temp.cmid2 = instruction.message_id
+            temp.message_id2 = instruction.message_id
             temp.save()
 
         items = user.cart.items.all()
 
         if items.count() == 0:
-            await tgUser.send_message(i18n.cart.empty(), parse_mode="HTML")
+            await tg_user.send_message(i18n.cart.empty(), parse_mode="HTML")
             await self.delete_messages(update, context)
             return await self.start(update, context)
 
@@ -243,12 +243,12 @@ class TgBotCart(CartBack):
         keyboard = await self.cart_keyboard(update, context)
         if not edit:
 
-            new_message = await tgUser.send_message(
+            new_message = await tg_user.send_message(
                 text,
                 parse_mode="HTML",
                 reply_markup=keyboard,
             )
-            temp.cmid = new_message.message_id
+            temp.message_id = new_message.message_id
             temp.save()
         else:
             message: Message = update.callback_query.message
@@ -258,7 +258,7 @@ class TgBotCart(CartBack):
         return CART
 
     async def cart_clear(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
         cart = user.cart
 
@@ -269,7 +269,7 @@ class TgBotCart(CartBack):
         return await self.cart(update, context)
 
     async def cart_set_count(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
         _, action, itemId = update.callback_query.data.split(":")
 
@@ -286,7 +286,7 @@ class TgBotCart(CartBack):
         return await self.cart(update, context, True)
 
     async def cart_remove_item(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
         action, itemId = update.callback_query.data.split(":")
 
@@ -303,7 +303,7 @@ class TgBotCart(CartBack):
 
     def back_from_cart(self, callback: Callable):
         async def wrap(update: UPD, context: CTX):
-            tgUser, user, temp, i18n = User.get(update)
+            tg_user, user, temp, i18n = User.get(update)
 
             # Prioritize callback first
             result = await callback(update, context)
@@ -316,19 +316,19 @@ class TgBotCart(CartBack):
         return wrap
 
     async def delete_messages(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
         try:
             await asyncio.gather(
-                tgUser.delete_message(temp.cmid), tgUser.delete_message(temp.cmid2)
+                tg_user.delete_message(temp.message_id), tg_user.delete_message(temp.message_id2)
             )
         except Exception as e:
             print(e)
 
     async def cart_done(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
-        await tgUser.send_message(
+        await tg_user.send_message(
             i18n.cart.get_method(),
             reply_markup=ReplyKeyboardMarkup(
                 [[i18n.cart.deliver(), i18n.cart.take_away()]]
@@ -340,14 +340,14 @@ class TgBotCart(CartBack):
         return CART_GET_METHOD
 
     async def cart_get_method_deliver(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
         cart = user.cart
 
         cart.delivery = "DELIVER"
         cart.save()
 
-        await tgUser.send_message(
+        await tg_user.send_message(
             i18n.deliver.location.ask(),
             reply_markup=ReplyKeyboardMarkup(
                 [
@@ -360,7 +360,7 @@ class TgBotCart(CartBack):
         return DELIVERY_LOCATION
 
     async def cart_delivery_location(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
         location = update.message.location
 
@@ -378,7 +378,7 @@ class TgBotCart(CartBack):
         temp.location = new_location
         temp.save()
 
-        await tgUser.send_message(
+        await tg_user.send_message(
             i18n.deliver.location.confirm(address=address),
             reply_markup=ReplyKeyboardMarkup(
                 [
@@ -396,14 +396,14 @@ class TgBotCart(CartBack):
         return CART_DELIVER_LOCATION_CONFIRM
 
     async def cart_deliver_location_confirm(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
         cart = user.cart
 
         cart.location = temp.location
         cart.save()
 
-        await tgUser.send_message(
+        await tg_user.send_message(
             i18n.time.deliver(),
             reply_markup=ReplyKeyboardMarkup(
                 [
@@ -418,7 +418,7 @@ class TgBotCart(CartBack):
         return CART_TIME
 
     async def cart_get_method_take_away(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
         cart = user.cart
 
@@ -427,7 +427,7 @@ class TgBotCart(CartBack):
 
         filials = Filial.objects.filter(active=True)
 
-        await tgUser.send_message(
+        await tg_user.send_message(
             i18n.takeaway.filial.ask(),
             reply_markup=ReplyKeyboardMarkup(
                 [
@@ -446,7 +446,7 @@ class TgBotCart(CartBack):
         return CART_TAKEAWAY_FILIAL
 
     async def cart_takeaway_filial_location(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
         location = update.message.location
 
@@ -454,7 +454,7 @@ class TgBotCart(CartBack):
 
         filials = Filial.objects.filter(active=True)
 
-        await tgUser.send_message(
+        await tg_user.send_message(
             i18n.takeaway.filial.filial_info(filial=i18n.get_name(filial)),
             reply_markup=ReplyKeyboardMarkup(
                 [
@@ -466,12 +466,12 @@ class TgBotCart(CartBack):
         )
 
     async def cart_takeaway_filial(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
         filial = Filial.objects.filter(i18n.filter_name(update.message.text)).first()
 
         if filial == None:
-            await tgUser.send_message(
+            await tg_user.send_message(
                 i18n.takeaway.filial.not_found(), parse_mode="HTML"
             )
             return await self.cart_get_method_take_away(update, context)
@@ -481,7 +481,7 @@ class TgBotCart(CartBack):
         cart.filial = filial
         cart.save()
 
-        await tgUser.send_message(
+        await tg_user.send_message(
             i18n.time.takeaway(),
             reply_markup=ReplyKeyboardMarkup(
                 [
@@ -496,7 +496,7 @@ class TgBotCart(CartBack):
         return CART_TIME
 
     async def cart_time(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
         cart = user.cart
 
@@ -508,7 +508,7 @@ class TgBotCart(CartBack):
                 else i18n.time.ask_later_takeaway()
             )
 
-            await tgUser.send_message(
+            await tg_user.send_message(
                 text,
                 reply_markup=ReplyKeyboardMarkup(
                     distribute([time.strftime("%H:%M") for time in times])
@@ -518,7 +518,7 @@ class TgBotCart(CartBack):
             return CART_TIME_LATER_TIME
 
         if update.message.text == i18n.time.asap():
-            await tgUser.send_message(
+            await tg_user.send_message(
                 i18n.data.phone_number.ask(),
                 reply_markup=ReplyKeyboardMarkup(
                     [
@@ -533,11 +533,11 @@ class TgBotCart(CartBack):
             )
             return CART_PHONE_NUMBER
 
-        await tgUser.send_message(i18n.time.wrong(),parse_mode="HTML")
+        await tg_user.send_message(i18n.time.wrong(),parse_mode="HTML")
         return CART_TIME_LATER_TIME
 
     async def cart_time_later_time(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
         time_t = update.message.text
 
@@ -556,7 +556,7 @@ class TgBotCart(CartBack):
 
         # TODO: Implement payment
 
-        await tgUser.send_message(
+        await tg_user.send_message(
             i18n.data.phone_number.ask(),
             reply_markup=ReplyKeyboardMarkup(
                 [[KeyboardButton(i18n.buttons.phone_number(), request_contact=True)]]
@@ -566,9 +566,9 @@ class TgBotCart(CartBack):
         return CART_PHONE_NUMBER
 
     async def cart_time_asap(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
-        await tgUser.send_message(
+        await tg_user.send_message(
             i18n.data.phone_number.ask(),
             reply_markup=ReplyKeyboardMarkup(
                 [[KeyboardButton(i18n.buttons.phone_number(), request_contact=True)]]
@@ -578,7 +578,7 @@ class TgBotCart(CartBack):
         return CART_PHONE_NUMBER
 
     async def cart_phone_number(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
         phone = (
             update.message.contact.phone_number
@@ -592,7 +592,7 @@ class TgBotCart(CartBack):
         cart.phone_number = phone
         cart.save()
 
-        await tgUser.send_message(
+        await tg_user.send_message(
             i18n.order.comment.ask(),
             reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
             parse_mode="HTML"
@@ -600,7 +600,7 @@ class TgBotCart(CartBack):
         return CART_COMMENT
 
     async def cart_comment(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
         cart = user.cart
         cart.comment = (
@@ -609,7 +609,7 @@ class TgBotCart(CartBack):
 
         cart.save()
 
-        await tgUser.send_message(
+        await tg_user.send_message(
             i18n.order.promocode.ask(),
             reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
             parse_mode="HTML"
@@ -618,14 +618,16 @@ class TgBotCart(CartBack):
         return CART_PROMOCODE
 
     async def cart_coupon(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
         
         cart = user.cart
         
-        promocode = Promocode.objects.filter(code__iexact=update.message.text, end_date__gte=timezone.now()).first()
+        promocode = Promocode.objects.filter(code__iexact=update.message.text, 
+                                             end_date__gte=timezone.now()
+                                            ).first()
         
         if promocode == None:
-            await tgUser.send_message(
+            await tg_user.send_message(
                 i18n.order.promocode.not_found(),
                 reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
                 parse_mode="HTML"
@@ -635,7 +637,7 @@ class TgBotCart(CartBack):
         used = user.carts.filter(promocode=promocode).exists()
         
         if used:
-            await tgUser.send_message(
+            await tg_user.send_message(
                 i18n.order.promocode.used(),
                 reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
                 parse_mode="HTML"
@@ -644,7 +646,7 @@ class TgBotCart(CartBack):
         
         
         if promocode.orders.count() >= promocode.count:
-            await tgUser.send_message(
+            await tg_user.send_message(
                 i18n.order.promocode.ended(),
                 reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
                 parse_mode="HTML"
@@ -654,7 +656,7 @@ class TgBotCart(CartBack):
         
         
         if promocode.min_amount != -1 and promocode.min_amount > cart.price:
-            await tgUser.send_message(
+            await tg_user.send_message(
             i18n.order.promocode.min_amount(amount=promocode.min_amount),
                 reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
                 parse_mode="HTML"
@@ -664,25 +666,19 @@ class TgBotCart(CartBack):
         
         
         if promocode.max_amount != -1 and promocode.max_amount < cart.price:
-            await tgUser.send_message(
-            i18n.order.promocode.min_amount(amount=promocode.min_amount),
+            await tg_user.send_message(
+            i18n.order.promocode.min_amount(amount=promocode.max_amount),
                 reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
                 parse_mode="HTML"
             )
             return CART_PROMOCODE
         
         
+        cart.promocode = promocode
+        cart.save()
         
         
-        
-        
-        
-        
-        
-        
-        
-
-
+    
         
         
         
@@ -701,12 +697,13 @@ class TgBotCart(CartBack):
                 )
             )
 
-        await tgUser.send_message(
+        await tg_user.send_message(
             i18n.order.info.base(
                 name=user.name,
                 number=cart.phone_number,
                 delivery_method=cart.delivery,
                 comment=i18n.order.info.comment(comment=cart.comment) if cart.comment else "",
+                promocode=i18n.order.info.promocode(name=cart.promocode.name, amount=cart.promocode.amount, measurement="%" if cart.promocode.measurement == "PERCENT" else "so'm") if cart.promocode else "",
                 filial=i18n.get_name(cart.filial),
                 total_price=cart.price,
                 orders="\n".join(products_text),
@@ -722,21 +719,21 @@ class TgBotCart(CartBack):
     
 
     async def cart_reject(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
-        await tgUser.send_message("Rad etildi qilindi.",parse_mode="HTML")
+        await tg_user.send_message("Rad etildi qilindi.",parse_mode="HTML")
 
         return await self.cart(update, context)
 
 
 
     async def cart_confirm(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
-        # await tgUser.send_message("Qabul qilindi.")
+        # await tg_user.send_message("Qabul qilindi.")
         
         
-        await tgUser.send_message(
+        await tg_user.send_message(
             i18n.payment.method.ask(),
             reply_markup=ReplyKeyboardMarkup([
                 [
@@ -754,7 +751,7 @@ class TgBotCart(CartBack):
     
     
     async def cart_payment_method(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
         
         
         
@@ -768,7 +765,7 @@ class TgBotCart(CartBack):
         
         
         if method == None:
-            await tgUser.send_message(i18n.payment.method.not_found(),reply_markup=ReplyKeyboardMarkup([
+            await tg_user.send_message(i18n.payment.method.not_found(),reply_markup=ReplyKeyboardMarkup([
                 [
                     i18n.payment.click(),
                     i18n.payment.payme()
@@ -790,7 +787,7 @@ class TgBotCart(CartBack):
         if method in [CLICK, PAYME]: 
             cart.status = "PENDING_PAYMENT"
             cart.save()
-            await tgUser.send_invoice(
+            await tg_user.send_invoice(
                 i18n.payment.title(),
                 i18n.payment.description(),
                 f"cart:{base64.b64encode(f"{cart.id}".encode()).decode()}:{method}",
@@ -800,4 +797,4 @@ class TgBotCart(CartBack):
             )
             return -1
         else:
-            await tgUser.send_message(i18n.payment.done(),parse_mode="HTML")
+            await tg_user.send_message(i18n.payment.done(),parse_mode="HTML")

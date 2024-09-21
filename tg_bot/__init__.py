@@ -1,5 +1,7 @@
 import base64
 import os
+from collections.abc import Callable, Coroutine
+
 from redis import Redis
 from telegram import KeyboardButton
 from telegram.ext import filters
@@ -53,7 +55,6 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
             .token(self.token)
             .concurrent_updates(128)
             .base_url("http://tgbotapi:8081/bot")
-            # .bot()
             .build()
         )
 
@@ -95,13 +96,14 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
             redis=self.redis,
         )
 
-    def back(self, callback):
+    def back(self, callback: Callable[[UPD, CTX], Coroutine]) -> MessageHandler:
         return MessageHandler(
             filters.Text(multilanguage.get_all("buttons.back")), callback
         )
 
+
     async def main_menu_keyboard(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
         keyboard = ReplyKeyboardMarkup(
             [
@@ -117,11 +119,13 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
         )
         return keyboard
 
-    async def start(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
 
-        if user.lang == None or user.name == None or user.number == None:
-            await tgUser.send_message(
+
+    async def start(self, update: UPD, context: CTX):
+        tg_user, user, temp, i18n = User.get(update)
+
+        if user.lang is None or user.name is None or user.number is None:
+            await tg_user.send_message(
                 i18n.register.lang.ask(),
                 parse_mode="HTML",
                 reply_markup=ReplyKeyboardMarkup([[UZ, RU], [EN]], False),
@@ -130,24 +134,24 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
 
         keyboard = await self.main_menu_keyboard(update, context)
 
-        await tgUser.send_message("Menu", reply_markup=keyboard, parse_mode="HTML")
+        await tg_user.send_message("Menu", reply_markup=keyboard, parse_mode="HTML")
 
         return MAIN_MENU
 
     async def lang(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
         lang = {UZ: "uz", RU: "ru", EN: "en"}.get(update.message.text)
 
         if lang == None:
-            await tgUser.send_message(i18n.register.lang.wrong(), parse_mode="HTML")
+            await tg_user.send_message(i18n.register.lang.wrong(), parse_mode="HTML")
 
             return await self.start(update, context)
 
         user.lang = lang
         user.save()
 
-        await tgUser.send_message(
+        await tg_user.send_message(
             i18n.register.name.ask(),
             reply_markup=ReplyKeyboardMarkup(),
             parse_mode="HTML",
@@ -156,12 +160,12 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
         return REGISTER_NAME
 
     async def register_name(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
         user.name = update.message.text
         user.save()
 
-        await tgUser.send_message(
+        await tg_user.send_message(
             i18n.register.number.ask(),
             reply_markup=ReplyKeyboardMarkup(
                 [[KeyboardButton(i18n.buttons.phone_number(), request_contact=True)]]
@@ -171,7 +175,7 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
         return REGISTER_PHONE
 
     async def register_number(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
         phone = (
             update.message.contact.phone_number
@@ -185,9 +189,9 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
         return await self.start(update, context)
 
     async def back_from_register_phone_number(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
-        await tgUser.send_message(
+        await tg_user.send_message(
             i18n.register.name.ask(),
             reply_markup=ReplyKeyboardMarkup(),
             parse_mode="HTML",
@@ -196,11 +200,11 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
         return REGISTER_NAME
 
     async def reload_locale(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
         multilanguage.load_translations("locales")
 
     async def pre_checkout_query_handler(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
         _, _cartId, provider = update.pre_checkout_query.invoice_payload.split(":")
 
@@ -225,17 +229,17 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
         await update.pre_checkout_query.answer(True)
 
     async def successful_payment(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
         payment = update.message.successful_payment
 
         _, _cartId, provider = payment.invoice_payload.split(":")
 
-        cartId = base64.b64decode(_cartId.encode()).decode()
+        cart_id = base64.b64decode(_cartId.encode()).decode()
 
-        cart = Cart.objects.filter(id=cartId).first()
+        cart = Cart.objects.filter(id=cart_id).first()
 
-        if cart == None:
+        if cart is None:
 
             return
 

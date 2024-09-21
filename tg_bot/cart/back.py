@@ -22,9 +22,9 @@ from utils import ReplyKeyboardMarkup, distribute, get_later_times
 class CartBack:
 
     async def back_from_cart_delivery_location(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
-        await tgUser.send_message(
+        await tg_user.send_message(
             i18n.cart.get_method(),
             reply_markup=ReplyKeyboardMarkup(
                 [[i18n.cart.deliver(), i18n.cart.take_away()]]
@@ -35,9 +35,9 @@ class CartBack:
         return CART_GET_METHOD
 
     async def back_from_cart_delivery_location_confirm(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
-        await tgUser.send_message(
+        await tg_user.send_message(
             i18n.deliver.location.ask(),
             reply_markup=ReplyKeyboardMarkup(
                 [
@@ -50,9 +50,9 @@ class CartBack:
         return DELIVERY_LOCATION
 
     async def back_from_cart_takeaway_filial(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
-        await tgUser.send_message(
+        await tg_user.send_message(
             i18n.cart.get_method(),
             reply_markup=ReplyKeyboardMarkup(
                 [[i18n.cart.deliver(), i18n.cart.take_away()]]
@@ -63,7 +63,7 @@ class CartBack:
         return CART_GET_METHOD
 
     async def back_from_cart_time(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
         cart = user.cart
 
@@ -73,7 +73,7 @@ class CartBack:
             address = nominatim.reverse(
                 f"{cart.location.latitude},{cart.location.longitude}"
             )
-            await tgUser.send_message(
+            await tg_user.send_message(
                 i18n.deliver.location.confirm(address=address),
                 reply_markup=ReplyKeyboardMarkup(
                     [
@@ -92,7 +92,7 @@ class CartBack:
         else:
             filials = Filial.objects.filter(active=True)
 
-            await tgUser.send_message(
+            await tg_user.send_message(
                 i18n.takeaway.filial.ask(),
                 reply_markup=ReplyKeyboardMarkup(
                     [
@@ -111,11 +111,11 @@ class CartBack:
             return CART_TAKEAWAY_FILIAL
 
     async def back_from_cart_time_later_time(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
         cart = user.cart
 
-        await tgUser.send_message(
+        await tg_user.send_message(
             (
                 i18n.time.deliver()
                 if cart.delivery == "DELIVER"
@@ -134,7 +134,7 @@ class CartBack:
         return CART_TIME
 
     async def back_from_cart_phone_number(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
         cart = user.cart
 
@@ -146,7 +146,7 @@ class CartBack:
                 else i18n.time.ask_later_takeaway()
             )
 
-            await tgUser.send_message(
+            await tg_user.send_message(
                 text,
                 reply_markup=ReplyKeyboardMarkup(
                     distribute([time.strftime("%H:%M") for time in times])
@@ -157,7 +157,7 @@ class CartBack:
 
         cart = user.cart
 
-        await tgUser.send_message(
+        await tg_user.send_message(
             (
                 i18n.time.deliver()
                 if cart.delivery == "DELIVER"
@@ -176,9 +176,9 @@ class CartBack:
         return CART_TIME
 
     async def back_from_cart_comment(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
-        await tgUser.send_message(
+        await tg_user.send_message(
             i18n.data.phone_number.ask(),
             reply_markup=ReplyKeyboardMarkup(
                 [[KeyboardButton(i18n.buttons.phone_number(), request_contact=True)]]
@@ -187,9 +187,9 @@ class CartBack:
         return CART_PHONE_NUMBER
 
     async def back_from_cart_coupon(self, update: UPD, context: CTX):
-        tgUser, user, temp, i18n = User.get(update)
+        tg_user, user, temp, i18n = User.get(update)
 
-        await tgUser.send_message(
+        await tg_user.send_message(
             i18n.data.comment.ask(),
             reply_markup=ReplyKeyboardMarkup(
                 [[KeyboardButton(i18n.buttons.phone_number(), request_contact=True)]]
