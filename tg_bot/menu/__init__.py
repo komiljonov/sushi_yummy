@@ -183,3 +183,4 @@ class Menu(MenuBack, CommonKeysMixin):
         tg_user, user, temp, i18n = User.get(update)
 
         return await self.menu_product(update, context, temp.product)
+
