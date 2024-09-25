@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from data.admins.models import CustomUser
 from rest_framework import serializers
 
 
@@ -9,9 +9,9 @@ class AdminSerializer(serializers.ModelSerializer):
     
     
     class Meta:
-        model = User
-        fields = ["id", "username", "username", "first_name", "last_name","fullname", "is_staff"]
+        model = CustomUser
+        fields = ["id", "username", "username", "filial", "role", "first_name", "last_name","fullname", "is_staff"]
 
 
-    def get_fullname(self, obj:User):
+    def get_fullname(self, obj:CustomUser):
         return obj.get_full_name()

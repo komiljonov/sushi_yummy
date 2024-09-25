@@ -174,3 +174,5 @@ data.json
 
 
 *.sock
+
+data/

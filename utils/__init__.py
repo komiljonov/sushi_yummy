@@ -64,3 +64,23 @@ def get_later_times(start_time=None):
     # Generate intervals for the next 3 hours
     intervals = [start_time + timedelta(minutes=i * 30) for i in range(0, 6)]
     return intervals
+
+
+def format_number_with_emojis(number):
+    # Dictionary for mapping digits to emojis
+    numbers = {
+        "1": "1️⃣",
+        "2": "2️⃣",
+        "3": "3️⃣",
+        "4": "4️⃣",
+        "5": "5️⃣",
+        "6": "6️⃣",
+        "7": "7️⃣",
+        "8": "8️⃣",
+        "9": "9️⃣",
+        "0": "0️⃣"
+    }
+
+    # Convert the number to a string and replace each digit with the corresponding emoji
+    formatted_number = ''.join([numbers[digit] for digit in str(number) if digit in numbers])
+    return formatted_number

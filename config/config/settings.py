@@ -155,3 +155,7 @@ SIMPLE_JWT = {
     "BLACKLIST_AFTER_ROTATION": True,
     "UPDATE_LAST_LOGIN": False,
 }
+
+
+AUTH_USER_MODEL = "admins.CustomUser"
+

@@ -2,6 +2,7 @@ import base64
 import os
 from collections.abc import Callable, Coroutine
 
+from django.db.models import QuerySet
 from redis import Redis
 from telegram import KeyboardButton
 from telegram.ext import filters
@@ -31,9 +32,10 @@ from tg_bot.constants import (
     UPD,
     UZ, INFO_FILIAL,
 )
-from utils import ReplyKeyboardMarkup, distribute
+from utils import ReplyKeyboardMarkup, distribute, format_number_with_emojis
 from utils.language import multilanguage
 from data.cart.models import Cart
+from django.utils import timezone
 
 
 class Bot(Menu, TgBotCart, TgBotFeedback):
@@ -93,6 +95,7 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
                     self._cart_handlers(self.start),
                     MessageHandler(filters.Text(multilanguage.get_all("main_menu.contact")), self.contact),
                     MessageHandler(filters.Text(multilanguage.get_all("main_menu.info")), self.info),
+                    MessageHandler(filters.Text(multilanguage.get_all("main_menu.order_history")), self.order_history),
                 ],
 
                 INFO_FILIAL: [
@@ -255,6 +258,7 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
 
         cart.status = "PENDING"
         cart.payment = new_payment
+        cart.order_time = timezone.now()
         cart.save()
 
         await context.bot.send_message(
@@ -301,8 +305,44 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
 
         await tg_user.send_message(
             i18n.info.filial.info(
-                name=i18n.get_name(filial)
+                name=i18n.get_name(filial),
             ), parse_mode="HTML"
         )
 
         return await self.start(update, context)
+
+    async def order_history(self, update: UPD, context: CTX):
+        tg_user, user, temp, i18n = User.get(update)
+
+        carts: QuerySet[Cart] = user.carts.filter(status__in=["DONE", "CANCELLED"])
+
+        print(carts)
+
+        await tg_user.send_message("salom")
+
+        for cart in carts:
+            products_text = []
+
+            for item in cart.items.all():
+                products_text.append(i18n.order_history.item(
+                    count=format_number_with_emojis(item.count),
+                    product_name=i18n.get_name(item.product),
+                ))
+
+            await tg_user.send_message(
+                i18n.order_history.info(
+                    order_id=cart.order_id,
+                    status=cart.status,
+                    delivery_type=cart.delivery,
+                    filial_or_address=i18n.order_history.location(
+                        address=cart.location.address) if cart.location else i18n.order_history.filial(
+                        filial=i18n.get_name(cart.filial)),
+                    products_text="\n".join(products_text),
+                    payment_type=cart.payment.provider,
+                    promocode=i18n.order_history.promocode(name=cart.promocode.name, amount=cart.promocode.amount,
+                                                           measurement=cart.promocode.measurement),
+                    price=cart.discount_price,
+                    delivery_price=0,
+                    total_price=cart.price
+                )
+            )

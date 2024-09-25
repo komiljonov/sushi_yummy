@@ -1,8 +1,10 @@
 from rest_framework import serializers
 
+from bot.models import Location
 from bot.serializers import LocationSerializer
 from data.cart.models import Cart
 from data.cartitem.serializers import CartItemSerializer
+from data.filial.serializers import FilialSerializer
 from data.payment.serializers import PaymentSerializer
 from django.db.models import Sum
 
@@ -21,11 +23,13 @@ class CartSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    # discount_price = serializers.SerializerMethodField()
     products_count = serializers.SerializerMethodField()
-    # saving = serializers.SerializerMethodField()
+    payment = PaymentSerializer()
 
-    promocode = PromocodeSerializer()
+    promocode = PromocodeSerializer(remove_fields=["orders"])
+
+    filial = FilialSerializer()
+    location = LocationSerializer()
 
     user = UserSerializer()
 
@@ -38,15 +42,20 @@ class OrderSerializer(serializers.ModelSerializer):
             "id",
             "order_id",
             "user",
+            "phone_number",
             "products_count",
             "promocode",
             "order_time",
+            "time",
             "status",
             "price",
             "discount_price",
             "saving",
             "items",
             "comment",
+            "payment",
+            "filial",
+            "location"
         ]
 
     def get_products_count(self, obj: Cart):

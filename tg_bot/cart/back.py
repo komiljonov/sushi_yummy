@@ -14,7 +14,7 @@ from tg_bot.constants import (
     CART_TIME_LATER_TIME,
     CTX,
     DELIVERY_LOCATION,
-    UPD,
+    UPD, CART_PROMOCODE,
 )
 from utils import ReplyKeyboardMarkup, distribute, get_later_times
 
@@ -197,3 +197,15 @@ class CartBack:
             parse_mode="HTML"
         )
         return CART_COMMENT
+
+
+    async def back_from_cart_confirm(self, update: UPD, context: CTX):
+        tg_user, user, temp, i18n = User.get(update)
+
+        await tg_user.send_message(
+            i18n.order.promocode.ask(),
+            reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
+            parse_mode="HTML"
+        )
+
+        return CART_PROMOCODE

@@ -36,8 +36,7 @@ class User(TimeStampModel):
     @classmethod
     def get(cls, update: Update):
         tg_user = update.effective_user
-
-        user = cls.objects.prefetch_related("carts").get_or_create(
+        user: "User" = cls.objects.prefetch_related("carts").get_or_create(
             chat_id=tg_user.id, tg_name=tg_user.full_name, username=tg_user.username
         )[0]
 

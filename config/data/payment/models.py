@@ -1,12 +1,16 @@
+from typing import TYPE_CHECKING
 from django.db import models
 from common.models import TimeStampModel
 from django.contrib import admin
+
+if TYPE_CHECKING:
+    from data.cart.models import Cart
+
 
 # Create your models here.
 
 
 class Payment(TimeStampModel):
-
     user = models.ForeignKey(
         "bot.User", on_delete=models.SET_NULL, null=True, blank=True
     )
@@ -30,12 +34,12 @@ class Payment(TimeStampModel):
         max_length=255,
         default="SUCCESSFUL",
     )
-    
-    
-    data = models.JSONField(null=True,blank=True)
+
+    data = models.JSONField(null=True, blank=True)
+
+    order: "Cart"
 
     class Admin(admin.ModelAdmin):
-
         list_display = ["provider", "amount", "status", "id"]
 
         list_filter = ["provider", "amount", "id"]
