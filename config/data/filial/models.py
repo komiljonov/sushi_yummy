@@ -5,6 +5,8 @@ from django.db import models
 from common.models import TimeStampModel
 from django.db.models import Func
 
+from data.category.models import Category
+
 if TYPE_CHECKING:
     from bot.models import Location
 
@@ -36,11 +38,18 @@ class Filial(TimeStampModel):
     name_uz = models.CharField(max_length=255)
     name_ru = models.CharField(max_length=255)
 
+    iiko_id = models.CharField(max_length=255)
+
     location: "Location" = models.ForeignKey(
         "bot.Location", on_delete=models.SET_NULL, null=True, blank=True
     )
 
     active = models.BooleanField(default=True)
+
+    categories: models.QuerySet["Category"]
+
+    def __str__(self):
+        return f"Filial ( {self.name_uz} )"
 
     @staticmethod
     def haversine(lon1, lat1, lon2, lat2):

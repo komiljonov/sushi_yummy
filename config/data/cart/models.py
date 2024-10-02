@@ -131,7 +131,7 @@ class Cart(TimeStampModel):
     @property
     def discount_price(self):
 
-        if self.promocode == None:
+        if self.promocode is None:
             return self.price
 
         # return self.price - ((self.price // 100) * 20)
@@ -143,7 +143,7 @@ class Cart(TimeStampModel):
 
     @property
     def saving(self):
-        if self.promocode == None:
+        if self.promocode is None:
             return 0
 
         return self.price - self.discount_price

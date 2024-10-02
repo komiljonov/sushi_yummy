@@ -4,6 +4,8 @@ from rest_framework.generics import (
     RetrieveAPIView,
 )
 
+from rest_framework.views import APIView
+
 from data.category.models import Category
 from data.category.serializers import (
     CategoryCreateSerializer,
@@ -39,3 +41,6 @@ class CategoryRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
 
     serializer_class = CategorySerializer
+
+
+

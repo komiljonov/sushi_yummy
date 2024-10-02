@@ -16,6 +16,7 @@ from telegram.ext import (
 from bot.models import User
 from data.filial.models import Filial
 from data.payment.models import Payment
+from data.referral.models import Referral
 from tg_bot.cart import TgBotCart
 from tg_bot.feedback import TgBotFeedback
 from tg_bot.menu import Menu
@@ -30,7 +31,8 @@ from tg_bot.constants import (
     REGISTER_PHONE,
     RU,
     UPD,
-    UZ, INFO_FILIAL,
+    UZ,
+    INFO_FILIAL,
 )
 from utils import ReplyKeyboardMarkup, distribute, format_number_with_emojis
 from utils.language import multilanguage
@@ -93,15 +95,28 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
                     self._menu_handlers(),
                     self._feedback_handlers(),
                     self._cart_handlers(self.start),
-                    MessageHandler(filters.Text(multilanguage.get_all("main_menu.contact")), self.contact),
-                    MessageHandler(filters.Text(multilanguage.get_all("main_menu.info")), self.info),
-                    MessageHandler(filters.Text(multilanguage.get_all("main_menu.order_history")), self.order_history),
+                    MessageHandler(
+                        filters.Text(multilanguage.get_all("main_menu.contact")),
+                        self.contact,
+                    ),
+                    MessageHandler(
+                        filters.Text(multilanguage.get_all("main_menu.info")), self.info
+                    ),
+                    MessageHandler(
+                        filters.Text(multilanguage.get_all("main_menu.order_history")),
+                        self.order_history,
+                    ),
+                    MessageHandler(
+                        filters.Text(
+                            multilanguage.get_all("main_menu.change_language")
+                        ),
+                        self.change_language,
+                    ),
                 ],
-
                 INFO_FILIAL: [
                     MessageHandler(filters.TEXT & EXCLUDE, self.info_filial),
-                    self.back(self.start)
-                ]
+                    self.back(self.start),
+                ],
             },
             self.ANYTHING,
             redis=self.redis,
@@ -123,7 +138,7 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
                 ],
                 [i18n.main_menu.order_history(), i18n.main_menu.feedback()],
                 [i18n.main_menu.info(), i18n.main_menu.contact()],
-                [i18n.main_menu.settings()],
+                [i18n.main_menu.change_language()],
             ],
             False,
         )
@@ -131,6 +146,17 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
 
     async def start(self, update: UPD, context: CTX):
         tg_user, user, temp, i18n = User.get(update)
+
+        if context.args:
+            if not user.referral:
+                token = context.args[0]
+
+                referral_id = base64.b64decode(token).decode()
+
+                referral = Referral.objects.filter(id=referral_id).first()
+
+                user.referral = referral
+                user.save()
 
         if user.lang is None or user.name is None or user.number is None:
             await tg_user.send_message(
@@ -159,13 +185,15 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
         user.lang = lang
         user.save()
 
-        await tg_user.send_message(
-            i18n.register.name.ask(),
-            reply_markup=ReplyKeyboardMarkup(),
-            parse_mode="HTML",
-        )
-
-        return REGISTER_NAME
+        if user.name is None or user.number is None:
+            await tg_user.send_message(
+                i18n.register.name.ask(),
+                reply_markup=ReplyKeyboardMarkup(),
+                parse_mode="HTML",
+            )
+            return REGISTER_NAME
+        else:
+            return await self.start(update, context)
 
     async def register_name(self, update: UPD, context: CTX):
         tg_user, user, temp, i18n = User.get(update)
@@ -220,7 +248,7 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
 
         cart = Cart.objects.filter(id=cartId).first()
         print(cart, update.pre_checkout_query)
-        if cart == None:
+        if cart is None:
             await update.pre_checkout_query.answer(
                 False, "Kechirasiz buyurtma topilmadi."
             )
@@ -270,10 +298,7 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
     async def contact(self, update: UPD, context: CTX):
         tg_user, user, temp, i18n = User.get(update)
 
-        await tg_user.send_message(
-            i18n.contact(),
-            parse_mode="HTML"
-        )
+        await tg_user.send_message(i18n.contact(), parse_mode="HTML")
 
     async def info(self, update: UPD, context: CTX):
         tg_user, user, temp, i18n = User.get(update)
@@ -282,7 +307,7 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
             reply_markup=ReplyKeyboardMarkup(
                 distribute([i18n.get_name(filial) for filial in Filial.objects.all()]),
             ),
-            parse_mode="HTML"
+            parse_mode="HTML",
         )
 
         return INFO_FILIAL
@@ -293,20 +318,16 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
         filial = Filial.objects.filter(i18n.filter_name(update.message.text)).first()
 
         if filial is None:
-            await tg_user.send_message(
-                i18n.info.filial.not_found(), parse_mode="HTML"
-            )
+            await tg_user.send_message(i18n.info.filial.not_found(), parse_mode="HTML")
             return INFO_FILIAL
 
-        await tg_user.send_location(
-            filial.location.latitude,
-            filial.location.longitude
-        )
+        await tg_user.send_location(filial.location.latitude, filial.location.longitude)
 
         await tg_user.send_message(
             i18n.info.filial.info(
                 name=i18n.get_name(filial),
-            ), parse_mode="HTML"
+            ),
+            parse_mode="HTML",
         )
 
         return await self.start(update, context)
@@ -314,7 +335,9 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
     async def order_history(self, update: UPD, context: CTX):
         tg_user, user, temp, i18n = User.get(update)
 
-        carts: QuerySet[Cart] = user.carts.filter(status__in=["DONE", "CANCELLED"])
+        carts: QuerySet[Cart] = user.carts.filter(
+            status__in=["DONE", "CANCELLED", "PENDING_PAYMENT"]
+        )
 
         print(carts)
 
@@ -324,25 +347,52 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
             products_text = []
 
             for item in cart.items.all():
-                products_text.append(i18n.order_history.item(
-                    count=format_number_with_emojis(item.count),
-                    product_name=i18n.get_name(item.product),
-                ))
+                products_text.append(
+                    i18n.order_history.item(
+                        count=format_number_with_emojis(item.count),
+                        product_name=i18n.get_name(item.product),
+                    )
+                )
 
             await tg_user.send_message(
                 i18n.order_history.info(
                     order_id=cart.order_id,
                     status=cart.status,
-                    delivery_type=cart.delivery,
-                    filial_or_address=i18n.order_history.location(
-                        address=cart.location.address) if cart.location else i18n.order_history.filial(
-                        filial=i18n.get_name(cart.filial)),
+                    deliver_type=cart.delivery,
+                    filial_or_address=(
+                        i18n.order_history.location(address=cart.location.address)
+                        if cart.location
+                        else i18n.order_history.filial(
+                            filial=i18n.get_name(cart.filial)
+                        )
+                    ),
                     products_text="\n".join(products_text),
-                    payment_type=cart.payment.provider,
-                    promocode=i18n.order_history.promocode(name=cart.promocode.name, amount=cart.promocode.amount,
-                                                           measurement=cart.promocode.measurement),
+                    payment=(
+                        i18n.order_history.payment(payment_type=cart.payment.provider)
+                        if cart.payment
+                        else ""
+                    ),
+                    promocode=(
+                        i18n.order_history.promocode(
+                            name=cart.promocode.name,
+                            amount=cart.promocode.amount,
+                            measurement=cart.promocode.measurement,
+                        )
+                        if cart.promocode
+                        else ""
+                    ),
                     price=cart.discount_price,
                     delivery_price=0,
-                    total_price=cart.price
+                    total_price=cart.price,
                 )
             )
+
+    async def change_language(self, update: UPD, context: CTX):
+        tg_user, user, temp, i18n = User.get(update)
+        print("Salom")
+        await tg_user.send_message(
+            i18n.register.lang.ask(),
+            parse_mode="HTML",
+            reply_markup=ReplyKeyboardMarkup([[UZ, RU], [EN]], False),
+        )
+        return LANG

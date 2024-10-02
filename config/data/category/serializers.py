@@ -2,6 +2,7 @@ from rest_framework.serializers import ModelSerializer, SerializerMethodField
 
 from data.category.models import Category
 from data.product.serialisers import ProductSerializer
+from datetime import date
 
 
 class SubCategory(ModelSerializer):
@@ -16,6 +17,7 @@ class CategorySerializer(ModelSerializer):
     # products = ProductSerializer(many=True)
 
     products_count = SerializerMethodField()
+    today_visits = SerializerMethodField()
 
     class Meta:
         model = Category
@@ -25,11 +27,17 @@ class CategorySerializer(ModelSerializer):
     def get_products_count(self, obj: Category):
         return obj.products.count()
 
+    def get_today_visits(self, obj:Category):
+        return obj.visits.filter(created_at__date=date.today()).count()
+
 
 class CategorySerializerWithStats(ModelSerializer):
 
     # products = ProductSerializer(many=True)
     products_count = SerializerMethodField()
+
+    visits = SerializerMethodField()
+    average_visit_time = SerializerMethodField()
 
     products = SerializerMethodField()
 
@@ -45,6 +53,12 @@ class CategorySerializerWithStats(ModelSerializer):
 
         return ProductSerializer(products, many=True, context=self.context).data
 
+    def get_visits(self, obj: Category):
+        return obj.get_visit_analytics
+
+
+    def get_average_visit_time(self, obj: Category):
+        return obj.get_visits_per_hour
 
 class CategoryCreateSerializer(ModelSerializer):
 

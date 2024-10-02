@@ -53,9 +53,17 @@ INSTALLED_APPS = [
     "data.admins",
     "data.promocode",
     "data.users",
+    "data.referral",
+    "data.analytics",
+    "data.sync"
 ]
 
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "https://127.0.01:3000", "https://sushi-yummy.vercel.app"]
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "https://127.0.01:3000",
+    "https://sushi-yummy.vercel.app",
+    "http://localhost:63342"
+]
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
@@ -156,6 +164,4 @@ SIMPLE_JWT = {
     "UPDATE_LAST_LOGIN": False,
 }
 
-
 AUTH_USER_MODEL = "admins.CustomUser"
-

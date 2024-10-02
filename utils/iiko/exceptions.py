@@ -1,0 +1,3 @@
+
+class InvalidTokenException(Exception):
+    pass

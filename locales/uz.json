@@ -6,16 +6,17 @@
       "Yetkazib berish turi: {deliver_type}\n",
       "{filial_or_address}\n\n",
       "{products_text}\n\n",
-      "To'lov turi: {payment_type}\n\n",
-      "{promocode}\n",
-      "Mahsulotlar: {price} so'm",
+      "{payment}",
+      "{promocode}",
+      "Mahsulotlar: {price} so'm\n",
       "Yetkazib berish: {delivery_price}\n",
       "Jami: {total_price}"
     ],
     "promocode": "Promokod: {name} - {amount} {measurement} chegirma\n",
     "location": "Manzil: {address}",
     "filial": "Filial: {filial}",
-    "item": "{count} ✖\uFE0F {product_name}"
+    "item": "{count} ✖\uFE0F {product_name}",
+    "payment": "To'lov turi: {payment_type}"
   },
   "register": {
     "lang": {
@@ -35,7 +36,7 @@
     "feedback": "✍️ Fikr-mulohaza qoldirish",
     "info": "ℹ️ Ma'lumotlar",
     "contact": "☎️ Bog'lanish",
-    "settings": "⚙️ Sozlamalar"
+    "change_language": "\uD83C\uDDFA\uD83C\uDDFF Tilni o'zgartirish"
   },
   "menu": {
     "welcome": [

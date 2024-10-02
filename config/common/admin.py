@@ -12,7 +12,7 @@ try:
                 @admin.register(model)
                 class ModelAdmin(modelAdmin):
                     model = model
-                    list_filter = (model.CustomFilter,)
+                    list_filter = (model.CustomFilter, *modelAdmin.list_filter)
 
             else:
                 if not hasattr(model, "CustomFilter"):

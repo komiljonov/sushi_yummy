@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stream Process State</title>
+</head>
+<body>
+    <h1>Organization Sync Progress</h1>
+    <pre id="output"></pre>
+
+    <script>
+        const outputElement = document.getElementById('output');
+
+        // Fetch API to handle the stream response
+        fetch('http://127.0.0.1:8000/api/sync', {  // Adjust the URL to your API endpoint
+            method: 'GET'
+        })
+        .then(response => {
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+
+            function read() {
+                reader.read().then(({ done, value }) => {
+                    if (done) {
+                        outputElement.innerText += '\nSync completed!';
+                        return;
+                    }
+                    // Decode the stream chunk and append it to the output
+                    const chunk = decoder.decode(value, { stream: true });
+                    outputElement.innerText += chunk;
+                    read();  // Read the next chunk
+                });
+            }
+
+            read();  // Start reading the stream
+        })
+        .catch(error => {
+            outputElement.innerText = 'Error occurred: ' + error;
+        });
+    </script>
+</body>
+</html>

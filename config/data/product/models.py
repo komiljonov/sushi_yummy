@@ -4,9 +4,12 @@ from common.models import TimeStampModel
 from django.core.validators import MinValueValidator
 from django.contrib import admin
 
+
 if TYPE_CHECKING:
-    from category.models import Category
+    from data.category.models import Category
     from data.file.models import File
+    from data.analytics.models import ProductVisit
+    from data.cartitem.models import CartItem
 
 # Create your models here.
 
@@ -39,6 +42,11 @@ class Product(TimeStampModel):
         blank=True,
         related_name="products",
     )
+    visits: "models.QuerySet[ProductVisit]"
+
+    cart_items: "models.QuerySet[CartItem]"
+
+
     
     
     def __str__(self) -> str:
