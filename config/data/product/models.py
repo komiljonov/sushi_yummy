@@ -19,6 +19,14 @@ class Product(TimeStampModel):
     name_uz = models.CharField(max_length=255)
     name_ru = models.CharField(max_length=255)
 
+    iiko_id = models.CharField(max_length=255)
+
+    # filial = models.ForeignKey(
+    #     "filial.Filial", on_delete=models.SET_NULL, null=True, blank=True
+    # )
+
+    filials = models.ManyToManyField("filial.Filial", blank=True)
+
     caption_uz = models.CharField(max_length=255)
     caption_ru = models.CharField(max_length=255)
 
@@ -42,20 +50,21 @@ class Product(TimeStampModel):
         blank=True,
         related_name="products",
     )
+
     visits: "models.QuerySet[ProductVisit]"
 
     cart_items: "models.QuerySet[CartItem]"
 
-
-    
-    
     def __str__(self) -> str:
         return f"Product( {self.name_uz} )"
 
-    
-    
+    class Meta:
+        ordering = ["-name_uz"]
+
     class Admin(admin.ModelAdmin):
-        
-        list_display = ["name_uz","name_ru","price","category"]
-        
-        list_filter = ["category"]
+
+        list_display = ["name_uz", "name_ru", "price", "category"]
+
+        list_filter = ["filials", "category"]
+
+        search_fields = ["name_uz", "name_ru", "iiko_id"]

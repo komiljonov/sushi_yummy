@@ -15,15 +15,18 @@ class NomenclatureGroup:
     parentGroup: str
     id: str
     name: str
-    children: List['NomenclatureGroup'] = field(default_factory=list)
+    children: List["NomenclatureGroup"] = field(default_factory=list)
 
     @classmethod
-    def from_list(cls, data: List[Dict]) -> List['NomenclatureGroup']:
-        group_map = {item['id']: cls(
-            id=item['id'],
-            name=item['name'],
-            parentGroup=item.get('parentGroup'),  # Use .get() for safety
-        ) for item in data}
+    def from_list(cls, data: List[Dict]) -> List["NomenclatureGroup"]:
+        group_map = {
+            item["id"]: cls(
+                id=item["id"],
+                name=item["name"],
+                parentGroup=item.get("parentGroup"),  # Use .get() for safety
+            )
+            for item in data
+        }
 
         # Create a mapping for children
         for group in group_map.values():
@@ -38,47 +41,19 @@ class NomenclatureGroup:
 
 @dataclass
 class NomenclatureProduct:
-    fatAmount: int
-    proteinsAmount: int
-    carbohydratesAmount: int
-    energyAmount: int
-    fatFullAmount: int
-    proteinsFullAmount: int
-    carbohydratesFullAmount: int
-    energyFullAmount: int
-    weight: float
-    groupId: str
-    productCategoryId: str
-    type: str
-    orderItemType: str
-    modifierSchemaId: str
-    modifierSchemaName: str
-    splittable: bool
-    measureUnit: str
-
-    imageLinks: list
-    doNotPrintInCheque: bool
-    parentGroup: str
-    order: int
-    fullNameEnglish: str
-    useBalanceForSell: bool
-    canSetOpenPrice: bool
-    paymentSubject: str
     id: str
     code: str
     name: str
-    description: str
-    additionalInfo: str
-    tags: []
+    parentGroup: str
+    type: str
+    productCategoryId: str
+    price: float
+    
+    # sizePrices: list
     isDeleted: bool
-    seoDescription: str
-    seoText: str
-    seoKeywords: str
-    seoTitle: str
-
-    sizePrices: list
-    modifiers: dict
-    groupModifiers: list
+    
+    
+    
 
 
 @dataclass
@@ -87,5 +62,5 @@ class NomenclaturesResponse:
 
     groups: list[NomenclatureGroup]
 
-    products: NomenclatureProduct =None
+    products: list[NomenclatureProduct] = None
     productCategories: Optional[dict] = None
