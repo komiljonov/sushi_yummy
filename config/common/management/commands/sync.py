@@ -3,8 +3,9 @@ import os
 from urllib.parse import urljoin
 import requests
 from bs4 import BeautifulSoup
-from django.core.files import File
+from django.core.files import File as DjFile
 from django.core.management.base import BaseCommand
+from data.file.models import File
 from data.product.models import Product  # Update with your actual app and model names
 
 
@@ -75,9 +76,14 @@ class Command(BaseCommand):
 
             # Convert the image content to a BytesIO object
             image_content = BytesIO(response.content)
+            
+            new_file = File.objects.create(
+                file=DjFile(image_content, file_name),
+                filename=file_name
+            )
 
             # Save the image to the product's image field using File
-            product.image = File(image_content)
+            product.image = new_file
             product.save()
             self.stdout.write(
                 f"Successfully saved/updated image for product id: {product.id}"
