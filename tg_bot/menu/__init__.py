@@ -350,10 +350,12 @@ class Menu(MenuBack, CommonKeysMixin):
             await tg_user.send_message(
                 i18n.menu.category.info(),
                 reply_markup=ReplyKeyboardMarkup(
-                    [i18n.menu.cart() if user.cart.items.count() > 0 else ""],
-                    *distribute(
-                        [i18n.get_name(cat) for cat in category.children.all()],
-                    ),
+                    [
+                        [i18n.menu.cart() if user.cart.items.count() > 0 else ""],
+                        *distribute(
+                            [i18n.get_name(cat) for cat in category.children.all()],
+                        ),
+                    ]
                 ),
             )
             return MENU_CATEGORY
@@ -449,10 +451,7 @@ class Menu(MenuBack, CommonKeysMixin):
 
         return await self.menu_product(update, context, temp.product)
 
-    
-    
     async def back_from_menu_category(self, update: UPD, context: CTX):
         tgUser, user, temp, i18n = User.get(update)
-        
-        
+
         pass
