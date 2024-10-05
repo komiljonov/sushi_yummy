@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
-from django.http import HttpRequest
+from io import BytesIO
+from django.http import HttpRequest, HttpResponse
 from rest_framework.views import APIView
 from rest_framework.request import Request
 
@@ -86,7 +87,6 @@ class StatisticsAPIView(APIView):
             }
         )
 
-
 class XlsxAPIView(APIView):
 
     def post(self, request: HttpRequest | Request):
@@ -129,7 +129,13 @@ class XlsxAPIView(APIView):
         for col in range(1, len(headers) + 1):
             ws.column_dimensions[get_column_letter(col)].width = 20
         
-        # Save the workbook to a file
-        output_filename = "cart_orders.xlsx"
-        wb.save(output_filename)
-        print(f"Excel file {output_filename} generated successfully.")
+        # Save the workbook to a BytesIO stream instead of a file
+        output = BytesIO()
+        wb.save(output)
+        output.seek(0)
+
+        # Create the response with the appropriate headers
+        response = HttpResponse(output, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=cart_orders.xlsx'
+
+        return response
