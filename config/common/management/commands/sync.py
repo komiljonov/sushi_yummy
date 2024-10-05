@@ -1,4 +1,5 @@
 import os
+from urllib.parse import urljoin
 import requests
 from bs4 import BeautifulSoup
 from django.core.files.base import ContentFile
@@ -60,15 +61,19 @@ class Command(BaseCommand):
                     f"Failed to fetch product page for id: {product_id}, status code: {response.status_code}"
                 )
 
-    def download_and_save_image(self, product: "Product", image_url: str):
+    def download_and_save_image(self, product, image_url):
+        # Check if the image URL is relative and if so, construct the full URL
+        if image_url.startswith('/'):
+            base_url = "https://yummy.botagent.uz"  # The base URL of the website
+            image_url = urljoin(base_url, image_url)
+        
+        # Proceed with downloading the image
         response = requests.get(image_url)
         if response.status_code == 200:
             file_name = os.path.basename(image_url)
             # Save the image to the product's image field (assuming it's an ImageField)
             product.image.save(file_name, ContentFile(response.content))
             product.save()
-            self.stdout.write(f"Successfully saved image for product id: {product.id}")
+            self.stdout.write(f'Successfully saved image for product id: {product.id}')
         else:
-            self.stdout.write(
-                f"Failed to download image from {image_url}, status code: {response.status_code}"
-            )
+            self.stdout.write(f'Failed to download image from {image_url}, status code: {response.status_code}')
