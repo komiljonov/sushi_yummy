@@ -51,13 +51,13 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
 
         self.CLICK_TOKEN = os.getenv("CLICK_TOKEN")
         self.PAYME_TOKEN = os.getenv("PAYME_TOKEN")
-        
+
         token = os.getenv("IIKO_TOKEN", "")
         if not token:
             raise "Not token"
 
         self.iiko_manager = Iiko(token)
-        
+
         self.ANYTHING = [
             CommandHandler("start", self.start),
         ]
@@ -143,7 +143,10 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
                     i18n.main_menu.menu(),
                     i18n.menu.cart() if user.cart.items.count() > 0 else "",
                 ],
-                [i18n.main_menu.order_history(), i18n.main_menu.feedback()],
+                [
+                    # i18n.main_menu.order_history(),
+                    i18n.main_menu.feedback()
+                ],
                 [i18n.main_menu.info(), i18n.main_menu.contact()],
                 [i18n.main_menu.change_language()],
             ],
