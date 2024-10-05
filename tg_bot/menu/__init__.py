@@ -83,9 +83,9 @@ class Menu(MenuBack, CommonKeysMixin):
                 #     self.back(self.back_from_cart_takeaway_filial),
                 # ],
                 MENU_CATEGORY: [
-                    self.back(self.back_from_menu_category),
                     self._cart_handlers(self.menu),
                     MessageHandler(filters.TEXT & EXCLUDE, self.menu_category),
+                    self.back(self.back_from_menu_category),
                 ],
                 MENU_PRODUCT: [
                     self._cart_handlers(self.back_to_menu_product),
