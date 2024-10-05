@@ -103,10 +103,10 @@ class Iiko:
             if price is not None:
                 print(f"Product with price found: {product['name']}, Price: {price}")
 
-            if (
-                product.get("modifiers") is None or len(product["modifiers"]) == 0
-            ) and product["type"] == "Dish":
-                continue
+            # if (
+            #     product.get("modifiers") is None or len(product["modifiers"]) == 0
+            # ) and product["type"] == "Dish":
+            #     continue
 
             if price == None:
                 continue
