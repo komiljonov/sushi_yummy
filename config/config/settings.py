@@ -62,7 +62,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "https://127.0.01:3000",
     "https://sushi-yummy.vercel.app",
-    "http://localhost:63342"
+    "http://localhost:63342",
+    "https://api.sushi.sectorsoft.uz"
 ]
 
 MIDDLEWARE = [
