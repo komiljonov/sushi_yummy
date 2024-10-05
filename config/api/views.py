@@ -45,8 +45,8 @@ class StatisticsAPIView(APIView):
         orders_delta = today_orders.count() - yesterday_orders.count()
 
         # Revenue calculation for today and yesterday (since price is a custom property)
-        today_revenue = sum([order.price for order in today_orders])
-        yesterday_revenue = sum([order.price for order in yesterday_orders])
+        today_revenue = sum([order.price for order in today_orders if order.price])
+        yesterday_revenue = sum([order.price for order in yesterday_orders if order.price])
 
         # Calculate revenue delta
         revenue_delta = today_revenue - yesterday_revenue
