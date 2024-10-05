@@ -186,7 +186,7 @@ class Iiko:
                     "latitude": cart.location.latitude,
                     "longitude": cart.location.longitude,
                 },
-                "externalCartographyId": cart.location.id,
+                "externalCartographyId": str(cart.location.id),
             }
             # data["order"]["deliveryPoint"] = {
             #     "Address": {
