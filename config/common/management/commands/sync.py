@@ -2,7 +2,7 @@ import os
 from urllib.parse import urljoin
 import requests
 from bs4 import BeautifulSoup
-from django.core.files.base import ContentFile
+from django.core.files.base import File
 from django.core.management.base import BaseCommand
 from data.product.models import Product  # Update with your actual app and model names
 
@@ -73,7 +73,7 @@ class Command(BaseCommand):
             file_name = os.path.basename(image_url)
 
             # Save the image to the product's image field (overwrite even if it exists)
-            product.image = ContentFile(
+            product.image = File(
                 response.content,
                 file_name,
             )
