@@ -55,7 +55,8 @@ INSTALLED_APPS = [
     "data.users",
     "data.referral",
     "data.analytics",
-    "data.sync"
+    "data.sync",
+    "data.taxi"
 ]
 
 CORS_ALLOWED_ORIGINS = [
