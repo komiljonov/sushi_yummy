@@ -61,9 +61,9 @@ class Command(BaseCommand):
                     f"Failed to fetch product page for id: {product_id}, status code: {response.status_code}"
                 )
 
-    def download_and_save_image(self, product, image_url):
+    def download_and_save_image(self, product: "Product", image_url):
         # Check if the image URL is relative and if so, construct the full URL
-        if image_url.startswith('/'):
+        if image_url.startswith("/"):
             base_url = "https://yummy.botagent.uz"  # The base URL of the website
             image_url = urljoin(base_url, image_url)
 
@@ -71,10 +71,17 @@ class Command(BaseCommand):
         response = requests.get(image_url)
         if response.status_code == 200:
             file_name = os.path.basename(image_url)
-            
+
             # Save the image to the product's image field (overwrite even if it exists)
-            product.image.save(file_name, ContentFile(response.content), save=True)
+            product.image = ContentFile(
+                response.content,
+                file_name,
+            )
             product.save()
-            self.stdout.write(f'Successfully saved/updated image for product id: {product.id}')
+            self.stdout.write(
+                f"Successfully saved/updated image for product id: {product.id}"
+            )
         else:
-            self.stdout.write(f'Failed to download image from {image_url}, status code: {response.status_code}')
+            self.stdout.write(
+                f"Failed to download image from {image_url}, status code: {response.status_code}"
+            )
