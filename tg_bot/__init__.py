@@ -80,6 +80,10 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
         )
 
     def _main_conversation(self):
+        
+        
+        
+        
         return ConversationHandler(
             "MainConversation",
             [
@@ -176,6 +180,9 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
                 reply_markup=ReplyKeyboardMarkup([[UZ, RU], [EN]], False),
             )
             return LANG
+        
+        
+        self.redis.hdel("CartConversation",update.effective_user.id)
 
         keyboard = await self.main_menu_keyboard(update, context)
 
