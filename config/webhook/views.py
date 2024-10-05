@@ -2,6 +2,7 @@ from django.http import HttpRequest
 from rest_framework.views import APIView
 from rest_framework.request import Request
 from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
 
 
 class IikoOrderUpdateAPIView(APIView):
@@ -14,5 +15,4 @@ class IikoOrderUpdateAPIView(APIView):
         data = request.data
         print("Data", data)
 
-        body = request.body
-        print("Body", body)
+        return Response(data)
