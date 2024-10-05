@@ -207,7 +207,11 @@ class Menu(MenuBack, CommonKeysMixin):
         cart = user.cart
 
         cart.location = temp.location
+        
+        filial: Filial | None = Filial.get_nearest_filial(cart.location)
+        cart.filial = filial
         cart.save()
+        
 
         # await tg_user.send_message(
         #     i18n.time.deliver(),
