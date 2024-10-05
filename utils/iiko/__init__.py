@@ -182,20 +182,27 @@ class Iiko:
         # Conditionally add the Address key if the delivery is not "DELIVER"
         if cart.delivery == "DELIVER":
             data["order"]["deliveryPoint"] = {
-                "Address": {
-                    "city": "Чапаевск",
-                    "street": {
-                        "id": "95f5a00d-f20f-4f38-9782-c8892d2e2f85",
-                        "name": "Доставка",
-                        "externalRevision": 6876,
-                        "classifierId": None,
-                        "isDeleted": False,
-                    },
-                    "house": "28",
-                    "building": None,
-                    "index": None,
-                }
+                "coordinates": {
+                    "latitude": cart.location.latitude,
+                    "longitude": cart.location.longitude,
+                },
+                "externalCartographyId": cart.location.id,
             }
+            # data["order"]["deliveryPoint"] = {
+            #     "Address": {
+            #         "city": "Чапаевск",
+            #         "street": {
+            #             "id": "95f5a00d-f20f-4f38-9782-c8892d2e2f85",
+            #             "name": "Доставка",
+            #             "externalRevision": 6876,
+            #             "classifierId": None,
+            #             "isDeleted": False,
+            #         },
+            #         "house": "28",
+            #         "building": None,
+            #         "index": None,
+            #     }
+            # }
 
         res = requests.post(
             f"{self.BASE_URL}deliveries/create",
