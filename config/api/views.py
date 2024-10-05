@@ -110,7 +110,7 @@ class XlsxAPIView(APIView):
 
         return response
 
-    def generate_user_cart_statistics(self, users):
+    def generate_user_cart_statistics(self, users: list[User]):
         # Create a workbook and select the active sheet
         wb = openpyxl.Workbook()
         sheet = wb.active
@@ -125,6 +125,7 @@ class XlsxAPIView(APIView):
                 f"{user.name or 'No Name'} - {user.number or 'No Number'}"
             )
             sheet[f"B{row_num}"].alignment = Alignment(horizontal="left")
+            sheet[f"C{row_num}"] = user.created_at.strftime("%d/%m/%Y, %H:%M:%S")
 
             row_num += 1  # Move to the next row
 
@@ -134,6 +135,7 @@ class XlsxAPIView(APIView):
                     f"Order ID: {cart.order_id} | Status: {cart.status}"
                 )
                 sheet[f"B{row_num}"].alignment = Alignment(horizontal="left")
+                sheet[f"C{row_num}"] = str(cart.price)
                 row_num += 1
 
             # Add an empty row after each user's data
