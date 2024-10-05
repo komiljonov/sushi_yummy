@@ -104,7 +104,8 @@ class Millenium:
         
         sleep(5)
 
-        state = self.get_order_state(order_data["data"]["order_id"])
+        # state = self.get_order_state(order_data["data"]["order_id"])
+        state = self.get_order_state(1168813)
 
         data: dict = state.json()["data"]
         
