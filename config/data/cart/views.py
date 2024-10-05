@@ -6,10 +6,11 @@ from data.cart.models import Cart
 from data.cart.serializers import OrderSerializer
 from django.db.models import Q
 from rest_framework.request import Request
-from rest_framework.exceptions import NotFound,bad_request
+from rest_framework.exceptions import NotFound, bad_request
 
 from data.taxi.serializers import TaxiSerializer
 from utils.millenium import Millenium
+from rest_framework.response import Response
 
 # Create your views here.
 
@@ -42,13 +43,13 @@ class OrderCallTaxiAPIView(APIView):
         millenium = Millenium("3E8EA3F2-4776-4E1C-9A97-E4C13C5AEF1C")
 
         taxi = millenium.create_order(
-            order.phone_number.replace("+",""), order.filial.location, order.location
+            order.phone_number.replace("+", ""), order.filial.location, order.location
         )
-        
+
         if taxi is None:
             return bad_request(request, None)
-        
+
         order.taxi = taxi
         order.save()
-        
-        return TaxiSerializer(taxi).data
+
+        return Response(TaxiSerializer(taxi).data)
