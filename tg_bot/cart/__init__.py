@@ -12,7 +12,6 @@ from telegram.ext import MessageHandler
 from telegram.ext import filters, CallbackQueryHandler,CommandHandler
 
 from bot.models import User
-from data.category.models import Category
 from data.filial.models import Filial
 from data.promocode.models import Promocode
 from tg_bot.cart.back import CartBack
@@ -863,7 +862,7 @@ class TgBotCart(CartBack, CommonKeysMixin):
                 "UZS",
                 products,
             )
-            return MAIN_MENU
+            # return MAIN_MENU
         else:
             cart.order_time = timezone.now()
             cart.status = "PENDING"
