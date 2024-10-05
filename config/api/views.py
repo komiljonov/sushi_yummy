@@ -114,22 +114,22 @@ class XlsxAPIView(APIView):
         # Create a workbook and select the active sheet
         wb = openpyxl.Workbook()
         sheet = wb.active
-        sheet.title = "User Cart Statistics"
+        sheet.title = "Statistika"
 
         # Add headers (customize based on your uploaded file)
         headers = [
-            "User",
-            "User Data",
-            "Registered On",
-            "Order ID",
-            "Order Status",
-            "Total Price",
-            "Discount",
-            "Final Price",
-            "Delivery Method",
-            "Location",
-            "Payment Status",
-            "Ordered Items",
+            "Foydalanuvchi",
+            "Foydalanuvchi ma'lumotlari",
+            "Birinchi start bosgan sanasi",
+            "Buyurtma idsi",
+            "Buyurtma holati",
+            "Tan narxi",
+            "Chegirma",
+            "Ohirgi narxi",
+            "Yetkazib berish turi",
+            "Joylashuv",
+            "TO'lov holati",
+            "Taomlar",
         ]
         sheet.append(headers)
 
@@ -156,12 +156,12 @@ class XlsxAPIView(APIView):
                 sheet[f"I{row_num}"] = "Yetkazib berish" if cart.delivery == "DELIVER" else "Olib ketish"   # Delivery Method
                 sheet[f"J{row_num}"] = (
                     cart.location.name if cart.location else "N/A"
-                )  # Location
+                )
                 sheet[f"K{row_num}"] = (
                     cart.payment.status if cart.payment else "To'lanmagan"
-                )  # Payment Status
+                )
 
-                # Generate a string of ordered items
+            
                 ordered_items = ", ".join(
                     [
                         f"{item.product.name_uz if item.product else ""} (x {item.count}, {item.price})"
