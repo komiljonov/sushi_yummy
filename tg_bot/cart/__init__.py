@@ -21,6 +21,7 @@ from tg_bot.constants import (
     CART_CONFIRM,
     CART_DELIVER_LOCATION_CONFIRM,
     CART_GET_METHOD,
+    CART_PAYMENT,
     CART_PROMOCODE,
     CART_PHONE_NUMBER,
     CART_TAKEAWAY_FILIAL,
@@ -157,6 +158,9 @@ class TgBotCart(CartBack, CommonKeysMixin):
                 ],
                 PAYMENT_METHOD: [
                     MessageHandler(filters.Text(multilanguage.get_all("payment.click","payment.payme","payment.cash")) & EXCLUDE, self.cart_payment_method)
+                ],
+                CART_PAYMENT: [
+                    CallbackQueryHandler(self.back_from_cart_payment, pattern="back")
                 ]
             },
             [
@@ -861,8 +865,13 @@ class TgBotCart(CartBack, CommonKeysMixin):
                 self.CLICK_TOKEN if method == CLICK else self.PAYME_TOKEN,
                 "UZS",
                 products,
+                reply_markup=InlineKeyboardMarkup([
+                    InlineKeyboardButton("To'lash",pay=True)
+                ],[
+                    InlineKeyboardButton(i18n.buttons.back(),callback_data="back")
+                ])
             )
-            # return MAIN_MENU
+            return CART_PAYMENT
         else:
             cart.order_time = timezone.now()
             cart.status = "PENDING"
@@ -882,3 +891,27 @@ class TgBotCart(CartBack, CommonKeysMixin):
             
             
             return await self.start(update,context)
+
+    
+    
+    async def back_from_cart_payment(self, update: UPD, context: CTX):
+        tgUser, user, temp, i18n = User.get(update)
+        
+        
+        try:
+            await update.message.delete()
+        except Exception as e:
+            print(e)
+            pass
+
+        await tgUser.send_message(i18n.payment.method.not_found(), reply_markup=ReplyKeyboardMarkup([
+                [
+                    i18n.payment.click(),
+                    i18n.payment.payme()
+                ],
+                [
+                    i18n.payment.cash()
+                ]
+            ]), parse_mode="HTML")
+
+        return PAYMENT_METHOD
