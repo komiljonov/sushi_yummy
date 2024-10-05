@@ -1,42 +1,42 @@
 {
   "order_history": {
     "info": [
-      "Buyurtma raqami: {order_id}\n",
-      "Holat: {status}\n",
-      "Yetkazib berish turi: {deliver_type}\n",
+      "📦 <b>Buyurtma raqami:</b> {order_id}\n",
+      "📊 <b>Holat:</b> {status}\n",
+      "🚚 <b>Yetkazib berish turi:</b> {deliver_type}\n",
       "{filial_or_address}\n\n",
       "{products_text}\n\n",
-      "{payment}",
+      "💳 {payment}\n",
       "{promocode}",
-      "Mahsulotlar: {price} so'm\n",
-      "Yetkazib berish: {delivery_price}\n",
-      "Jami: {total_price}"
+      "🛍 <b>Mahsulotlar:</b> {price} so'm\n",
+      "🚚 <b>Yetkazib berish narxi:</b> {delivery_price}\n",
+      "💰 <b>Jami:</b> {total_price}"
     ],
-    "promocode": "Promokod: {name} - {amount} {measurement} chegirma\n",
-    "location": "Manzil: {address}",
-    "filial": "Filial: {filial}",
-    "item": "{count} ✖\uFE0F {product_name}",
-    "payment": "To'lov turi: {payment_type}"
+    "promocode": "🎉 <b>Promokod:</b> {name} - {amount} {measurement} chegirma\n",
+    "location": "📍 <b>Manzil:</b> {address}",
+    "filial": "🏢 <b>Filial:</b> {filial}",
+    "item": "🛒 {count} ✖\uFE0F {product_name}",
+    "payment": "💳 <b>To'lov turi:</b> {payment_type}"
   },
   "register": {
     "lang": {
-      "ask": "<b>🌍 Iltimos, o'zingizga mos tilni tanlang:</b>\n\n<b>🇷🇺 Выберите язык, пожалуйста:</b>\n\n<b>🇺🇸 Please choose your preferred language:</b>",
-      "wrong": "Kechirasiz til topilmadi.\n\nIltimos pastdagi tillardan birini tanlang."
+      "ask": "🌍 <b>Iltimos, o'zingizga mos tilni tanlang:</b>\n\n<b>🇷🇺 Выберите язык, пожалуйста:</b>\n\n<b>🇺🇸 Please choose your preferred language:</b>",
+      "wrong": "❌ Kechirasiz, til topilmadi. Iltimos, quyidagi tillardan birini tanlang."
     },
     "name": {
-      "ask": "Iltimos ismingizni yuboring."
+      "ask": "👤 Iltimos, ismingizni yuboring."
     },
     "number": {
-      "ask": "📞 Biz siz bilan bog'lanish imkoniga ega bo'lishimiz uchun telefon raqamingizni yuboring yoki pastdagi tugmani bosing."
+      "ask": "📞 Telefon raqamingizni yuboring yoki pastdagi tugmani bosing, shunda biz siz bilan bog'lana olamiz."
     }
   },
   "main_menu": {
     "menu": "🍽 Mazali Menyu",
-    "order_history": "📖 Buyurtmalar tarixingiz",
+    "order_history": "📖 Buyurtmalar tarixi",
     "feedback": "✍️ Fikr-mulohaza qoldirish",
     "info": "ℹ️ Ma'lumotlar",
     "contact": "☎️ Bog'lanish",
-    "change_language": "\uD83C\uDDFA\uD83C\uDDFF Tilni o'zgartirish"
+    "change_language": "🌍 Tilni o'zgartirish"
   },
   "menu": {
     "welcome": [
@@ -45,12 +45,12 @@
     ],
     "category": {
       "info": "🍴 <b>Ovqatga buyurtma berish uchun biror kategoriya tanlang:</b>",
-      "not_found": "Kechirasiz kategoriya topilmadi."
+      "not_found": "❌ Kechirasiz, kategoriya topilmadi."
     },
     "product": {
       "count": {
         "ask": "🔢 <b>Miqdorini kiriting yoki tanlang:</b>",
-        "success": "✅ <b>{product_name} savatga muvaffaqiyatli qo'shildi!\n\nDavom etamizmi yoki yana nimadir yeymizmi?</b>"
+        "success": "✅ <b>{product_name} savatga muvaffaqiyatli qo'shildi! Davom etamizmi yoki yana nimadir yeymizmi?</b>"
       }
     },
     "cart": "🛒 Savatni ko'rish"
@@ -59,145 +59,144 @@
     "instruction": [
       "<b>❌ <i>Mahsulot nomi</i> - <i>savatdan o'chirish</i></b>\n\n",
       "<b>➖ va ➕ <i>Mahsulot sonini kamaytirish yoki oshirish</i></b>\n\n",
-      "<b>🔄 <i>Savatni butunlay tozalash</i></b>"
+      "<b>🔄 <i>Savatni tozalash</i></b>"
     ],
-    "info": "📥 <b>Savat:</b>\n\n{products}\n\n🧾 <b>Umumiy narx: {total_price} so'm</b>",
+    "info": "🛒 <b>Savat:</b>\n\n{products}\n\n🧾 <b>Jami:</b> {total_price} so'm",
     "item": "{i}. {product_name}\n\t\t\t\t{count} x {price} = {item_price} so'm\n\n",
-    "empty": "<b>Sizning savatingiz bo'sh 😔</b>",
-    "done": "Savatni to’ldirdim ✅",
+    "empty": "😔 <b>Sizning savatingiz bo'sh!</b>",
+    "done": "✅ Savatni to’ldirdim!",
     "deliver": "🚙 Yetkazib berish",
     "take_away": "🏃 Olib ketish",
-    "get_method": "Buyurtmani o'zingiz olib keting yoki Yetkazib berishni tanlang"
+    "get_method": "Buyurtmani olib keting yoki yetkazib berishni tanlang"
   },
   "deliver": {
     "location": {
       "ask": [
-        "Buyurtmangizni qayerga yetkazib berish kerak 🚙?\n\n",
-        "Agar joylashuvingizni yuborsangiz, sizga eng yaqin filialni va yetkazib berish xarajatlarini aniqlaymiz 💵"
+        "🚚 <b>Buyurtmangizni qayerga yetkazish kerak?</b>\n\n",
+        "📍 <i>Joylashuvingizni yuborsangiz, eng yaqin filial va yetkazib berish narxini aniqlaymiz.</i>"
       ],
       "confirm": [
-        "Sizning manzilingiz: {address}\n\n",
-        "Joylashuv noto'g'rimi?\n",
-        "Qayta yuboring 📍"
+        "📍 <b>Manzilingiz:</b> {address}\n\n",
+        "❓ <b>Joylashuv noto'g'rimi?</b> Qayta yuboring 📍"
       ],
-      "resend": "📍Joylashuvni qayta yuborish"
+      "resend": "📍 Joylashuvni qayta yuborish"
     }
   },
   "takeaway": {
     "filial": {
       "ask": [
-        "<b>Qayerdasiz 👀?\n\n",
-        "Agar lokatsiyangizni📍 yuborsangiz, sizga eng yaqin filialni aniqlaymiz</b>"
+        "<b>🏢 Qayerdasiz?</b>\n\n",
+        "📍 <i>Joylashuvingizni yuborsangiz, eng yaqin filialni aniqlaymiz.</i>"
       ],
       "check_nearest_filial": "📍 Eng yaqin filialni aniqlash",
-      "filial_info": "<b>Eng yaqin filial - {filial}</b>",
-      "not_found": "Kechirasiz filial topilmadi."
+      "filial_info": "<b>📍 Eng yaqin filial - {filial}</b>",
+      "not_found": "❌ Kechirasiz, filial topilmadi."
     }
   },
   "time": {
-    "deliver": "Buyurtmani qabul qilish uchun qulay vaqtni tanlang.",
-    "takeaway": "Buyurtmani olib ketish uchun qulay vaqtni tanlang.",
+    "deliver": "⏳ Buyurtmani qabul qilish uchun qulay vaqtni tanlang.",
+    "takeaway": "⏳ Buyurtmani olib ketish uchun qulay vaqtni tanlang.",
     "asap": "✅ Iloji boricha tezroq",
     "later": "⏳ Keyinroq",
-    "ask_later_deliver": "Buyurtmani yetkazib berish vaqtini tanlang.",
-    "ask_later_takeaway": "Buyurtmani olib ketish vaqtini tanlang.",
-    "wrong": "Kechirasiz quyidagilardan birini tanlang."
+    "ask_later_deliver": "⏳ Buyurtmani yetkazish vaqtini tanlang.",
+    "ask_later_takeaway": "⏳ Buyurtmani olib ketish vaqtini tanlang.",
+    "wrong": "❌ Kechirasiz, iltimos quyidagilardan birini tanlang."
   },
   "order": {
     "info": {
       "base": [
-        "Sizning buyurtmangiz:\n\n",
-        "Ism: {name}\n",
-        "Telefon: {number}\n",
-        "Buyurtma turi: {delivery_method}\n",
+        "📋 <b>Sizning buyurtmangiz:</b>\n\n",
+        "👤 <b>Ism:</b> {name}\n",
+        "📞 <b>Telefon:</b> {number}\n",
+        "🚚 <b>Buyurtma turi:</b> {delivery_method}\n",
         "{comment}\n",
         "{promocode}\n",
         "{orders}\n\n",
-        "Umumiy: {total_price} so'm"
+        "💰 <b>Jami:</b> {total_price} so'm"
       ],
-      "comment": "Izoh: {comment}\n",
-      "promocode": "Promokod: {name} - {amount} {measurement} chegirma\n"
+      "comment": "📝 <b>Izoh:</b> {comment}\n",
+      "promocode": "🎉 <b>Promokod:</b> {name} - {amount} {measurement} chegirma\n"
     },
     "promocode": {
-      "ask": "Kupon bo'lsa kirgazing",
-      "not_found": "Kechirasiz promokod topilmadi.",
-      "min_amount": "Promokodni ishlatish uchun buyurtmaning minimal narxi {amount} so'm bo'lishi kerak.",
-      "max_amount": "Promokodni ishlatish uchun buyurtmaning maksimal narxi {amount} so'm bo'lishi kerak.",
-      "ended": "Promokodlar soni tugagan.",
-      "used": "Kechirasiz promocode ishlatib bo'lingan."
+      "ask": "🎟 Agar kuponingiz bo'lsa, kiriting.",
+      "not_found": "❌ Kechirasiz, promokod topilmadi.",
+      "min_amount": "❗️ Promokodni ishlatish uchun minimal buyurtma narxi {amount} so'm bo'lishi kerak.",
+      "max_amount": "❗️ Promokodni ishlatish uchun maksimal buyurtma narxi {amount} so'm bo'lishi kerak.",
+      "ended": "⚠️ Promokodlar soni tugagan.",
+      "used": "⚠️ Kechirasiz, bu promokod ishlatilgan."
     },
     "comment": {
-      "ask": "Izoh qoldiring"
+      "ask": "📝 Fikr-mulohaza qoldiring."
     }
   },
   "data": {
     "phone_number": {
-      "ask": "Telefon raqamingizni yuboring yoki pastdagi Raqamni yuborish tugmasini bosish orqali yuboring."
+      "ask": "📞 Telefon raqamingizni yuboring yoki pastdagi 'Raqamni yuborish' tugmasini bosing."
     },
     "comment": {
-      "ask": "Izoh qoldiring"
+      "ask": "📝 Fikr-mulohaza qoldiring."
     }
   },
   "payment": {
-    "cash": "Naqd 💰",
-    "click": "Click",
-    "payme": "Payme",
-    "title": "Sushi Yummy To'lov",
-    "description": "Sushi yummyga xush kelibsiz.",
-    "done": "Buyurtmangiz qabul qilindi",
+    "cash": "💵 Naqd",
+    "click": "💳 Click",
+    "payme": "💳 Payme",
+    "title": "💳 Sushi Yummy To'lov",
+    "description": "🍣 Sushi Yummy'ga xush kelibsiz!",
+    "done": "✅ Buyurtmangiz qabul qilindi!",
     "method": {
       "ask": [
-        "To'lov turini tanlang."
+        "💳 To'lov turini tanlang."
       ],
-      "not_found": "TO'lov turi topilmadi."
+      "not_found": "❌ To'lov turi topilmadi."
     },
-    "successful": "To'lov muvaffaqiyatli amalga oshirildi."
+    "successful": "✅ To'lov muvaffaqiyatli amalga oshirildi!"
   },
   "feedback": {
     "star": {
       "ask": [
-        "<b>✅ Sushi Yummyni tanlaganingiz uchun rahmat.\n\n",
-        "Agar Siz bizning hizmatlarimiz sifatini yaxshilashga yordam bersangiz, bundan benihoya xursand bo'lamiz.\n\n",
-        "Buning uchun 5 ballik tizim asosida baholang</b>"
+        "⭐️ <b>Sushi Yummyni tanlaganingiz uchun rahmat!</b>\n\n",
+        "Agar xizmatlarimizni baholab, bizga yordam bersangiz, sizga minnatdor bo'lamiz!\n\n",
+        "5 ballik tizimda baholang."
       ],
       "levels": {
-        "worst": "Juda yomon 👎",
-        "bad": "Yomon ⭐️⭐️",
-        "not_like": "Yoqmadi ⭐️⭐️⭐️",
-        "good": "Yaxshi ⭐️⭐️⭐️⭐️",
-        "best": "Hammasi yoqdi ❤️"
+        "worst": "👎 Juda yomon",
+        "bad": "⭐️⭐️ Yomon",
+        "not_like": "⭐️⭐️⭐️ Yoqmadi",
+        "good": "⭐️⭐️⭐️⭐️ Yaxshi",
+        "best": "❤️ Hammasi yoqdi!"
       },
-      "not_found": "Kechirasiz nimadir hato ketdi."
+      "not_found": "❌ Kechirasiz, nimadir noto'g'ri ketdi."
     },
     "bad_service": {
-      "ask": "Qaysi xizmat turimiz sizga yoqmadi?",
-      "not_found": "Kechirasiz hizmat turi topilmadi."
+      "ask": "❌ Qaysi xizmat turi sizga yoqmadi?",
+      "not_found": "❌ Kechirasiz, xizmat turi topilmadi."
     },
-    "comment": "Fikr mulohazangizni kiriting.",
-    "success": "Fikr va mulohazalaringiz uchun rahmat!"
+    "comment": "📝 Fikr-mulohazangizni kiriting.",
+    "success": "✅ Fikr-mulohazangiz uchun rahmat!"
   },
   "buttons": {
     "back": "🔙 Ortga",
     "clear": "🔄 Tozalash",
     "location": "📍 Joylashuvni yuborish",
     "my_locations": "🗺 Mening manzillarim",
-    "phone_number": "Raqamni yuborish 📞",
-    "skip": "O'tkazib yuborish",
-    "confirm": "Tasdiqlash ✅",
-    "cancel": "Bekor qilish ❌"
+    "phone_number": "📞 Raqamni yuborish",
+    "skip": "⏭ O'tkazib yuborish",
+    "confirm": "✅ Tasdiqlash",
+    "cancel": "❌ Bekor qilish"
   },
   "contact": [
-    "Agar sizda savollar bo'lsa bizga yozishingiz mumkin: \n",
+    "❓ Savollaringiz bormi? Biz bilan bog'laning: \n",
     "@syummy_support"
   ],
   "info": {
     "filial": {
-      "ask": "<b>Sizni qaysi filial qiziqtiryapti?</b>",
-      "not_found": "Kechirasiz filial topilmadi.",
+      "ask": "<b>🏢 Sizni qaysi filial qiziqtiradi?</b>",
+      "not_found": "❌ Kechirasiz, filial topilmadi.",
       "info": [
-        "Filial.\n\n",
-        "Nomi: {name}\n",
-        "Address: {address}"
+        "🏢 <b>Filial:</b>\n\n",
+        "📍 <b>Nomi:</b> {name}\n",
+        "📍 <b>Manzil:</b> {address}"
       ]
     }
   }
