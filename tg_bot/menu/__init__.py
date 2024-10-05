@@ -304,20 +304,6 @@ class Menu(MenuBack, CommonKeysMixin):
         cart.filial = filial
         cart.save()
 
-        # await tg_user.send_message(
-        #     i18n.time.takeaway(),
-        #     reply_markup=ReplyKeyboardMarkup(
-        #         [
-        #             [
-        #                 i18n.time.asap(),
-        #             ],
-        #             [i18n.time.later()],
-        #         ]
-        #     ),
-        #     parse_mode="HTML",
-        # )
-        # return CART_TIME
-
         await tg_user.send_message(
             i18n.menu.welcome(),
             reply_markup=ReplyKeyboardMarkup(
@@ -342,7 +328,9 @@ class Menu(MenuBack, CommonKeysMixin):
 
         category = (
             _category
-            or Category.objects.filter(i18n.filter_name(update.message.text)).first()
+            or Category.objects.filter(
+                i18n.filter_name(update.message.text), parent=temp.category
+            ).first()
         )
 
         if category is None:
@@ -358,19 +346,35 @@ class Menu(MenuBack, CommonKeysMixin):
 
         user.category_visits.create(category=category)
 
-        await tg_user.send_message(
-            i18n.menu.category.info(name=i18n.get_name(category)),
-            reply_markup=ReplyKeyboardMarkup(
-                [
+        if category.content_type == "CATEGORY":
+            await tg_user.send_message(
+                i18n.menu.category.info(),
+                reply_markup=ReplyKeyboardMarkup(
                     [i18n.menu.cart() if user.cart.items.count() > 0 else ""],
                     *distribute(
-                        [i18n.get_name(product) for product in category.products.all()],
+                        [i18n.get_name(cat) for cat in category.children.all()],
                     ),
-                ]
-            ),
-            parse_mode="HTML",
-        )
-        return MENU_PRODUCT
+                ),
+            )
+            return MENU_CATEGORY
+        else:
+
+            await tg_user.send_message(
+                i18n.menu.category.info(name=i18n.get_name(category)),
+                reply_markup=ReplyKeyboardMarkup(
+                    [
+                        [i18n.menu.cart() if user.cart.items.count() > 0 else ""],
+                        *distribute(
+                            [
+                                i18n.get_name(product)
+                                for product in category.products.all()
+                            ],
+                        ),
+                    ]
+                ),
+                parse_mode="HTML",
+            )
+            return MENU_PRODUCT
 
     async def menu_product(self, update: UPD, context: CTX, _product: "Product" = None):
         tg_user, user, temp, i18n = User.get(update)
