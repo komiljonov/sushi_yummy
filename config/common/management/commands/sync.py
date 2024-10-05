@@ -26,7 +26,9 @@ class Command(BaseCommand):
 
         for product in products:
             product_id = product.iiko_id
-            self.stdout.write(f"Fetching image and captions for product id: {product_id}")
+            self.stdout.write(
+                f"Fetching image and captions for product id: {product_id}"
+            )
 
             # URL of the product page
             product_url = f"https://yummy.botagent.uz/groups/view-product?id={product_id}&region_id=1"
@@ -40,8 +42,12 @@ class Command(BaseCommand):
                 soup = BeautifulSoup(response.text, "html.parser")
 
                 # Extract captions (Uzbek and Russian)
-                caption_uz = self.extract_and_clean_caption(soup, '#w0 > tbody > tr:nth-child(4) > td')
-                caption_ru = self.extract_and_clean_caption(soup, '#w0 > tbody > tr:nth-child(2) > td')
+                caption_uz = self.extract_and_clean_caption(
+                    soup, "#w0 > tbody > tr:nth-child(4) > td"
+                )
+                caption_ru = self.extract_and_clean_caption(
+                    soup, "#w0 > tbody > tr:nth-child(2) > td"
+                )
 
                 self.stdout.write(f"Caption (UZ): {caption_uz}")
                 self.stdout.write(f"Caption (RU): {caption_ru}")
@@ -57,14 +63,20 @@ class Command(BaseCommand):
                     if image_url:
                         self.download_and_save_image(product, image_url)
                     else:
-                        self.stdout.write(f"No image URL found for product id: {product_id}")
+                        self.stdout.write(
+                            f"No image URL found for product id: {product_id}"
+                        )
                 else:
-                    self.stdout.write(f"No image tag found for product id: {product_id}")
+                    self.stdout.write(
+                        f"No image tag found for product id: {product_id}"
+                    )
 
                 # Save the product with updated captions and image
                 product.save()
             else:
-                self.stdout.write(f"Failed to fetch product page for id: {product_id}, status code: {response.status_code}")
+                self.stdout.write(
+                    f"Failed to fetch product page for id: {product_id}, status code: {response.status_code}"
+                )
 
     def extract_and_clean_caption(self, soup, css_selector):
         """Extracts caption from the given CSS selector and cleans the <br> tags."""
@@ -88,15 +100,18 @@ class Command(BaseCommand):
 
             # Convert the image content to a BytesIO object
             image_content = BytesIO(response.content)
-            
+
             new_file = File.objects.create(
-                file=DjFile(image_content, file_name),
-                filename=file_name
+                file=DjFile(image_content, file_name), filename=file_name
             )
 
             # Save the image to the product's image field using File
             product.image = new_file
             product.save()
-            self.stdout.write(f"Successfully saved/updated image for product id: {product.id}")
+            self.stdout.write(
+                f"Successfully saved/updated image for product id: {product.id}"
+            )
         else:
-            self.stdout.write(f"Failed to download image from {image_url}, status code: {response.status_code}")
+            self.stdout.write(
+                f"Failed to download image from {image_url}, status code: {response.status_code}"
+            )
