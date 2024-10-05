@@ -462,39 +462,41 @@ class Menu(MenuBack, CommonKeysMixin):
 
         if category == None:
 
-            if user.cart.delivery == "DELIVER":
-                await tgUser.send_message(
-                    i18n.deliver.location.ask(),
-                    reply_markup=ReplyKeyboardMarkup(
-                        [
-                            [
-                                KeyboardButton(
-                                    i18n.buttons.location(), request_location=True
-                                )
-                            ],
-                            [i18n.buttons.my_locations()],
-                        ]
-                    ),
-                    parse_mode="HTML",
-                )
-                return DELIVERY_LOCATION
-            else:
-                filials = Filial.objects.filter(active=True)
-                await tgUser.send_message(
-                    i18n.takeaway.filial.ask(),
-                    reply_markup=ReplyKeyboardMarkup(
-                        [
-                            [
-                                KeyboardButton(
-                                    i18n.takeaway.filial.check_nearest_filial(),
-                                    request_location=True,
-                                )
-                            ],
-                            *distribute([i18n.get_name(filial) for filial in filials]),
-                        ]
-                    ),
-                    parse_mode="HTML",
-                )
+            # if user.cart.delivery == "DELIVER":
+                # await tgUser.send_message(
+                #     i18n.deliver.location.ask(),
+                #     reply_markup=ReplyKeyboardMarkup(
+                #         [
+                #             [
+                #                 KeyboardButton(
+                #                     i18n.buttons.location(), request_location=True
+                #                 )
+                #             ],
+                #             [i18n.buttons.my_locations()],
+                #         ]
+                #     ),
+                #     parse_mode="HTML",
+                # )
+                # return DELIVERY_LOCATION
+            # else:
+                # filials = Filial.objects.filter(active=True)
+                # await tgUser.send_message(
+                #     i18n.takeaway.filial.ask(),
+                #     reply_markup=ReplyKeyboardMarkup(
+                #         [
+                #             [
+                #                 KeyboardButton(
+                #                     i18n.takeaway.filial.check_nearest_filial(),
+                #                     request_location=True,
+                #                 )
+                #             ],
+                #             *distribute([i18n.get_name(filial) for filial in filials]),
+                #         ]
+                #     ),
+                #     parse_mode="HTML",
+                # )
+                
+            return await self.start(update,context)
 
         else:
             # return await self.menu_category(update,context, category.parent)
