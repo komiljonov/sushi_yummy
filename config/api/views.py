@@ -135,6 +135,7 @@ class XlsxAPIView(APIView):
                     f"Order ID: {cart.order_id} | Status: {cart.status}"
                 )
                 sheet[f"B{row_num}"].alignment = Alignment(horizontal="left")
+                sheet[f"C{row_num}"] = str(cart.price)
                 row_num += 1
 
             # Add an empty row after each user's data
