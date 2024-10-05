@@ -1,3 +1,4 @@
+from io import BytesIO
 import os
 from urllib.parse import urljoin
 import requests
@@ -71,10 +72,13 @@ class Command(BaseCommand):
         response = requests.get(image_url)
         if response.status_code == 200:
             file_name = os.path.basename(image_url)
+            
+            image_content = BytesIO(response.content)
+
 
             # Save the image to the product's image field (overwrite even if it exists)
             product.image = File(
-                response.content,
+                image_content,
                 file_name,
             )
             product.save()
