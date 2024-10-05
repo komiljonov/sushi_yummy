@@ -83,19 +83,19 @@ class Menu(MenuBack, CommonKeysMixin):
                 #     self.back(self.back_from_cart_takeaway_filial),
                 # ],
                 MENU_CATEGORY: [
-                    self.back(self.back_from_menu_category),
                     self._cart_handlers(self.menu),
                     MessageHandler(filters.TEXT & EXCLUDE, self.menu_category),
+                    self.back(self.back_from_menu_category),
                 ],
                 MENU_PRODUCT: [
-                    self.back(self.back_from_menu_category),
                     self._cart_handlers(self.back_to_menu_product),
                     MessageHandler(filters.TEXT & EXCLUDE, self.menu_product),
+                    self.back(self.back_from_menu_category),
                 ],
                 PRODUCT_INFO: [
-                    self.back(self.back_from_product_info),
                     self._cart_handlers(self.back_to_menu_product_info),
                     MessageHandler(filters.Regex(r"\d+"), self.set_product_count),
+                    self.back(self.back_from_product_info),
                 ],
             },
             self.ANYTHING,
