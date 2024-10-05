@@ -91,7 +91,7 @@ class TgBotCart(CartBack, CommonKeysMixin):
                         filters.Text(multilanguage.get_all("cart.take_away")),
                         self.cart_get_method_take_away,
                     ),
-                    self.back(self.start),
+                    self.back(self.cart),
                 ],
                 DELIVERY_LOCATION: [
                     MessageHandler(filters.LOCATION, self.cart_delivery_location),
