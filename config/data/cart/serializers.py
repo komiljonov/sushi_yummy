@@ -35,6 +35,7 @@ class OrderSerializer(serializers.ModelSerializer):
     location = LocationSerializer()
 
     user = UserSerializer()
+    
     taxi = TaxiSerializer()
 
     items = CartItemSerializer(many=True)
