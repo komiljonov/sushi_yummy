@@ -29,7 +29,7 @@ class OrderSerializer(serializers.ModelSerializer):
     products_count = serializers.SerializerMethodField()
     payment = PaymentSerializer()
 
-    promocode = PromocodeSerializer(remove_fields=["orders"])
+    promocode = PromocodeSerializer(remove_fields=["orders",])
 
     filial = FilialSerializer()
     location = LocationSerializer()

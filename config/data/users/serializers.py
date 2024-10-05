@@ -4,6 +4,8 @@ from bot.models import User
 
 from django.db.models import Q
 
+from data.cart.serializers import OrderSerializer
+
 
 class UserSerializer(serializers.ModelSerializer):
 
@@ -31,6 +33,7 @@ class RetrieveUserSerializer(serializers.ModelSerializer):
 
     def get_carts(self, obj: User):
         from data.cart.serializers import CartSerializer
+
         carts = obj.carts.exclude(Q(status="ORDERING") | Q(status="PENDING_PAYMENT"))
 
-        return CartSerializer(carts, many=True).data
+        return OrderSerializer(carts, many=True, remove_fields=["user"]).data
