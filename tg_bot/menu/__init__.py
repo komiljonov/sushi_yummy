@@ -1,13 +1,10 @@
 from typing import TYPE_CHECKING
 
-from geopy.geocoders import Nominatim
 from redis import Redis
-from telegram import KeyboardButton
 from telegram.ext import filters
 
 from telegram.ext import MessageHandler
 from bot.models import User
-from data.filial.models import Filial
 
 from tg_bot.menu.back import MenuBack
 from tg_bot.redis_conversation import ConversationHandler
@@ -25,12 +22,8 @@ from tg_bot.constants import (
     REGISTER_NAME,
     REGISTER_PHONE,
     UPD,
-    DELIVERY_LOCATION,
-    CART_DELIVER_LOCATION_CONFIRM,
-    CART_TAKEAWAY_FILIAL,
-    MENU_GET_METHOD,
 )
-from utils import ReplyKeyboardMarkup, distribute, get_later_times
+from utils import ReplyKeyboardMarkup, distribute
 
 from data.category.models import Category
 
