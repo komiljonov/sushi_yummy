@@ -454,4 +454,59 @@ class Menu(MenuBack, CommonKeysMixin):
     async def back_from_menu_category(self, update: UPD, context: CTX):
         tgUser, user, temp, i18n = User.get(update)
 
-        pass
+        category = temp.category
+
+        if category == None:
+
+            if user.cart.delivery == "DELIVER":
+                await tgUser.send_message(
+                    i18n.deliver.location.ask(),
+                    reply_markup=ReplyKeyboardMarkup(
+                        [
+                            [
+                                KeyboardButton(
+                                    i18n.buttons.location(), request_location=True
+                                )
+                            ],
+                            [i18n.buttons.my_locations()],
+                        ]
+                    ),
+                    parse_mode="HTML",
+                )
+                return DELIVERY_LOCATION
+            else:
+                await tgUser.send_message(
+                    i18n.deliver.location.confirm(address=user.cart.location.address),
+                    reply_markup=ReplyKeyboardMarkup(
+                        [
+                            [
+                                KeyboardButton(
+                                    i18n.deliver.location.resend(),
+                                    request_location=True,
+                                )
+                            ],
+                            [i18n.buttons.confirm()],
+                        ]
+                    ),
+                    parse_mode="HTML",
+                )
+
+                return CART_DELIVER_LOCATION_CONFIRM
+        else:
+            # return await self.menu_category(update,context, category.parent)
+            await tgUser.send_message(
+                i18n.menu.welcome(),
+                reply_markup=ReplyKeyboardMarkup(
+                    [
+                        [i18n.menu.cart() if user.cart.items.count() > 0 else ""],
+                        *distribute(
+                            [
+                                i18n.get_name(category)
+                                for category in Category.objects.filter(parent=None)
+                            ],
+                        ),
+                    ]
+                ),
+                parse_mode="HTML",
+            )
+            return MENU_CATEGORY
