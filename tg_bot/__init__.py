@@ -358,7 +358,6 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
 
         print(carts)
 
-        await tg_user.send_message("salom")
 
         for cart in carts:
             products_text = []
@@ -406,7 +405,6 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
 
     async def change_language(self, update: UPD, context: CTX):
         tg_user, user, temp, i18n = User.get(update)
-        print("Salom")
         await tg_user.send_message(
             i18n.register.lang.ask(),
             parse_mode="HTML",
