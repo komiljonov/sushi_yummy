@@ -26,6 +26,8 @@ class Millenium:
         data_string = "".join(
             f"{key}={str(value)}&" for key, value in data.items()
         ).rstrip("&")
+        
+        print(data_string)
 
         # Combine the data string with the token
         string_to_hash = data_string + self.token
@@ -98,6 +100,10 @@ class Millenium:
             return None
 
         order_data = order.json()
+        
+        
+        
+        
         state = self.get_order_state(order_data["data"]["order_id"])
 
         data: dict = state.json()["data"]
