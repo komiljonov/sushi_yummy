@@ -869,10 +869,17 @@ class TgBotCart(CartBack, CommonKeysMixin):
             cart.status = "PENDING"
             cart.save()
             
+            
+            
             order = cart.order(self.iiko_manager)
             
-            if order:
-                await tg_user.send_message("Buyurtma iikoga yuborildi.")
-            else:
-                await tg_user.send_message("Buyurtma iikoga yuborilmadi.")
+            # if order:
+            #     await tg_user.send_message("Buyurtma iikoga yuborildi.")
+            # else:
+            #     await tg_user.send_message("Buyurtma iikoga yuborilmadi.")
+            
+            
             await tg_user.send_message(i18n.payment.done(), parse_mode="HTML")
+            
+            
+            return await self.start(update,context)

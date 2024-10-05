@@ -299,12 +299,12 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
         cart.order_time = timezone.now()
         cart.save()
 
-        order = cart.order(self.iiko_manager)
+        # order = cart.order(self.iiko_manager)
 
-        if order:
-            await tg_user.send_message("Buyurtma iikoga yuborildi.")
-        else:
-            await tg_user.send_message("Buyurtma iikoga yuborilmadi.")
+        # if order:
+        #     await tg_user.send_message("Buyurtma iikoga yuborildi.")
+        # else:
+        #     await tg_user.send_message("Buyurtma iikoga yuborilmadi.")
 
         await context.bot.send_message(
             cart.user.chat_id, i18n.payment.successful(), parse_mode="HTML"

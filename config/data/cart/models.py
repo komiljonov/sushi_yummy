@@ -160,12 +160,14 @@ class Cart(TimeStampModel):
         return self.price - self.discount_price
 
     def order(self, manager: "Iiko"):
+        
+        return False
 
-        order = manager.create_order(self)
+        # order = manager.create_order(self)
 
-        print(order)
+        # print(order)
 
-        if order is None:
-            return False
+        # if order is None:
+        #     return False
 
-        return True
+        # return True
