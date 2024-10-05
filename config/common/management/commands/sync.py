@@ -77,7 +77,7 @@ class Command(BaseCommand):
             image_content = BytesIO(response.content)
 
             # Save the image to the product's image field using File
-            product.image = File(image_content, file_name)
+            product.image = File(image_content)
             product.save()
             self.stdout.write(
                 f"Successfully saved/updated image for product id: {product.id}"
