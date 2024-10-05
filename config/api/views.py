@@ -11,7 +11,6 @@ from django.db.models import Sum
 
 from data.cart.serializers import OrderSerializer
 
-
 class StatisticsAPIView(APIView):
 
     def get(self, request: HttpRequest | Request):
@@ -55,8 +54,11 @@ class StatisticsAPIView(APIView):
             [order.price for order in yesterday_orders if order.price]
         )
 
-        # Calculate revenue delta
-        revenue_delta = today_revenue - yesterday_revenue
+        # Calculate revenue delta in percentage
+        if yesterday_revenue != 0:
+            revenue_delta_percent = ((today_revenue - yesterday_revenue) / yesterday_revenue) * 100
+        else:
+            revenue_delta_percent = 100 if today_revenue > 0 else 0
 
         # Active users today (based on last update)
         active_users = User.objects.filter(last_update__range=(today_start, today_end))
@@ -68,7 +70,7 @@ class StatisticsAPIView(APIView):
                 "orders_count": today_orders.count(),
                 "orders_delta": orders_delta,
                 "today_revenue": today_revenue,
-                "revenue_delta": revenue_delta,
+                "revenue_delta_percent": round(revenue_delta_percent, 2),  # Rounded to 2 decimal places
                 "active_users": active_users.count(),
                 "active_users_delta": 43,
                 "recent_orders": OrderSerializer(today_orders[:10], many=True).data,
