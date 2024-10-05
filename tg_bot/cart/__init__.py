@@ -466,22 +466,22 @@ class TgBotCart(CartBack, CommonKeysMixin):
         # )
         # return CART_TIME
 
-        await tg_user.send_message(
-            i18n.menu.welcome(),
-            reply_markup=ReplyKeyboardMarkup(
-                [
-                    [i18n.menu.cart() if user.cart.items.count() > 0 else ""],
-                    *distribute(
-                        [
-                            i18n.get_name(category)
-                            for category in Category.objects.filter(parent=None)
-                        ],
-                    ),
-                ]
-            ),
-            parse_mode="HTML",
-        )
-        return MENU_CATEGORY
+        # await tg_user.send_message(
+        #     i18n.menu.welcome(),
+        #     reply_markup=ReplyKeyboardMarkup(
+        #         [
+        #             [i18n.menu.cart() if user.cart.items.count() > 0 else ""],
+        #             *distribute(
+        #                 [
+        #                     i18n.get_name(category)
+        #                     for category in Category.objects.filter(parent=None)
+        #                 ],
+        #             ),
+        #         ]
+        #     ),
+        #     parse_mode="HTML",
+        # )
+        # return MENU_CATEGORY
 
     async def cart_get_method_take_away(self, update: UPD, context: CTX):
         tg_user, user, temp, i18n = User.get(update)
@@ -546,23 +546,37 @@ class TgBotCart(CartBack, CommonKeysMixin):
 
         cart.filial = filial
         cart.save()
-
+        
         await tg_user.send_message(
-            i18n.menu.welcome(),
+            i18n.time.deliver(),
             reply_markup=ReplyKeyboardMarkup(
                 [
-                    [i18n.menu.cart() if user.cart.items.count() > 0 else ""],
-                    *distribute(
-                        [
-                            i18n.get_name(category)
-                            for category in Category.objects.filter(parent=None)
-                        ],
-                    ),
+                    [
+                        i18n.time.asap(),
+                    ],
+                    [i18n.time.later()],
                 ]
             ),
             parse_mode="HTML",
         )
-        return MENU_CATEGORY
+        return CART_TIME
+
+        # await tg_user.send_message(
+        #     i18n.menu.welcome(),
+        #     reply_markup=ReplyKeyboardMarkup(
+        #         [
+        #             [i18n.menu.cart() if user.cart.items.count() > 0 else ""],
+        #             *distribute(
+        #                 [
+        #                     i18n.get_name(category)
+        #                     for category in Category.objects.filter(parent=None)
+        #                 ],
+        #             ),
+        #         ]
+        #     ),
+        #     parse_mode="HTML",
+        # )
+        # return MENU_CATEGORY
     
     
     
