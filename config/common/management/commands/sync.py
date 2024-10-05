@@ -66,14 +66,15 @@ class Command(BaseCommand):
         if image_url.startswith('/'):
             base_url = "https://yummy.botagent.uz"  # The base URL of the website
             image_url = urljoin(base_url, image_url)
-        
+
         # Proceed with downloading the image
         response = requests.get(image_url)
         if response.status_code == 200:
             file_name = os.path.basename(image_url)
-            # Save the image to the product's image field (assuming it's an ImageField)
-            product.image.save(file_name, ContentFile(response.content))
+            
+            # Save the image to the product's image field (overwrite even if it exists)
+            product.image.save(file_name, ContentFile(response.content), save=True)
             product.save()
-            self.stdout.write(f'Successfully saved image for product id: {product.id}')
+            self.stdout.write(f'Successfully saved/updated image for product id: {product.id}')
         else:
             self.stdout.write(f'Failed to download image from {image_url}, status code: {response.status_code}')
