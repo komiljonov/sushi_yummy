@@ -5,8 +5,6 @@ from bot.models import User
 from django.db.models import Q
 
 
-
-
 class UserSerializer(serializers.ModelSerializer):
 
     has_order = serializers.SerializerMethodField()
@@ -26,6 +24,8 @@ class RetrieveUserSerializer(serializers.ModelSerializer):
 
     carts = serializers.SerializerMethodField()
 
+    current_order = serializers.SerializerMethodField()
+
     class Meta:
         model = User
 
@@ -37,3 +37,8 @@ class RetrieveUserSerializer(serializers.ModelSerializer):
         carts = obj.carts.exclude(Q(status="ORDERING") | Q(status="PENDING_PAYMENT"))
 
         return OrderSerializer(carts, many=True, remove_fields=["user"]).data
+
+    def get_current_order(self, obj: User):
+        from data.cart.serializers import OrderSerializer
+
+        return OrderSerializer(obj.carts.last(), remove_fields=["user"]).data
