@@ -98,9 +98,7 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
                     self.back(self.back_from_register_phone_number),
                 ],
                 MAIN_MENU: [
-                    self._menu_handlers(),
-                    self._feedback_handlers(),
-                    self._cart_handlers(self.start),
+                    
                     MessageHandler(
                         filters.Text(multilanguage.get_all("main_menu.contact")),
                         self.contact,
@@ -118,6 +116,9 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
                         ),
                         self.change_language,
                     ),
+                    self._menu_handlers(),
+                    self._feedback_handlers(),
+                    self._cart_handlers(self.start),
                 ],
                 INFO_FILIAL: [
                     MessageHandler(filters.TEXT & EXCLUDE, self.info_filial),
