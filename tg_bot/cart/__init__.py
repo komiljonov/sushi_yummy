@@ -904,7 +904,7 @@ class TgBotCart(CartBack, CommonKeysMixin):
             print(e)
             pass
 
-        await tgUser.send_message(i18n.payment.method.not_found(), reply_markup=ReplyKeyboardMarkup([
+        await tgUser.send_message(i18n.payment.method.ask(), reply_markup=ReplyKeyboardMarkup([
                 [
                     i18n.payment.click(),
                     i18n.payment.payme()
