@@ -153,12 +153,12 @@ class XlsxAPIView(APIView):
                 sheet[f"F{row_num}"] = cart.price  # Total Price
                 sheet[f"G{row_num}"] = cart.saving  # Discount
                 sheet[f"H{row_num}"] = cart.discount_price  # Final Price
-                sheet[f"I{row_num}"] = cart.delivery  # Delivery Method
+                sheet[f"I{row_num}"] = "Yetkazib berish" if cart.delivery == "DELIVER" else "Olib ketish"   # Delivery Method
                 sheet[f"J{row_num}"] = (
                     cart.location.name if cart.location else "N/A"
                 )  # Location
                 sheet[f"K{row_num}"] = (
-                    cart.payment.status if cart.payment else "Unpaid"
+                    cart.payment.status if cart.payment else "To'lanmagan"
                 )  # Payment Status
 
                 # Generate a string of ordered items
