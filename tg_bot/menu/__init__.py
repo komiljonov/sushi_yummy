@@ -16,13 +16,19 @@ from utils.language import multilanguage
 from tg_bot.constants import (
     CTX,
     EXCLUDE,
+    LANG,
     MAIN_MENU,
     MENU,
     MENU_CATEGORY,
     MENU_PRODUCT,
     PRODUCT_INFO,
-    UPD, CART_GET_METHOD, DELIVERY_LOCATION, CART_DELIVER_LOCATION_CONFIRM, CART_TIME, CART_TAKEAWAY_FILIAL,
-    CART_TIME_LATER_TIME, CART_PHONE_NUMBER, MENU_GET_METHOD,
+    REGISTER_NAME,
+    REGISTER_PHONE,
+    UPD,
+    DELIVERY_LOCATION,
+    CART_DELIVER_LOCATION_CONFIRM,
+    CART_TAKEAWAY_FILIAL,
+    MENU_GET_METHOD,
 )
 from utils import ReplyKeyboardMarkup, distribute, get_later_times
 
@@ -76,8 +82,6 @@ class Menu(MenuBack, CommonKeysMixin):
                     MessageHandler(filters.TEXT & EXCLUDE, self.cart_takeaway_filial),
                     self.back(self.back_from_cart_takeaway_filial),
                 ],
-
-
                 MENU_CATEGORY: [
                     self._cart_handlers(self.menu),
                     MessageHandler(filters.TEXT & EXCLUDE, self.menu_category),
@@ -97,7 +101,13 @@ class Menu(MenuBack, CommonKeysMixin):
             self.ANYTHING,
             self.redis,
             True,
-            {MENU: MENU, MAIN_MENU: MAIN_MENU},
+            {
+                MENU: MENU,
+                MAIN_MENU: MAIN_MENU,
+                LANG: LANG,
+                REGISTER_NAME: REGISTER_NAME,
+                REGISTER_PHONE: REGISTER_PHONE,
+            },
         )
 
     async def menu(self, update: UPD, context: CTX):
@@ -168,7 +178,7 @@ class Menu(MenuBack, CommonKeysMixin):
             name=str(address),
             latitude=location.latitude,
             longitude=location.longitude,
-            address=str(address)
+            address=str(address),
         )
 
         temp.location = new_location
@@ -325,21 +335,20 @@ class Menu(MenuBack, CommonKeysMixin):
         )
         return MENU_CATEGORY
 
-
-
-
     async def menu_category(
-            self, update: UPD, context: CTX, _category: "Category | None" = None
+        self, update: UPD, context: CTX, _category: "Category | None" = None
     ):
         tg_user, user, temp, i18n = User.get(update)
 
         category = (
-                _category
-                or Category.objects.filter(i18n.filter_name(update.message.text)).first()
+            _category
+            or Category.objects.filter(i18n.filter_name(update.message.text)).first()
         )
 
         if category is None:
-            await tg_user.send_message(i18n.menu.category.not_found(), parse_mode="HTML")
+            await tg_user.send_message(
+                i18n.menu.category.not_found(), parse_mode="HTML"
+            )
             if temp.category is None:
                 return await self.menu(update, context)
             return await self.menu_category(update, context, temp.category)
@@ -347,9 +356,7 @@ class Menu(MenuBack, CommonKeysMixin):
         temp.category = category
         temp.save()
 
-        user.category_visits.create(
-            category=category
-        )
+        user.category_visits.create(category=category)
 
         await tg_user.send_message(
             i18n.menu.category.info(name=i18n.get_name(category)),
@@ -375,22 +382,28 @@ class Menu(MenuBack, CommonKeysMixin):
         temp.product = product
         temp.save()
 
-        user.product_visits.create(
-            product=product
-        )
+        user.product_visits.create(product=product)
 
         image = product.image
-        caption = i18n.get_value(product, "caption")
+        _caption = i18n.get_value(product, "caption")
+
+        caption = _caption if _caption else "Caption yo'q"
 
         if image is None:
-            await tg_user.send_message(caption, parse_mode="HTML")
+            await tg_user.send_message(
+                caption,
+                reply_markup=ReplyKeyboardMarkup(
+                    distribute([i for i in "123456789"], 3)
+                ),
+                parse_mode="HTML",
+            )
             return PRODUCT_INFO
 
         f = image.file.open("rb")
 
         await tg_user.send_photo(
             f,
-            caption,
+            caption if caption else "Caption yo'q",
             reply_markup=ReplyKeyboardMarkup(distribute([i for i in "123456789"], 3)),
             parse_mode="HTML",
         )

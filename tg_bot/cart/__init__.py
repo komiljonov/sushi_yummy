@@ -4,14 +4,12 @@ from datetime import date, datetime, timedelta
 from typing import Callable, Coroutine
 
 from django.utils import timezone
-from geopy.geocoders import Nominatim
 from redis import Redis
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, LabeledPrice, Message
 from telegram.ext import MessageHandler
-from telegram.ext import filters, CallbackQueryHandler
+from telegram.ext import filters, CallbackQueryHandler,CommandHandler
 
 from bot.models import User
-from data.filial.models import Filial
 from data.promocode.models import Promocode
 from tg_bot.cart.back import CartBack
 from tg_bot.constants import (
@@ -19,16 +17,12 @@ from tg_bot.constants import (
     CART_COMMENT,
     CART_CONFIRM,
     CART_PROMOCODE,
-    CART_DELIVER_LOCATION_CONFIRM,
-    CART_GET_METHOD,
     CART_PHONE_NUMBER,
-    CART_TAKEAWAY_FILIAL,
     CART_TIME,
     CART_TIME_LATER_TIME,
     CASH,
     CLICK,
     CTX,
-    DELIVERY_LOCATION,
     EXCLUDE,
     LANG,
     MAIN_MENU,
@@ -53,6 +47,8 @@ class TgBotCart(CartBack, CommonKeysMixin):
 
     def _cart_handlers(self, back_handler: Callable[[UPD, CTX], Coroutine] | None = None):
 
+        
+        
         return ConversationHandler(
             "CartConversation",
             [
@@ -113,10 +109,12 @@ class TgBotCart(CartBack, CommonKeysMixin):
                     )
                 ],
                 PAYMENT_METHOD: [
-                    MessageHandler(filters.TEXT & EXCLUDE, self.cart_payment_method)
+                    MessageHandler(filters.Text(multilanguage.get_all("payment.click","payment.payme","payment.cash")) & EXCLUDE, self.cart_payment_method)
                 ]
             },
-            self.ANYTHING,
+            [
+                CommandHandler('start',self.start)
+            ],
             self.redis,
             True,
             {
@@ -302,13 +300,13 @@ class TgBotCart(CartBack, CommonKeysMixin):
     async def cart_done(self, update: UPD, context: CTX):
         tg_user, user, temp, i18n = User.get(update)
 
-        cart = user.cart
+        # cart = user.cart
 
-        cart.promocode = None
-        cart.time = None
-        cart.filial = None
-        cart.location = None
-        cart.save()
+        # cart.promocode = None
+        # cart.time = None
+        # cart.filial = None
+        # cart.location = None
+        # cart.save()
 
         await tg_user.send_message(
             i18n.time.deliver(),
@@ -610,4 +608,11 @@ class TgBotCart(CartBack, CommonKeysMixin):
             cart.order_time = timezone.now()
             cart.status = "PENDING"
             cart.save()
+            
+            order = cart.order(self.iiko_manager)
+            
+            if order:
+                await tg_user.send_message("Buyurtma iikoga yuborildi.")
+            else:
+                await tg_user.send_message("Buyurtma iikoga yuborilmadi.")
             await tg_user.send_message(i18n.payment.done(), parse_mode="HTML")

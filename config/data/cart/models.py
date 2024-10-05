@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from bot.models import User
     from bot.models import Location
     from data.filial.models import Filial
+    from utils.iiko import Iiko
 
 
 # Create your models here.
@@ -32,13 +33,15 @@ class Cart(TimeStampModel):
 
     order_id = models.IntegerField(unique=True, blank=True, null=True)
 
+    iiko_id = models.CharField(max_length=255, null=True,blank=True)
+    correlation_id = models.CharField(max_length=255, null=True,blank=True)
+
     phone_number = models.CharField(max_length=255, null=True, blank=True)
 
     comment = models.CharField(max_length=1024, null=True, blank=True)
 
     promocode: "Promocode" = models.ForeignKey(
         "promocode.Promocode",
-
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -46,7 +49,11 @@ class Cart(TimeStampModel):
     )
 
     payment: "Payment" = models.OneToOneField(
-        "payment.Payment", on_delete=models.SET_NULL, null=True, blank=True, related_name="order"
+        "payment.Payment",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="order",
     )
 
     status = models.CharField(
@@ -147,3 +154,14 @@ class Cart(TimeStampModel):
             return 0
 
         return self.price - self.discount_price
+
+    def order(self, manager: "Iiko"):
+
+        order = manager.create_order(self)
+        
+        print(order)
+
+        if order is None:
+            return False
+
+        return True

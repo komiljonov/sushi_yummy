@@ -6,6 +6,8 @@ from common.models import TimeStampModel
 from django.db.models import Func
 
 from data.category.models import Category
+from django.contrib import admin
+
 
 if TYPE_CHECKING:
     from bot.models import Location
@@ -35,10 +37,11 @@ class Pow(Func):
 
 
 class Filial(TimeStampModel):
-    name_uz = models.CharField(max_length=255)
-    name_ru = models.CharField(max_length=255)
+    name_uz = models.CharField(max_length=255, null=True, blank=True)
+    name_ru = models.CharField(max_length=255, null=True, blank=True)
 
     iiko_id = models.CharField(max_length=255)
+    terminal_id = models.CharField(max_length=255)
 
     location: "Location" = models.ForeignKey(
         "bot.Location", on_delete=models.SET_NULL, null=True, blank=True
@@ -57,10 +60,10 @@ class Filial(TimeStampModel):
         dlat = math.radians(lat2 - lat1)
         dlon = math.radians(lon2 - lon1)
         a = (
-                math.sin(dlat / 2) ** 2
-                + math.cos(math.radians(lat1))
-                * math.cos(math.radians(lat2))
-                * math.sin(dlon / 2) ** 2
+            math.sin(dlat / 2) ** 2
+            + math.cos(math.radians(lat1))
+            * math.cos(math.radians(lat2))
+            * math.sin(dlon / 2) ** 2
         )
         c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
         return R * c
@@ -86,3 +89,7 @@ class Filial(TimeStampModel):
                     nearest_filial = filial
 
         return nearest_filial
+
+    class Admin(admin.ModelAdmin):
+
+        list_display = ["name_uz", "iiko_id", "terminal_id", "location"]

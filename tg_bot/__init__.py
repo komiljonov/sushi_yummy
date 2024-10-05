@@ -35,6 +35,7 @@ from tg_bot.constants import (
     INFO_FILIAL,
 )
 from utils import ReplyKeyboardMarkup, distribute, format_number_with_emojis
+from utils.iiko import Iiko
 from utils.language import multilanguage
 from data.cart.models import Cart
 from django.utils import timezone
@@ -50,7 +51,13 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
 
         self.CLICK_TOKEN = os.getenv("CLICK_TOKEN")
         self.PAYME_TOKEN = os.getenv("PAYME_TOKEN")
+        
+        token = os.getenv("IIKO_TOKEN", "")
+        if not token:
+            raise "Not token"
 
+        self.iiko_manager = Iiko(token)
+        
         self.ANYTHING = [
             CommandHandler("start", self.start),
         ]
@@ -77,7 +84,6 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
             "MainConversation",
             [
                 CommandHandler("start", self.start),
-                MessageHandler(filters.ALL & ~filters.SUCCESSFUL_PAYMENT, self.start),
             ],
             {
                 LANG: [MessageHandler(filters.TEXT & EXCLUDE, self.lang)],
@@ -120,6 +126,7 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
             },
             self.ANYTHING,
             redis=self.redis,
+            allow_reentry=True,
         )
 
     def back(self, callback: Callable[[UPD, CTX], Coroutine]) -> MessageHandler:
@@ -288,6 +295,13 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
         cart.payment = new_payment
         cart.order_time = timezone.now()
         cart.save()
+
+        order = cart.order(self.iiko_manager)
+
+        if order:
+            await tg_user.send_message("Buyurtma iikoga yuborildi.")
+        else:
+            await tg_user.send_message("Buyurtma iikoga yuborilmadi.")
 
         await context.bot.send_message(
             cart.user.chat_id, i18n.payment.successful(), parse_mode="HTML"
