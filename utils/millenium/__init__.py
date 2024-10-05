@@ -55,8 +55,8 @@ class Millenium:
         # Generate the secret
         secret = self.getSecret(data)
 
-        # Generate the query string using the data
-        query_string = urlencode(data)
+        # Manually build the query string using a for loop
+        query_string = "&".join(f"{key}={value}" for key, value in data.items())
 
         # Full URL
         full_url = f"{self.host}/create_order?{query_string}"
