@@ -865,11 +865,11 @@ class TgBotCart(CartBack, CommonKeysMixin):
                 self.CLICK_TOKEN if method == CLICK else self.PAYME_TOKEN,
                 "UZS",
                 products,
-                reply_markup=InlineKeyboardMarkup([
+                reply_markup=InlineKeyboardMarkup([[
                     InlineKeyboardButton("To'lash",pay=True)
                 ],[
                     InlineKeyboardButton(i18n.buttons.back(),callback_data="back")
-                ])
+                ]])
             )
             return CART_PAYMENT
         else:
