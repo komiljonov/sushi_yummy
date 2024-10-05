@@ -494,6 +494,8 @@ class Menu(MenuBack, CommonKeysMixin):
                 return CART_DELIVER_LOCATION_CONFIRM
         else:
             # return await self.menu_category(update,context, category.parent)
+            temp.category = None
+            temp.save()
             await tgUser.send_message(
                 i18n.menu.welcome(),
                 reply_markup=ReplyKeyboardMarkup(
