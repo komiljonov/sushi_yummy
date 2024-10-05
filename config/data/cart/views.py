@@ -48,4 +48,7 @@ class OrderCallTaxiAPIView(APIView):
         if taxi is None:
             return bad_request(request, None)
         
+        order.taxi = taxi
+        order.save()
+        
         return TaxiSerializer(taxi).data

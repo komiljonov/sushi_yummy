@@ -33,8 +33,8 @@ class Cart(TimeStampModel):
 
     order_id = models.IntegerField(unique=True, blank=True, null=True)
 
-    iiko_id = models.CharField(max_length=255, null=True,blank=True)
-    correlation_id = models.CharField(max_length=255, null=True,blank=True)
+    iiko_id = models.CharField(max_length=255, null=True, blank=True)
+    correlation_id = models.CharField(max_length=255, null=True, blank=True)
 
     phone_number = models.CharField(max_length=255, null=True, blank=True)
 
@@ -97,6 +97,10 @@ class Cart(TimeStampModel):
 
     order_time = models.DateTimeField(null=True, blank=True)
 
+    taxi = models.ForeignKey(
+        "taxi.Taxi", on_delete=models.SET_NULL, null=True, blank=True
+    )
+
     items: "models.QuerySet[CartItem]"
 
     def save(self, *args, **kwargs):
@@ -158,7 +162,7 @@ class Cart(TimeStampModel):
     def order(self, manager: "Iiko"):
 
         order = manager.create_order(self)
-        
+
         print(order)
 
         if order is None:
