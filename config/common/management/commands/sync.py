@@ -43,10 +43,10 @@ class Command(BaseCommand):
 
                 # Extract captions (Uzbek and Russian)
                 caption_uz = self.extract_and_clean_caption(
-                    soup, "#w0 > tbody > tr:nth-child(4) > td"
+                    soup, "#w0 > tr:nth-child(4) > td"
                 )
                 caption_ru = self.extract_and_clean_caption(
-                    soup, "#w0 > tbody > tr:nth-child(2) > td"
+                    soup, "#w0 > tr:nth-child(2) > td"
                 )
 
                 self.stdout.write(f"Caption (UZ): {caption_uz}")
