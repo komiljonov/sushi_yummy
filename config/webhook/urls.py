@@ -4,5 +4,5 @@ from .views import IikoOrderUpdateAPIView
 
 
 urlpatterns = [
-    path("iiko",IikoOrderUpdateAPIView.as_view())
+    path("/iiko",IikoOrderUpdateAPIView.as_view())
 ]
