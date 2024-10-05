@@ -93,6 +93,9 @@ class Iiko:
                 if product.get("sizePrices")
                 and len(product["sizePrices"]) > 0
                 and "price" in product["sizePrices"][0]
+                and product["sizePrices"][0]["price"][
+                    "isIncludedInMenu"
+                ]  # New condition added
                 else None
             )
 

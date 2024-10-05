@@ -1,0 +1,52 @@
+{
+    "fatAmount": 0.0,
+    "proteinsAmount": 0.0,
+    "carbohydratesAmount": 0.0,
+    "energyAmount": 0.0,
+    "fatFullAmount": 0.0,
+    "proteinsFullAmount": 0.0,
+    "carbohydratesFullAmount": 0.0,
+    "energyFullAmount": 0.0,
+    "weight": 2.0,
+    "groupId": "41d31247-aab9-433a-b1b7-a6fb9559f456",
+    "productCategoryId": null,
+    "type": "Good",
+    "orderItemType": "Product",
+    "modifierSchemaId": null,
+    "modifierSchemaName": null,
+    "splittable": false,
+    "measureUnit": "pcs",
+    "sizePrices": [
+        {
+            "sizeId": null,
+            "price": {
+                "currentPrice": 13000.000000000,
+                "isIncludedInMenu": false,
+                "nextPrice": null,
+                "nextIncludedInMenu": false,
+                "nextDatePrice": null
+            }
+        }
+    ],
+    "modifiers": [],
+    "groupModifiers": [],
+    "imageLinks": [],
+    "doNotPrintInCheque": false,
+    "parentGroup": "74d264b6-1cb5-4ad9-ae7b-f16a2d116a02",
+    "order": 16,
+    "fullNameEnglish": "",
+    "useBalanceForSell": false,
+    "canSetOpenPrice": false,
+    "paymentSubject": "ТОВАР",
+    "id": "e37a5c90-4607-48f9-9cca-be499d5cef2e",
+    "code": "00295",
+    "name": "Pepsi 2л",
+    "description": "",
+    "additionalInfo": null,
+    "tags": [],
+    "isDeleted": false,
+    "seoDescription": null,
+    "seoText": null,
+    "seoKeywords": null,
+    "seoTitle": null
+}
