@@ -87,7 +87,6 @@ class StatisticsAPIView(APIView):
             }
         )
 
-
 class XlsxAPIView(APIView):
 
     def post(self, request, *args, **kwargs):
@@ -116,14 +115,19 @@ class XlsxAPIView(APIView):
         sheet = wb.active
         sheet.title = "User Cart Statistics"
 
-        row_num = 1
+        # Add headers (customize based on your uploaded file)
+        headers = [
+            "User", "User Data", "Registered On", "Order ID", "Order Status", "Total Price",
+            "Discount", "Final Price", "Delivery Method", "Location", "Payment Status"
+        ]
+        sheet.append(headers)
+
+        row_num = 2  # Starting row (after headers)
 
         for idx, user in enumerate(users, start=1):
             # Write user header
             sheet[f"A{row_num}"] = f"{idx}. User"
-            sheet[f"B{row_num}"] = (
-                f"{user.name or 'No Name'} - {user.number or 'No Number'}"
-            )
+            sheet[f"B{row_num}"] = f"{user.name or 'No Name'} - {user.number or 'No Number'}"
             sheet[f"B{row_num}"].alignment = Alignment(horizontal="left")
             sheet[f"C{row_num}"] = user.created_at.strftime("%d/%m/%Y, %H:%M:%S")
 
@@ -131,19 +135,27 @@ class XlsxAPIView(APIView):
 
             # Write cart data for the user
             for cart in user.carts.all():
-                sheet[f"B{row_num}"] = (
-                    f"Order ID: {cart.order_id} | Status: {cart.status}"
-                )
-                sheet[f"B{row_num}"].alignment = Alignment(horizontal="left")
-                sheet[f"C{row_num}"] = str(cart.price)
+                sheet[f"D{row_num}"] = cart.order_id  # Order ID
+                sheet[f"E{row_num}"] = cart.status  # Order Status
+                sheet[f"F{row_num}"] = cart.price  # Total Price
+                sheet[f"G{row_num}"] = cart.saving  # Discount
+                sheet[f"H{row_num}"] = cart.discount_price  # Final Price
+                sheet[f"I{row_num}"] = cart.delivery  # Delivery Method
+                sheet[f"J{row_num}"] = cart.location.name if cart.location else "N/A"  # Location
+                sheet[f"K{row_num}"] = cart.payment.status if cart.payment else "Unpaid"  # Payment Status
+
+                # Align all data cells
+                for col in range(4, 12):  # From columns D to K
+                    sheet[f"{get_column_letter(col)}{row_num}"].alignment = Alignment(horizontal="left")
+                
                 row_num += 1
 
             # Add an empty row after each user's data
             row_num += 1
 
-        # Adjust column width
+        # Adjust column width for readability
         for col in range(1, sheet.max_column + 1):
             column_letter = get_column_letter(col)
-            sheet.column_dimensions[column_letter].width = 30
+            sheet.column_dimensions[column_letter].width = 25  # Set width for each column
 
         return wb
