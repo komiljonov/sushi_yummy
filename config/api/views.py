@@ -11,7 +11,7 @@ from django.utils.timezone import make_aware
 from django.db.models import Sum
 import openpyxl
 from openpyxl.utils import get_column_letter
-
+from openpyxl.styles import Alignment
 
 
 from data.cart.serializers import OrderSerializer
@@ -87,55 +87,61 @@ class StatisticsAPIView(APIView):
             }
         )
 
+
 class XlsxAPIView(APIView):
 
-    def post(self, request: HttpRequest | Request):
+    def get(self, request, *args, **kwargs):
+        # Get all users with related carts
+        users = User.objects.prefetch_related("carts").all()
 
-        wb = openpyxl.Workbook()
-        ws = wb.active
-        ws.title = "Cart Orders"
+        # Generate the XLSX file
+        wb = self.generate_user_cart_statistics(users)
 
-        # Define headers based on the structure of the provided Excel file
-        headers = [
-            "Oy.sana.kun (start bosilgan data)", "Ism", "Tel. nomer", 
-            "Zakaz (summa)", "Usp ID", "Usp (summa)", 
-            "Otmen ID", "Otmen (summa)", "Data Otmen (zakaz)"
-        ]
-        
-        # Append headers to the worksheet
-        ws.append(headers)
+        # Prepare the response with the XLSX file
+        response = HttpResponse(
+            content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+        response["Content-Disposition"] = (
+            "attachment; filename=user_cart_statistics.xlsx"
+        )
 
-        # Fetch cart data (replace this with your actual database query)
-        carts = Cart.objects.all()  # Assuming this returns all Cart instances
-        
-        # Loop through the cart entries and add rows to the sheet
-        for cart in carts:
-            row = [
-                cart.created_at.strftime("%Y-%m-%d"),  # Assuming this is the order creation date
-                cart.user.tg_name if cart.user else "Unknown",  # User name
-                cart.phone_number,  # Phone number
-                cart.price,  # Order price
-                cart.order_id,  # Order ID
-                cart.discount_price,  # Discounted price (Usp summa)
-                None,  # Assuming Otmen ID is null in this case
-                None,  # Assuming Otmen summa is null in this case
-                None   # Assuming Data Otmen is null in this case
-            ]
-            
-            # Append each row to the worksheet
-            ws.append(row)
-
-        # Adjust column width
-        for col in range(1, len(headers) + 1):
-            ws.column_dimensions[get_column_letter(col)].width = 20
-        
-        # Save the workbook to a BytesIO stream instead of a file
-        output = BytesIO()
-        wb.save(output)
-        output.seek(0)
-
-        # Create the response with the appropriate headers
-        response = HttpResponse(output, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-        response['Content-Disposition'] = 'attachment; filename=cart_orders.xlsx'
+        # Save the workbook to the response
+        wb.save(response)
 
         return response
+
+    def generate_user_cart_statistics(self, users):
+        # Create a workbook and select the active sheet
+        wb = openpyxl.Workbook()
+        sheet = wb.active
+        sheet.title = "User Cart Statistics"
+
+        row_num = 1
+
+        for idx, user in enumerate(users, start=1):
+            # Write user header
+            sheet[f"A{row_num}"] = f"{idx}. User"
+            sheet[f"B{row_num}"] = (
+                f"{user.name or 'No Name'} - {user.number or 'No Number'}"
+            )
+            sheet[f"B{row_num}"].alignment = Alignment(horizontal="left")
+
+            row_num += 1  # Move to the next row
+
+            # Write cart data for the user
+            for cart in user.carts.all():
+                sheet[f"B{row_num}"] = (
+                    f"Order ID: {cart.order_id} | Status: {cart.status}"
+                )
+                sheet[f"B{row_num}"].alignment = Alignment(horizontal="left")
+                row_num += 1
+
+            # Add an empty row after each user's data
+            row_num += 1
+
+        # Adjust column width
+        for col in range(1, sheet.max_column + 1):
+            column_letter = get_column_letter(col)
+            sheet.column_dimensions[column_letter].width = 30
+
+        return wb
