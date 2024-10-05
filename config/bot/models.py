@@ -37,6 +37,9 @@ class User(TimeStampModel):
         blank=True,
         related_name="users"
     )
+    
+    
+    last_update = models.DateTimeField(null=True,blank=True)
 
     carts: "models.QuerySet[Cart]"
     locations: "models.QuerySet[Location]"
