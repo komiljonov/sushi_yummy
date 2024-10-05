@@ -107,6 +107,9 @@ class Iiko:
                 product.get("modifiers") is None or len(product["modifiers"]) == 0
             ) and product["type"] == "Dish":
                 continue
+            
+            if price == None:
+                continue
 
             # Append the product to the list
             products.append(
