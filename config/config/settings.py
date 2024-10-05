@@ -63,7 +63,12 @@ CORS_ALLOWED_ORIGINS = [
     "https://127.0.01:3000",
     "https://sushi-yummy.vercel.app",
     "http://localhost:63342",
-    "https://api.sushi.sectorsoft.uz"
+    "https://api.sushi.sectorsoft.uz",
+    "http://api.sushi.sectorsoft.uz"
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://api.sushi.sectorsoft.uz',  # Add your API domain here
 ]
 
 MIDDLEWARE = [
