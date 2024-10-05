@@ -1,0 +1,60 @@
+{
+    "code": 0,
+    "descr": "OK",
+    "data": {
+        "order_id": 1173859,
+        "state_id": 1,
+        "state_kind": "new_order",
+        "crew_id": 0,
+        "prior_crew_id": 0,
+        "driver_id": 0,
+        "car_id": 0,
+        "server_time_offset": 0,
+        "start_time": "20241005141355",
+        "source_time": "20241005141355",
+        "finish_time": null,
+        "source": "1",
+        "source_lat": 41.27149,
+        "source_lon": 69.231696,
+        "destination": "Dilfuza pirozhnyi (кондитерская) \/Ташкент\/ *Курувчи ул., 27*",
+        "destination_lat": 41.312343,
+        "destination_lon": 69.1646,
+        "stops": [],
+        "trip_distance": 0,
+        "trip_time": 0,
+        "customer": "10",
+        "passenger": "",
+        "phone": "998909755211",
+        "phone_to_dial": "998909755211",
+        "client_id": 69600,
+        "client_name": "10",
+        "client_group_id": 9,
+        "client_group_name": "Физические (до получения бонусов за первый заказ из ТФ)",
+        "client_employee_id": 0,
+        "order_crew_group_id": 27,
+        "tariff_id": 47,
+        "order_params": [
+            109
+        ],
+        "attribute_values": [
+            {
+                "id": 109,
+                "num_value": 0
+            }
+        ],
+        "creation_way": "common_api",
+        "is_prior": false,
+        "is_really_prior": false,
+        "email": "",
+        "prior_to_current_before_minutes": 0,
+        "flight_number": "",
+        "sum": 43505.53,
+        "total_sum": 44000,
+        "cash_sum": 44000,
+        "cashless_sum": 0,
+        "bonus_sum": 0,
+        "bank_card_sum": 0,
+        "payment_pay_system": "",
+        "is_auction": false
+    }
+}
