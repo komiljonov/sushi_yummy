@@ -118,17 +118,18 @@ class XlsxAPIView(APIView):
 
         # Add headers (customize based on your uploaded file)
         headers = [
-            "Foydalanuvchi",
-            "Foydalanuvchi ma'lumotlari",
-            "Birinchi start bosgan vaqti",
-            "Buyurtma idsi",
-            "Buyurtma holati",
-            "TO'liq narxi",
-            "Chegirma",
-            "Ohirgi narx",
-            "Yetkazish turi",
-            "Joylashuv",
-            "To'lov holati",
+            "User",
+            "User Data",
+            "Registered On",
+            "Order ID",
+            "Order Status",
+            "Total Price",
+            "Discount",
+            "Final Price",
+            "Delivery Method",
+            "Location",
+            "Payment Status",
+            "Ordered Items",
         ]
         sheet.append(headers)
 
@@ -160,8 +161,19 @@ class XlsxAPIView(APIView):
                     cart.payment.status if cart.payment else "Unpaid"
                 )  # Payment Status
 
+                # Generate a string of ordered items
+                ordered_items = ", ".join(
+                    [
+                        f"{item.product.name} (x{item.count}, {item.price}$)"
+                        for item in cart.items.all()
+                    ]
+                )
+                sheet[f"L{row_num}"] = (
+                    ordered_items if ordered_items else "No items ordered"
+                )
+
                 # Align all data cells
-                for col in range(4, 12):  # From columns D to K
+                for col in range(4, 13):  # From columns D to L
                     sheet[f"{get_column_letter(col)}{row_num}"].alignment = Alignment(
                         horizontal="left"
                     )
