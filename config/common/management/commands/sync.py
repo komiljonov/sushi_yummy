@@ -73,12 +73,12 @@ class Command(BaseCommand):
         if response.status_code == 200:
             file_name = os.path.basename(image_url)
             
-            image_content = BytesIO(response.content)
+            # image_content = BytesIO(response.content)
 
 
             # Save the image to the product's image field (overwrite even if it exists)
             product.image = ContentFile(
-                image_content,
+                response.content,
                 file_name,
             )
             product.save()
