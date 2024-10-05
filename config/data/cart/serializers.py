@@ -9,6 +9,7 @@ from data.payment.serializers import PaymentSerializer
 from django.db.models import Sum
 
 from data.promocode.serializers import PromocodeSerializer
+from data.taxi.serializers import TaxiSerializer
 from data.users.serializers import UserSerializer
 
 
@@ -16,6 +17,8 @@ class CartSerializer(serializers.ModelSerializer):
     location = LocationSerializer()
 
     payment = PaymentSerializer()
+    
+    taxi = TaxiSerializer()
 
     class Meta:
         model = Cart
@@ -32,6 +35,7 @@ class OrderSerializer(serializers.ModelSerializer):
     location = LocationSerializer()
 
     user = UserSerializer()
+    taxi = TaxiSerializer()
 
     items = CartItemSerializer(many=True)
 
@@ -55,7 +59,8 @@ class OrderSerializer(serializers.ModelSerializer):
             "comment",
             "payment",
             "filial",
-            "location"
+            "location",
+            "taxi"
         ]
 
     def get_products_count(self, obj: Cart):

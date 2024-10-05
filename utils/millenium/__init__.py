@@ -26,7 +26,7 @@ class Millenium:
         data_string = "".join(
             f"{key}={str(value)}&" for key, value in data.items()
         ).rstrip("&")
-        
+
         print(data_string)
 
         # Combine the data string with the token
@@ -102,11 +102,14 @@ class Millenium:
         order_data = order.json()
         
         
-        
-        
-        state = self.get_order_state(order_data["data"]["order_id"])
+        sleep(5)
+
+        # state = self.get_order_state(order_data["data"]["order_id"])
+        state = self.get_order_state(1168813)
 
         data: dict = state.json()["data"]
+        
+        
 
         new_taxi = Taxi.objects.create(
             order_id=data["order_id"],
@@ -130,6 +133,7 @@ class Millenium:
             car_number=data.get("car_number"),
             driver_phone_number=data.get("phone_to_dial"),
         )
+
         return new_taxi
 
 
