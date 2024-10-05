@@ -164,7 +164,7 @@ class XlsxAPIView(APIView):
                 # Generate a string of ordered items
                 ordered_items = ", ".join(
                     [
-                        f"{item.product.name_uz} (x{item.count}, {item.price}$)"
+                        f"{item.product.name_uz if item.product else ""} (x{item.count}, {item.price}$)"
                         for item in cart.items.all()
                     ]
                 )
