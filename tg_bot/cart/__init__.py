@@ -3,6 +3,8 @@ import base64
 from datetime import date, datetime, timedelta
 from typing import Callable, Coroutine
 
+from geopy.geocoders import Nominatim
+
 from django.utils import timezone
 from redis import Redis
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, LabeledPrice, Message
@@ -10,19 +12,25 @@ from telegram.ext import MessageHandler
 from telegram.ext import filters, CallbackQueryHandler,CommandHandler
 
 from bot.models import User
+from data.category.models import Category
+from data.filial.models import Filial
 from data.promocode.models import Promocode
 from tg_bot.cart.back import CartBack
 from tg_bot.constants import (
     CART,
     CART_COMMENT,
     CART_CONFIRM,
+    CART_DELIVER_LOCATION_CONFIRM,
+    CART_GET_METHOD,
     CART_PROMOCODE,
     CART_PHONE_NUMBER,
+    CART_TAKEAWAY_FILIAL,
     CART_TIME,
     CART_TIME_LATER_TIME,
     CASH,
     CLICK,
     CTX,
+    DELIVERY_LOCATION,
     EXCLUDE,
     LANG,
     MAIN_MENU,
@@ -70,6 +78,46 @@ class TgBotCart(CartBack, CommonKeysMixin):
                     CallbackQueryHandler(self.cart_remove_item, pattern=r"remove"),
                     self.back(self.back_from_cart(back_handler)),
                 ],
+                
+                
+                
+                
+                CART_GET_METHOD: [
+                    MessageHandler(
+                        filters.Text(multilanguage.get_all("cart.deliver")),
+                        self.cart_get_method_deliver,
+                    ),
+                    MessageHandler(
+                        filters.Text(multilanguage.get_all("cart.take_away")),
+                        self.cart_get_method_take_away,
+                    ),
+                    self.back(self.start),
+                ],
+                DELIVERY_LOCATION: [
+                    MessageHandler(filters.LOCATION, self.cart_delivery_location),
+                    self.back(self.back_from_cart_delivery_location),
+                ],
+                CART_DELIVER_LOCATION_CONFIRM: [
+                    MessageHandler(filters.LOCATION, self.cart_delivery_location),
+                    MessageHandler(
+                        filters.Text(multilanguage.get_all("buttons.confirm")),
+                        self.cart_deliver_location_confirm,
+                    ),
+                    self.back(self.back_from_cart_delivery_location_confirm),
+                ],
+                CART_TAKEAWAY_FILIAL: [
+                    MessageHandler(
+                        filters.LOCATION, self.cart_takeaway_filial_location
+                    ),
+                    MessageHandler(filters.TEXT & EXCLUDE, self.cart_takeaway_filial),
+                    self.back(self.back_from_cart_takeaway_filial),
+                ],
+                
+                
+                
+                
+                
+                
 
                 CART_TIME: [
                     MessageHandler(filters.TEXT & EXCLUDE, self.cart_time),
@@ -300,27 +348,225 @@ class TgBotCart(CartBack, CommonKeysMixin):
     async def cart_done(self, update: UPD, context: CTX):
         tg_user, user, temp, i18n = User.get(update)
 
-        # cart = user.cart
+        cart = user.cart
 
-        # cart.promocode = None
-        # cart.time = None
-        # cart.filial = None
-        # cart.location = None
-        # cart.save()
+        cart.promocode = None
+        cart.time = None
+        cart.filial = None
+        cart.location = None
+        cart.save()
+
+        # await tg_user.send_message(
+        #     i18n.time.deliver(),
+        #     reply_markup=ReplyKeyboardMarkup(
+        #         [
+        #             [
+        #                 i18n.time.asap(),
+        #             ],
+        #             [i18n.time.later()],
+        #         ]
+        #     ),
+        #     parse_mode="HTML",
+        # )
+        # return CART_TIME
+        
+        await tg_user.send_message(
+            i18n.cart.get_method(),
+            reply_markup=ReplyKeyboardMarkup(
+                [[i18n.cart.deliver(), i18n.cart.take_away()]]
+            ),
+            parse_mode="HTML",
+        )
+        print("Menu")
+
+        return CART_GET_METHOD
+    
+    
+    
+    
+    async def cart_get_method_deliver(self, update: UPD, context: CTX):
+        tg_user, user, temp, i18n = User.get(update)
+
+        cart = user.cart
+
+        cart.delivery = "DELIVER"
+        cart.save()
 
         await tg_user.send_message(
-            i18n.time.deliver(),
+            i18n.deliver.location.ask(),
             reply_markup=ReplyKeyboardMarkup(
                 [
-                    [
-                        i18n.time.asap(),
-                    ],
-                    [i18n.time.later()],
+                    [KeyboardButton(i18n.buttons.location(), request_location=True)],
+                    [i18n.buttons.my_locations()],
                 ]
             ),
             parse_mode="HTML",
         )
-        return CART_TIME
+        return DELIVERY_LOCATION
+
+    async def cart_delivery_location(self, update: UPD, context: CTX):
+        tg_user, user, temp, i18n = User.get(update)
+
+        location = update.message.location
+
+        nominatim = Nominatim(user_agent="Google")
+
+        address = nominatim.reverse(f"{location.latitude},{location.longitude}")
+
+        new_location = user.locations.create(
+            name=str(address),
+            latitude=location.latitude,
+            longitude=location.longitude,
+            address=str(address),
+        )
+
+        temp.location = new_location
+        temp.save()
+
+        await tg_user.send_message(
+            i18n.deliver.location.confirm(address=address),
+            reply_markup=ReplyKeyboardMarkup(
+                [
+                    [
+                        KeyboardButton(
+                            i18n.deliver.location.resend(), request_location=True
+                        )
+                    ],
+                    [i18n.buttons.confirm()],
+                ]
+            ),
+            parse_mode="HTML",
+        )
+
+        return CART_DELIVER_LOCATION_CONFIRM
+
+    async def cart_deliver_location_confirm(self, update: UPD, context: CTX):
+        tg_user, user, temp, i18n = User.get(update)
+
+        cart = user.cart
+
+        cart.location = temp.location
+        
+        filial: Filial | None = Filial.get_nearest_filial(cart.location)
+        cart.filial = filial
+        cart.save()
+        
+
+        # await tg_user.send_message(
+        #     i18n.time.deliver(),
+        #     reply_markup=ReplyKeyboardMarkup(
+        #         [
+        #             [
+        #                 i18n.time.asap(),
+        #             ],
+        #             [i18n.time.later()],
+        #         ]
+        #     ),
+        #     parse_mode="HTML",
+        # )
+        # return CART_TIME
+
+        await tg_user.send_message(
+            i18n.menu.welcome(),
+            reply_markup=ReplyKeyboardMarkup(
+                [
+                    [i18n.menu.cart() if user.cart.items.count() > 0 else ""],
+                    *distribute(
+                        [
+                            i18n.get_name(category)
+                            for category in Category.objects.filter(parent=None)
+                        ],
+                    ),
+                ]
+            ),
+            parse_mode="HTML",
+        )
+        return MENU_CATEGORY
+
+    async def cart_get_method_take_away(self, update: UPD, context: CTX):
+        tg_user, user, temp, i18n = User.get(update)
+
+        cart = user.cart
+
+        cart.delivery = "TAKEAWAY"
+        cart.save()
+
+        filials = Filial.objects.filter(active=True)
+
+        await tg_user.send_message(
+            i18n.takeaway.filial.ask(),
+            reply_markup=ReplyKeyboardMarkup(
+                [
+                    [
+                        KeyboardButton(
+                            i18n.takeaway.filial.check_nearest_filial(),
+                            request_location=True,
+                        )
+                    ],
+                    *distribute([i18n.get_name(filial) for filial in filials]),
+                ]
+            ),
+            parse_mode="HTML",
+        )
+
+        return CART_TAKEAWAY_FILIAL
+
+    async def cart_takeaway_filial_location(self, update: UPD, context: CTX):
+        tg_user, user, temp, i18n = User.get(update)
+
+        location = update.message.location
+
+        filial: Filial | None = Filial.get_nearest_filial(location)
+
+        filials = Filial.objects.filter(active=True)
+
+        await tg_user.send_message(
+            i18n.takeaway.filial.filial_info(filial=i18n.get_name(filial)),
+            reply_markup=ReplyKeyboardMarkup(
+                [
+                    [i18n.takeaway.filial.check_nearest_filial()],
+                    *distribute([i18n.get_name(filial) for filial in filials]),
+                ]
+            ),
+            parse_mode="HTML",
+        )
+
+    async def cart_takeaway_filial(self, update: UPD, context: CTX):
+        tg_user, user, temp, i18n = User.get(update)
+
+        filial = Filial.objects.filter(i18n.filter_name(update.message.text)).first()
+
+        if filial is None:
+            await tg_user.send_message(
+                i18n.takeaway.filial.not_found(), parse_mode="HTML"
+            )
+            return await self.cart_get_method_take_away(update, context)
+
+        cart = user.cart
+
+        cart.filial = filial
+        cart.save()
+
+        await tg_user.send_message(
+            i18n.menu.welcome(),
+            reply_markup=ReplyKeyboardMarkup(
+                [
+                    [i18n.menu.cart() if user.cart.items.count() > 0 else ""],
+                    *distribute(
+                        [
+                            i18n.get_name(category)
+                            for category in Category.objects.filter(parent=None)
+                        ],
+                    ),
+                ]
+            ),
+            parse_mode="HTML",
+        )
+        return MENU_CATEGORY
+    
+    
+    
+    
 
     async def cart_time(self, update: UPD, context: CTX):
         tg_user, user, temp, i18n = User.get(update)
