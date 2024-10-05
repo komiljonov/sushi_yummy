@@ -25,7 +25,7 @@ class Command(BaseCommand):
         )  # Assuming `category` is a field on Product
 
         for product in products:
-            product_id = product.id
+            product_id = product.iiko_id
             self.stdout.write(f"Fetching image for product id: {product_id}")
 
             # URL of the product page
