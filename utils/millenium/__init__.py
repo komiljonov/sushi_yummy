@@ -127,27 +127,27 @@ class Millenium:
         return new_taxi
 
 
-# Example usage
-millenium = Millenium(token="3E8EA3F2-4776-4E1C-9A97-E4C13C5AEF1C")
+# # Example usage
+# millenium = Millenium(token="3E8EA3F2-4776-4E1C-9A97-E4C13C5AEF1C")
 
-# Sample locations for filial and client address
-filial = Location(latitude=41.2714904, longitude=69.2316963)
-clientaddress = Location(latitude=41.312343, longitude=69.1645997)
+# # Sample locations for filial and client address
+# filial = Location(latitude=41.2714904, longitude=69.2316963)
+# clientaddress = Location(latitude=41.312343, longitude=69.1645997)
 
-# Call the create_order method
-order = millenium._create_order(
-    phone="998909755211", filial=filial, clientaddress=clientaddress
-)
-
-
-# Output the response content
-print("Response Status Code:", order.status_code)
-print("Response Text:", order.text)
+# # Call the create_order method
+# order = millenium._create_order(
+#     phone="998909755211", filial=filial, clientaddress=clientaddress
+# )
 
 
-sleep(3)
-state = millenium.get_order_state(order.json()["data"]["order_id"])
-# state = millenium.get_order_state(1168813)
+# # Output the response content
+# print("Response Status Code:", order.status_code)
+# print("Response Text:", order.text)
 
 
-print(state.text)
+# sleep(3)
+# state = millenium.get_order_state(order.json()["data"]["order_id"])
+# # state = millenium.get_order_state(1168813)
+
+
+# print(state.text)
