@@ -27,8 +27,8 @@ class Product(TimeStampModel):
 
     filials = models.ManyToManyField("filial.Filial", blank=True)
 
-    caption_uz = models.CharField(max_length=255)
-    caption_ru = models.CharField(max_length=255)
+    caption_uz = models.CharField(max_length=950)
+    caption_ru = models.CharField(max_length=950)
 
     image: "File" = models.ForeignKey(
         "file.File", on_delete=models.SET_NULL, null=True, blank=True
