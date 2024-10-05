@@ -85,7 +85,7 @@ class Menu(MenuBack, CommonKeysMixin):
                 MENU_CATEGORY: [
                     self._cart_handlers(self.menu),
                     MessageHandler(filters.TEXT & EXCLUDE, self.menu_category),
-                    self.back(self.start),
+                    self.back(self.back_from_menu_category),
                 ],
                 MENU_PRODUCT: [
                     self._cart_handlers(self.back_to_menu_product),
@@ -448,3 +448,11 @@ class Menu(MenuBack, CommonKeysMixin):
         tg_user, user, temp, i18n = User.get(update)
 
         return await self.menu_product(update, context, temp.product)
+
+    
+    
+    async def back_from_menu_category(self, update: UPD, context: CTX):
+        tgUser, user, temp, i18n = User.get(update)
+        
+        
+        pass
