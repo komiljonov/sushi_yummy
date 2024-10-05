@@ -6,6 +6,7 @@ from typing import Callable
 
 from data.category.models import Category
 from tg_bot.constants import UPD, CTX
+from utils.iiko import Iiko
 
 
 class CommonKeysMixin:
@@ -18,3 +19,7 @@ class CommonKeysMixin:
 
     menu: Callable[[UPD, CTX], Coroutine[str | None]]
     menu_category: Callable[[UPD, CTX, Category], Coroutine[str | None]]
+
+    
+    
+    iiko_manager: Iiko

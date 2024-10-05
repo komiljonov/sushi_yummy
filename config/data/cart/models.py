@@ -16,6 +16,8 @@ if TYPE_CHECKING:
     from bot.models import User
     from bot.models import Location
     from data.filial.models import Filial
+    from utils.iiko import Iiko
+
 
 # Create your models here.
 
@@ -31,6 +33,9 @@ class Cart(TimeStampModel):
 
     order_id = models.IntegerField(unique=True, blank=True, null=True)
 
+    iiko_id = models.CharField(max_length=255, null=True,blank=True)
+    correlation_id = models.CharField(max_length=255, null=True,blank=True)
+
     phone_number = models.CharField(max_length=255, null=True, blank=True)
 
     comment = models.CharField(max_length=1024, null=True, blank=True)
@@ -43,15 +48,24 @@ class Cart(TimeStampModel):
         related_name="orders",
     )
 
-    payment: "Payment" = models.ForeignKey(
-        "payment.Payment", on_delete=models.SET_NULL, null=True, blank=True
+    payment: "Payment" = models.OneToOneField(
+        "payment.Payment",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="order",
     )
 
     status = models.CharField(
         choices=[
             ("ORDERING", "Buyurtma berilmoqda"),
             ("PENDING_PAYMENT", "To'lov kutilmoqda"),
-            ("PENDING", "Buyurtma kutilmoqda"),
+            ("PENDING", "Kutilmoqda"),
+            ("PENDING_KITCHEN", "Tayyorlanishi kutilmoqda"),
+            ("PREPARING", "Tayyorlanmoqda"),
+            ("DELIVERING", "Yetkazilmoqda"),
+            ("DONE", "Tugadi"),
+            ("CANCELLED", "Bekor qilindi."),
         ],
         default="ORDERING",
         max_length=255,
@@ -72,6 +86,7 @@ class Cart(TimeStampModel):
         blank=True,
         related_name="orders",
     )
+
     location: "Location" = models.ForeignKey(
         "bot.Location",
         on_delete=models.SET_NULL,
@@ -88,7 +103,7 @@ class Cart(TimeStampModel):
         if self.order_id is None:
             # Fetch the last entry with a valid (non-None) order_id
             last_entry = (
-                Cart.objects.exclude(order_id__isnull=True)
+                Cart.all_objects.exclude(order_id__isnull=True)
                 .order_by("-order_id")
                 .first()
             )
@@ -110,7 +125,7 @@ class Cart(TimeStampModel):
 
     class Admin(admin.ModelAdmin):
 
-        list_display = ["user", "status"]
+        list_display = ["user", "status", "order_id"]
 
         list_filter = ["status"]
 
@@ -123,8 +138,8 @@ class Cart(TimeStampModel):
     @property
     def discount_price(self):
 
-        if self.promocode == None:
-            return None
+        if self.promocode is None:
+            return self.price
 
         # return self.price - ((self.price // 100) * 20)
 
@@ -135,7 +150,18 @@ class Cart(TimeStampModel):
 
     @property
     def saving(self):
-        if self.promocode == None:
-            return None
+        if self.promocode is None:
+            return 0
 
         return self.price - self.discount_price
+
+    def order(self, manager: "Iiko"):
+
+        order = manager.create_order(self)
+        
+        print(order)
+
+        if order is None:
+            return False
+
+        return True

@@ -4,14 +4,12 @@ from datetime import date, datetime, timedelta
 from typing import Callable, Coroutine
 
 from django.utils import timezone
-from geopy.geocoders import Nominatim
 from redis import Redis
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, LabeledPrice, Message
 from telegram.ext import MessageHandler
-from telegram.ext import filters, CallbackQueryHandler
+from telegram.ext import filters, CallbackQueryHandler,CommandHandler
 
 from bot.models import User
-from data.filial.models import Filial
 from data.promocode.models import Promocode
 from tg_bot.cart.back import CartBack
 from tg_bot.constants import (
@@ -19,16 +17,12 @@ from tg_bot.constants import (
     CART_COMMENT,
     CART_CONFIRM,
     CART_PROMOCODE,
-    CART_DELIVER_LOCATION_CONFIRM,
-    CART_GET_METHOD,
     CART_PHONE_NUMBER,
-    CART_TAKEAWAY_FILIAL,
     CART_TIME,
     CART_TIME_LATER_TIME,
     CASH,
     CLICK,
     CTX,
-    DELIVERY_LOCATION,
     EXCLUDE,
     LANG,
     MAIN_MENU,
@@ -53,6 +47,8 @@ class TgBotCart(CartBack, CommonKeysMixin):
 
     def _cart_handlers(self, back_handler: Callable[[UPD, CTX], Coroutine] | None = None):
 
+        
+        
         return ConversationHandler(
             "CartConversation",
             [
@@ -61,6 +57,7 @@ class TgBotCart(CartBack, CommonKeysMixin):
                 )
             ],
             {
+
                 CART: [
                     MessageHandler(
                         filters.Text(multilanguage.get_all("cart.done")), self.cart_done
@@ -73,36 +70,7 @@ class TgBotCart(CartBack, CommonKeysMixin):
                     CallbackQueryHandler(self.cart_remove_item, pattern=r"remove"),
                     self.back(self.back_from_cart(back_handler)),
                 ],
-                CART_GET_METHOD: [
-                    MessageHandler(
-                        filters.Text(multilanguage.get_all("cart.deliver")),
-                        self.cart_get_method_deliver,
-                    ),
-                    MessageHandler(
-                        filters.Text(multilanguage.get_all("cart.take_away")),
-                        self.cart_get_method_take_away,
-                    ),
-                    self.back(self.cart),
-                ],
-                DELIVERY_LOCATION: [
-                    MessageHandler(filters.LOCATION, self.cart_delivery_location),
-                    self.back(self.back_from_cart_delivery_location),
-                ],
-                CART_DELIVER_LOCATION_CONFIRM: [
-                    MessageHandler(filters.LOCATION, self.cart_delivery_location),
-                    MessageHandler(
-                        filters.Text(multilanguage.get_all("buttons.confirm")),
-                        self.cart_deliver_location_confirm,
-                    ),
-                    self.back(self.back_from_cart_delivery_location_confirm),
-                ],
-                CART_TAKEAWAY_FILIAL: [
-                    MessageHandler(
-                        filters.LOCATION, self.cart_takeaway_filial_location
-                    ),
-                    MessageHandler(filters.TEXT & EXCLUDE, self.cart_takeaway_filial),
-                    self.back(self.back_from_cart_takeaway_filial),
-                ],
+
                 CART_TIME: [
                     MessageHandler(filters.TEXT & EXCLUDE, self.cart_time),
                     self.back(self.back_from_cart_time),
@@ -111,6 +79,7 @@ class TgBotCart(CartBack, CommonKeysMixin):
                     MessageHandler(filters.TEXT & EXCLUDE, self.cart_time_later_time),
                     self.back(self.back_from_cart_time_later_time),
                 ],
+
                 CART_PHONE_NUMBER: [
                     MessageHandler(
                         filters.CONTACT | (filters.TEXT & EXCLUDE),
@@ -123,7 +92,7 @@ class TgBotCart(CartBack, CommonKeysMixin):
                     self.back(self.back_from_cart_comment),
                 ],
                 CART_PROMOCODE: [
-                    MessageHandler(filters.TEXT & EXCLUDE, self.cart_coupon),
+                    MessageHandler(filters.TEXT & EXCLUDE, self.cart_promocode),
                     self.back(self.back_from_cart_coupon),
                 ],
                 CART_CONFIRM: [
@@ -135,12 +104,17 @@ class TgBotCart(CartBack, CommonKeysMixin):
                         filters.Text(multilanguage.get_all("buttons.cancel")),
                         self.cart_reject,
                     ),
+                    self.back(
+                        self.back_from_cart_confirm
+                    )
                 ],
                 PAYMENT_METHOD: [
-                    MessageHandler(filters.TEXT & EXCLUDE, self.cart_payment_method)
+                    MessageHandler(filters.Text(multilanguage.get_all("payment.click","payment.payme","payment.cash")) & EXCLUDE, self.cart_payment_method)
                 ]
             },
-            self.ANYTHING,
+            [
+                CommandHandler('start',self.start)
+            ],
             self.redis,
             True,
             {
@@ -273,7 +247,7 @@ class TgBotCart(CartBack, CommonKeysMixin):
 
         item = user.cart.items.filter(id=itemId).first()
 
-        if item == None:
+        if item is None:
             # TODO: Impelement error text
             await update.callback_query.answer()
             return
@@ -290,7 +264,7 @@ class TgBotCart(CartBack, CommonKeysMixin):
 
         item = user.cart.items.filter(id=itemId).first()
 
-        if item == None:
+        if item is None:
             # TODO: Impelement error text
             await update.callback_query.answer()
             return
@@ -326,161 +300,16 @@ class TgBotCart(CartBack, CommonKeysMixin):
     async def cart_done(self, update: UPD, context: CTX):
         tg_user, user, temp, i18n = User.get(update)
 
-        await tg_user.send_message(
-            i18n.cart.get_method(),
-            reply_markup=ReplyKeyboardMarkup(
-                [[i18n.cart.deliver(), i18n.cart.take_away()]]
-            ),
-            parse_mode="HTML",
-        )
-        await self.delete_messages(update, context)
+        # cart = user.cart
 
-        return CART_GET_METHOD
-
-    async def cart_get_method_deliver(self, update: UPD, context: CTX):
-        tg_user, user, temp, i18n = User.get(update)
-
-        cart = user.cart
-
-        cart.delivery = "DELIVER"
-        cart.save()
-
-        await tg_user.send_message(
-            i18n.deliver.location.ask(),
-            reply_markup=ReplyKeyboardMarkup(
-                [
-                    [KeyboardButton(i18n.buttons.location(), request_location=True)],
-                    [i18n.buttons.my_locations()],
-                ]
-            ),
-            parse_mode="HTML",
-        )
-        return DELIVERY_LOCATION
-
-    async def cart_delivery_location(self, update: UPD, context: CTX):
-        tg_user, user, temp, i18n = User.get(update)
-
-        location = update.message.location
-
-        nominatim = Nominatim(user_agent="Google")
-
-        address = nominatim.reverse(f"{location.latitude},{location.longitude}")
-
-        new_location = user.locations.create(
-            name=str(address),
-            latitude=location.latitude,
-            longitude=location.longitude,
-            address=str(address)
-        )
-
-        temp.location = new_location
-        temp.save()
-
-        await tg_user.send_message(
-            i18n.deliver.location.confirm(address=address),
-            reply_markup=ReplyKeyboardMarkup(
-                [
-                    [
-                        KeyboardButton(
-                            i18n.deliver.location.resend(), request_location=True
-                        )
-                    ],
-                    [i18n.buttons.confirm()],
-                ]
-            ),
-            parse_mode="HTML",
-        )
-
-        return CART_DELIVER_LOCATION_CONFIRM
-
-    async def cart_deliver_location_confirm(self, update: UPD, context: CTX):
-        tg_user, user, temp, i18n = User.get(update)
-
-        cart = user.cart
-
-        cart.location = temp.location
-        cart.save()
+        # cart.promocode = None
+        # cart.time = None
+        # cart.filial = None
+        # cart.location = None
+        # cart.save()
 
         await tg_user.send_message(
             i18n.time.deliver(),
-            reply_markup=ReplyKeyboardMarkup(
-                [
-                    [
-                        i18n.time.asap(),
-                    ],
-                    [i18n.time.later()],
-                ]
-            ),
-            parse_mode="HTML",
-        )
-        return CART_TIME
-
-    async def cart_get_method_take_away(self, update: UPD, context: CTX):
-        tg_user, user, temp, i18n = User.get(update)
-
-        cart = user.cart
-
-        cart.delivery = "TAKEAWAY"
-        cart.save()
-
-        filials = Filial.objects.filter(active=True)
-
-        await tg_user.send_message(
-            i18n.takeaway.filial.ask(),
-            reply_markup=ReplyKeyboardMarkup(
-                [
-                    [
-                        KeyboardButton(
-                            i18n.takeaway.filial.check_nearest_filial(),
-                            request_location=True,
-                        )
-                    ],
-                    *distribute([i18n.get_name(filial) for filial in filials]),
-                ]
-            ),
-            parse_mode="HTML",
-        )
-
-        return CART_TAKEAWAY_FILIAL
-
-    async def cart_takeaway_filial_location(self, update: UPD, context: CTX):
-        tg_user, user, temp, i18n = User.get(update)
-
-        location = update.message.location
-
-        filial: Filial | None = Filial.get_nearest_filial(location)
-
-        filials = Filial.objects.filter(active=True)
-
-        await tg_user.send_message(
-            i18n.takeaway.filial.filial_info(filial=i18n.get_name(filial)),
-            reply_markup=ReplyKeyboardMarkup(
-                [
-                    [i18n.takeaway.filial.check_nearest_filial()],
-                    *distribute([i18n.get_name(filial) for filial in filials]),
-                ]
-            ),
-            parse_mode="HTML",
-        )
-
-    async def cart_takeaway_filial(self, update: UPD, context: CTX):
-        tg_user, user, temp, i18n = User.get(update)
-
-        filial = Filial.objects.filter(i18n.filter_name(update.message.text)).first()
-
-        if filial == None:
-            await tg_user.send_message(
-                i18n.takeaway.filial.not_found(), parse_mode="HTML"
-            )
-            return await self.cart_get_method_take_away(update, context)
-
-        cart = user.cart
-
-        cart.filial = filial
-        cart.save()
-
-        await tg_user.send_message(
-            i18n.time.takeaway(),
             reply_markup=ReplyKeyboardMarkup(
                 [
                     [
@@ -552,8 +381,6 @@ class TgBotCart(CartBack, CommonKeysMixin):
         cart.time = time
         cart.save()
 
-        # TODO: Implement payment
-
         await tg_user.send_message(
             i18n.data.phone_number.ask(),
             reply_markup=ReplyKeyboardMarkup(
@@ -615,60 +442,62 @@ class TgBotCart(CartBack, CommonKeysMixin):
 
         return CART_PROMOCODE
 
-    async def cart_coupon(self, update: UPD, context: CTX):
+    async def cart_promocode(self, update: UPD, context: CTX):
         tg_user, user, temp, i18n = User.get(update)
 
         cart = user.cart
 
-        promocode = Promocode.objects.filter(code__iexact=update.message.text,
-                                             end_date__gte=timezone.now()
-                                             ).first()
+        if update.message.text != i18n.buttons.skip():
 
-        if promocode is None:
-            await tg_user.send_message(
-                i18n.order.promocode.not_found(),
-                reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
-                parse_mode="HTML"
-            )
-            return CART_PROMOCODE
+            promocode = Promocode.objects.filter(code__iexact=update.message.text,
+                                                 end_date__gte=timezone.now()
+                                                 ).first()
 
-        used = user.carts.filter(promocode=promocode).exists()
+            if promocode is None:
+                await tg_user.send_message(
+                    i18n.order.promocode.not_found(),
+                    reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
+                    parse_mode="HTML"
+                )
+                return CART_PROMOCODE
 
-        if used:
-            await tg_user.send_message(
-                i18n.order.promocode.used(),
-                reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
-                parse_mode="HTML"
-            )
-            return CART_PROMOCODE
+            used = user.carts.filter(promocode=promocode).exists()
 
-        if promocode.orders.count() >= promocode.count:
-            await tg_user.send_message(
-                i18n.order.promocode.ended(),
-                reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
-                parse_mode="HTML"
-            )
+            if used:
+                await tg_user.send_message(
+                    i18n.order.promocode.used(),
+                    reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
+                    parse_mode="HTML"
+                )
+                return CART_PROMOCODE
 
-            return CART_PROMOCODE
+            if promocode.orders.count() >= promocode.count:
+                await tg_user.send_message(
+                    i18n.order.promocode.ended(),
+                    reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
+                    parse_mode="HTML"
+                )
 
-        if promocode.min_amount != -1 and promocode.min_amount > cart.price:
-            await tg_user.send_message(
-                i18n.order.promocode.min_amount(amount=promocode.min_amount),
-                reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
-                parse_mode="HTML"
-            )
-            return CART_PROMOCODE
+                return CART_PROMOCODE
 
-        if promocode.max_amount != -1 and promocode.max_amount < cart.price:
-            await tg_user.send_message(
-                i18n.order.promocode.min_amount(amount=promocode.max_amount),
-                reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
-                parse_mode="HTML"
-            )
-            return CART_PROMOCODE
+            if promocode.min_amount > 0 and promocode.min_amount > cart.price:
+                await tg_user.send_message(
+                    i18n.order.promocode.min_amount(amount=promocode.min_amount),
+                    reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
+                    parse_mode="HTML"
+                )
+                return CART_PROMOCODE
 
-        cart.promocode = promocode
-        cart.save()
+            if 0 < promocode.max_amount < cart.price:
+                await tg_user.send_message(
+                    i18n.order.promocode.min_amount(amount=promocode.max_amount),
+                    reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
+                    parse_mode="HTML"
+                )
+                return CART_PROMOCODE
+
+            cart.promocode = promocode
+            cart.save()
 
         products_text = []
 
@@ -689,7 +518,7 @@ class TgBotCart(CartBack, CommonKeysMixin):
                 promocode=i18n.order.info.promocode(name=cart.promocode.name, amount=cart.promocode.amount,
                                                     measurement="%" if cart.promocode.measurement == "PERCENT" else "so'm") if cart.promocode else "",
                 filial=i18n.get_name(cart.filial),
-                total_price=cart.price,
+                total_price=cart.discount_price,
                 orders="\n".join(products_text),
             ),
             reply_markup=ReplyKeyboardMarkup(
@@ -709,7 +538,6 @@ class TgBotCart(CartBack, CommonKeysMixin):
 
     async def cart_confirm(self, update: UPD, context: CTX):
         tg_user, user, temp, i18n = User.get(update)
-
 
         await tg_user.send_message(
             i18n.payment.method.ask(),
@@ -737,7 +565,7 @@ class TgBotCart(CartBack, CommonKeysMixin):
 
         method = methods.get(update.message.text)
 
-        if method == None:
+        if method is None:
             await tg_user.send_message(i18n.payment.method.not_found(), reply_markup=ReplyKeyboardMarkup([
                 [
                     i18n.payment.click(),
@@ -755,6 +583,14 @@ class TgBotCart(CartBack, CommonKeysMixin):
         products = [
             LabeledPrice(i18n.get_name(item.product), int((item.count * item.price) * 100)) for item in cart.items.all()
         ]
+        if cart.promocode:
+            print(cart.saving * 100)
+            products.append(
+                LabeledPrice(
+                    "Promocode",
+                    -int(cart.saving * 100),
+                )
+            )
 
         if method in [CLICK, PAYME]:
             cart.status = "PENDING_PAYMENT"
@@ -767,6 +603,16 @@ class TgBotCart(CartBack, CommonKeysMixin):
                 "UZS",
                 products,
             )
-            return -1
+            return MAIN_MENU
         else:
+            cart.order_time = timezone.now()
+            cart.status = "PENDING"
+            cart.save()
+            
+            order = cart.order(self.iiko_manager)
+            
+            if order:
+                await tg_user.send_message("Buyurtma iikoga yuborildi.")
+            else:
+                await tg_user.send_message("Buyurtma iikoga yuborilmadi.")
             await tg_user.send_message(i18n.payment.done(), parse_mode="HTML")

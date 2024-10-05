@@ -2,7 +2,7 @@ import os
 from telegram.ext import ContextTypes
 from typing import TypeVar
 from telegram import Update
-from telegram.ext.filters import Text
+from telegram.ext.filters import Text,Regex
 from utils.language import multilanguage
 
 CTX = TypeVar("CTX", bound=ContextTypes.DEFAULT_TYPE)
@@ -10,18 +10,29 @@ UPD = TypeVar("UPD", bound=Update)
 
 PASSWORD = os.getenv("PASSWORD")
 
-EXCLUDE = ~Text(
-    [
-        "/start",
-        f"/start {PASSWORD}",
-        f"/start basicUser",
-        *multilanguage.get_all("buttons.back", "main_menu.feedback"),
-    ]
+# EXCLUDE = ~Text(
+#     [
+#         "/start",
+#         f"/start {PASSWORD}",
+#         f"/start basicUser",
+#         *multilanguage.get_all("buttons.back", "main_menu.feedback"),
+#     ]
+# )
+
+
+
+EXCLUDE = ~(
+    Regex(r"^\/start\s*(\w+)?$") | Text(multilanguage.get_all("buttons.back", "main_menu.feedback"))
 )
+
+
+
+
 
 UZ = "🇺🇿 O'zbekcha"
 RU = "🇷🇺 Русский"
-EN = "🇺🇸 English"
+#EN = "🇺🇸 English"
+EN = ""
 
 CLICK = "CLICK"
 PAYME = "PAYME"
@@ -65,3 +76,7 @@ FEEDBACK_SERVICE = "FEEDBACK_SERVICE"
 FEEDBACK_COMMENT = "FEEDBACK_COMMENT"
 
 INFO_FILIAL = "INFO_FILIAL"
+
+
+
+MENU_GET_METHOD = "MENU_GET_METHOD"

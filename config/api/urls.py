@@ -15,6 +15,12 @@ urlpatterns = [
     path("products", include("data.product.urls")),
     path("files", include("data.file.urls")),
     path("orders", include("data.cart.urls")),
+    path("payments", include("data.payment.urls")),
+
+    path("filials", include("data.filial.urls")),
+    path("referrals", include("data.referral.urls")),
+    path("sync", include("data.sync.urls")),
+
     path("", include("data.admins.urls")),
     path("", include("data.promocode.urls")),
     path("", include("data.users.urls")),

@@ -1,4 +1,23 @@
 {
+  "order_history": {
+    "info": [
+      "Buyurtma raqami: {order_id}\n",
+      "Holat: {status}\n",
+      "Yetkazib berish turi: {deliver_type}\n",
+      "{filial_or_address}\n\n",
+      "{products_text}\n\n",
+      "{payment}",
+      "{promocode}",
+      "Mahsulotlar: {price} so'm\n",
+      "Yetkazib berish: {delivery_price}\n",
+      "Jami: {total_price}"
+    ],
+    "promocode": "Promokod: {name} - {amount} {measurement} chegirma\n",
+    "location": "Manzil: {address}",
+    "filial": "Filial: {filial}",
+    "item": "{count} ✖\uFE0F {product_name}",
+    "payment": "To'lov turi: {payment_type}"
+  },
   "register": {
     "lang": {
       "ask": "<b>🌍 Iltimos, o'zingizga mos tilni tanlang:</b>\n\n<b>🇷🇺 Выберите язык, пожалуйста:</b>\n\n<b>🇺🇸 Please choose your preferred language:</b>",
@@ -17,7 +36,7 @@
     "feedback": "✍️ Fikr-mulohaza qoldirish",
     "info": "ℹ️ Ma'lumotlar",
     "contact": "☎️ Bog'lanish",
-    "settings": "⚙️ Sozlamalar"
+    "change_language": "\uD83C\uDDFA\uD83C\uDDFF Tilni o'zgartirish"
   },
   "menu": {
     "welcome": [
@@ -104,7 +123,8 @@
       "not_found": "Kechirasiz promokod topilmadi.",
       "min_amount": "Promokodni ishlatish uchun buyurtmaning minimal narxi {amount} so'm bo'lishi kerak.",
       "max_amount": "Promokodni ishlatish uchun buyurtmaning maksimal narxi {amount} so'm bo'lishi kerak.",
-      "ended": "Promokodlar soni tugagan."
+      "ended": "Promokodlar soni tugagan.",
+      "used": "Kechirasiz promocode ishlatib bo'lingan."
     },
     "comment": {
       "ask": "Izoh qoldiring"

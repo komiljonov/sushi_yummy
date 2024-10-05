@@ -1,25 +1,25 @@
 from typing import TYPE_CHECKING
 from django.db import models
 
-
 from common.models import TimeStampModel
 from telegram import Update
 
-from data.feedback.models import Service
-from data.filial.models import Filial
 from utils.language import multilanguage
-
 
 if TYPE_CHECKING:
     from data.cart.models import Cart
     from data.category.models import Category
     from data.product.models import Product
+    from data.referral.models import Referral
+    from data.filial.models import Filial
+    from data.feedback.models import Service
+    from data.analytics.models import CategoryVisit, ProductVisit
+
 
 # Create your models here.
 
 
 class User(TimeStampModel):
-
     chat_id = models.BigIntegerField()
 
     name = models.CharField(max_length=255, null=True, blank=True)
@@ -30,14 +30,23 @@ class User(TimeStampModel):
 
     lang = models.CharField(max_length=255, null=True, blank=True)
 
+    referral: "Referral" = models.ForeignKey(
+        'referral.Referral',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="users"
+    )
+
     carts: "models.QuerySet[Cart]"
     locations: "models.QuerySet[Location]"
+    category_visits: "models.QuerySet[CategoryVisit]"
+    product_visits: "models.QuerySet[ProductVisit]"
 
     @classmethod
     def get(cls, update: Update):
         tg_user = update.effective_user
-
-        user = cls.objects.prefetch_related("carts").get_or_create(
+        user: "User" = cls.objects.prefetch_related("carts").get_or_create(
             chat_id=tg_user.id, tg_name=tg_user.full_name, username=tg_user.username
         )[0]
 
@@ -59,7 +68,6 @@ class User(TimeStampModel):
 
 
 class UserTemp(TimeStampModel):
-
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     category: "Category" = models.ForeignKey(
@@ -90,7 +98,6 @@ class UserTemp(TimeStampModel):
 
 
 class Location(TimeStampModel):
-
     user = models.ForeignKey(
         User, on_delete=models.SET_NULL, null=True, blank=True, related_name="locations"
     )

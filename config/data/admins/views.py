@@ -1,20 +1,21 @@
-from django.contrib.auth.models import User
 from django.http import HttpRequest
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
+
+from .models import CustomUser
 from .serializers import AdminSerializer
 from rest_framework.request import Request
 
 
 class AdminViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
+    queryset = CustomUser.objects.all()
     serializer_class = AdminSerializer
     permission_classes = [IsAuthenticated]  # Add appropriate permissions as needed
 
     request: HttpRequest | Request
 
     def perform_create(self, serializer: AdminSerializer):
-        user: User = serializer.save()
+        user: CustomUser = serializer.save()
         password = self.request.data.get("password")
         if password:
             user.set_password(password)
@@ -22,7 +23,7 @@ class AdminViewSet(viewsets.ModelViewSet):
         user.save()
 
     def perform_update(self, serializer: AdminSerializer):
-        user: User = serializer.save()
+        user: CustomUser = serializer.save()
         password = self.request.data.get("password")
         if password:
             user.set_password(password)

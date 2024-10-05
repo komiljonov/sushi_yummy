@@ -94,7 +94,7 @@ class MultiLanguage:
                     self.translations[language_code] = json.load(file)
 
     def get_all(self, *text_names, **kwargs):
-        all_texts = []
+        all_texts = [*text_names]
 
         for language_code, translations in self.translations.items():
             for text_name in text_names:

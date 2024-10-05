@@ -2,11 +2,11 @@ import math
 from typing import TYPE_CHECKING
 from django.db import models
 
-
 from common.models import TimeStampModel
-from django.db.models import F, FloatField, ExpressionWrapper, Func
+from django.db.models import Func
 
-from telegram import Location as TgLocation
+from data.category.models import Category
+from django.contrib import admin
 
 
 if TYPE_CHECKING:
@@ -37,15 +37,22 @@ class Pow(Func):
 
 
 class Filial(TimeStampModel):
+    name_uz = models.CharField(max_length=255, null=True, blank=True)
+    name_ru = models.CharField(max_length=255, null=True, blank=True)
 
-    name_uz = models.CharField(max_length=255)
-    name_ru = models.CharField(max_length=255)
+    iiko_id = models.CharField(max_length=255)
+    terminal_id = models.CharField(max_length=255)
 
     location: "Location" = models.ForeignKey(
         "bot.Location", on_delete=models.SET_NULL, null=True, blank=True
     )
 
     active = models.BooleanField(default=True)
+
+    categories: models.QuerySet["Category"]
+
+    def __str__(self):
+        return f"Filial ( {self.name_uz} )"
 
     @staticmethod
     def haversine(lon1, lat1, lon2, lat2):
@@ -82,3 +89,7 @@ class Filial(TimeStampModel):
                     nearest_filial = filial
 
         return nearest_filial
+
+    class Admin(admin.ModelAdmin):
+
+        list_display = ["name_uz", "iiko_id", "terminal_id", "location"]
