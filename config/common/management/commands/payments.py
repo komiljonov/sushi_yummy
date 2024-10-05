@@ -48,7 +48,7 @@ class Command(BaseCommand):
                 provider=provider,
                 amount=amount,
                 status=status,
-                order=cart,
+                # order=cart,
                 data={
                     "transaction_id": random.randint(1000, 9999),
                     "description": f"Test payment with provider {provider}",
