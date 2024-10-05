@@ -1,5 +1,5 @@
 from django.urls import path, include
-
+from .views import StatisticsAPIView
 # from rest_framework.routers import DefaultRouter
 
 # from data.users.views import UserViewSet
@@ -28,5 +28,7 @@ urlpatterns = [
     
     path("webhook", include("webhook.urls")),
     
+    
+    path("statistics",StatisticsAPIView.as_view())
     
 ]
