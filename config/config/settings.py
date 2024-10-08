@@ -57,7 +57,7 @@ INSTALLED_APPS = [
     "data.referral",
     "data.analytics",
     "data.sync",
-    "data.taxi"
+    "data.taxi",
 ]
 
 CORS_ALLOWED_ORIGINS = [
@@ -66,11 +66,14 @@ CORS_ALLOWED_ORIGINS = [
     "https://sushi-yummy.vercel.app",
     "http://localhost:63342",
     "https://api.sushi.sectorsoft.uz",
-    "http://api.sushi.sectorsoft.uz"
+    "http://api.sushi.sectorsoft.uz",
+    "http://192.168.27.78:3000"
 ]
 
+# CORS_ALLOW_ALL_ORIGINS = True
+
 CSRF_TRUSTED_ORIGINS = [
-    'https://api.sushi.sectorsoft.uz',  # Add your API domain here
+  "https://api.sushi.sectorsoft.uz",
 ]
 
 MIDDLEWARE = [
