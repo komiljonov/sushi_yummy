@@ -99,10 +99,12 @@ class TgBotCart(CartBack, CommonKeysMixin):
                 ],
                 CART_DELIVER_LOCATION_CONFIRM: [
                     MessageHandler(filters.LOCATION, self.cart_delivery_location),
+                    
                     MessageHandler(
                         filters.Text(multilanguage.get_all("buttons.confirm")),
                         self.cart_deliver_location_confirm,
                     ),
+                    
                     self.back(self.back_from_cart_delivery_location_confirm),
                 ],
                 CART_TAKEAWAY_FILIAL: [

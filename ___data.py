@@ -1,0 +1,1 @@
+{'Content-Length': '6107', 'Content-Type': 'application/json; charset=utf-8', 'Host': 'api.sushi.sectorsoft.uz', 'X-Real-Ip': '217.197.116.80', 'X-Forwarded-For': '217.197.116.80', 'X-Forwarded-Proto': 'https', 'Connection': 'close', 'Authorization': 'Bearer ABC1234', 'Trncorrelationid': '00c43750-a443-41f6-9ae7-3434ac0263aa'}
