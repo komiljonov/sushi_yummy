@@ -307,7 +307,7 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
         cart.order_time = timezone.now()
         cart.save()
 
-        # order = cart.order(self.iiko_manager)
+        order = cart.order(self.iiko_manager)
 
         # if order:
         #     await tg_user.send_message("Buyurtma iikoga yuborildi.")
