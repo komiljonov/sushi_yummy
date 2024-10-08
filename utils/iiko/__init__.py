@@ -208,6 +208,13 @@ class Iiko:
                     }
                     for item in cart.items.all()
                 ],
+                "externalData": [
+                    {
+                        "key": "TaxiIdKomiljonov",
+                        "value": "Salom Ishladi external data",
+                        "isPublic": True,
+                    }
+                ],
             },
         }
 
