@@ -61,18 +61,48 @@ class Iiko:
 
         data = req.json()
 
-        orgs = []
+        orgs = [org["id"] for org in data["organizations"]]
+
+        # for org in data["organizations"]:
+        #     orgs.append(
+        #         Organization(
+        #             id=org["id"],
+        #             name=org["name"],
+        #             responseType=org["responseType"],
+        #             code=org["code"],
+        #         )
+        #     )
+
+        return self.get_organizations_data(orgs)
+
+    def get_organizations_data(self, organizations: list[str]):
+
+        req = requests.post(
+            f"{self.BASE_URL}/organizations/settings",
+            headers={"Authorization": f"Bearer {self.token}"},
+            json={
+                "organizationIds": organizations,
+                "includeDisabled": True,
+                "parameters": ["name", "latitude", "longitude"],
+            },
+        )
+
+        data = req.json()
+
+        res = []
 
         for org in data["organizations"]:
-            orgs.append(
+
+            res.append(
                 Organization(
                     id=org["id"],
                     name=org["name"],
-                    responseType=org["responseType"],
-                    code=org["code"],
+                    latitude=org["latitude"],
+                    longitude=org["longitude"],
                 )
             )
-        return orgs
+            
+        return org
 
     def get_nomenclatures(self, organization_id: str):
 
@@ -188,21 +218,6 @@ class Iiko:
                 },
                 "externalCartographyId": str(cart.location.id),
             }
-            # data["order"]["deliveryPoint"] = {
-            #     "Address": {
-            #         "city": "Чапаевск",
-            #         "street": {
-            #             "id": "95f5a00d-f20f-4f38-9782-c8892d2e2f85",
-            #             "name": "Доставка",
-            #             "externalRevision": 6876,
-            #             "classifierId": None,
-            #             "isDeleted": False,
-            #         },
-            #         "house": "28",
-            #         "building": None,
-            #         "index": None,
-            #     }
-            # }
 
         res = requests.post(
             f"{self.BASE_URL}deliveries/create",

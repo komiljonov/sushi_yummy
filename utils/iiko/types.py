@@ -4,10 +4,10 @@ from typing import Any, Optional, List, Dict
 
 @dataclass
 class Organization:
-    responseType: str
     id: str
     name: str
-    code: str
+    latitude: float
+    longitude: float
 
 
 @dataclass
