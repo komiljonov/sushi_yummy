@@ -49,13 +49,10 @@ class SyncAPIView(APIView):
         if created:
             filial.name_uz = organization.name
             filial.name_ru = organization.name
-            filial.save()
-
-        if filial.location == None:
             filial.location = Location.objects.create(
                 name=organization.name,
-                latitude=41.2995,
-                longitude=69.2401,
+                latitude=organization.latitude,
+                longitude=organization.longitude,
                 address=organization.name,
                 used=True,
                 special=True,
@@ -67,10 +64,6 @@ class SyncAPIView(APIView):
 
         nomenclatures = manager.get_nomenclatures(organization.id)
 
-        # groups = nomenclatures.groups
-
-        # self._sync_categories(groups, filial)
-        # self._link_categories(groups)
 
         self._sync_products(nomenclatures.products, filial)
 
