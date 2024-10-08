@@ -104,7 +104,7 @@ class Iiko:
                 )
             )
             
-        return org
+        return res
 
     def get_nomenclatures(self, organization_id: str):
 
