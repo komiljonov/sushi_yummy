@@ -78,7 +78,7 @@ class Iiko:
     def get_organizations_data(self, organizations: list[str]):
 
         req = requests.post(
-            f"{self.BASE_URL}/organizations/settings",
+            f"{self.BASE_URL}organizations/settings",
             headers={"Authorization": f"Bearer {self.token}"},
             json={
                 "organizationIds": organizations,
@@ -86,6 +86,8 @@ class Iiko:
                 "parameters": ["name", "latitude", "longitude"],
             },
         )
+        
+        print(req.text)
 
         data = req.json()
 
