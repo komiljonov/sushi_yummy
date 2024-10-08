@@ -86,7 +86,7 @@ class Iiko:
                 "parameters": ["name", "latitude", "longitude"],
             },
         )
-        
+
         print(req.text)
 
         data = req.json()
@@ -103,7 +103,7 @@ class Iiko:
                     longitude=org["longitude"],
                 )
             )
-            
+
         return res
 
     def get_nomenclatures(self, organization_id: str):
