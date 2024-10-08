@@ -161,4 +161,6 @@ class Cart(TimeStampModel):
 
     def order(self, manager: "Iiko"):
         
-        return False
+        success = manager.create_order(self)
+        
+        return True
