@@ -27,6 +27,7 @@ urlpatterns = [
     
     
     path("webhook", include("webhook.urls")),
+    path("users", include("bot.urls")),
     
     
     path("statistics",StatisticsAPIView.as_view()),
