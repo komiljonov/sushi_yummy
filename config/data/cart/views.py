@@ -11,6 +11,7 @@ from rest_framework.generics import CreateAPIView
 from data.taxi.serializers import TaxiSerializer
 from utils.millenium import Millenium
 from rest_framework.response import Response
+from rest_framework import status
 
 # Create your views here.
 
