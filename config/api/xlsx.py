@@ -43,10 +43,8 @@ def generate_excel_from_orders(order_list: List[Cart], res: HttpResponse):
     # Create a DataFrame from the rows
     df = pd.DataFrame(rows)
 
-    res = BytesIO()
 
     # Save the DataFrame to an Excel file
     df.to_excel(res, index=False)
-    res.seek(0)
 
     return res
