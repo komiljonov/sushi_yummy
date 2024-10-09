@@ -1,6 +1,6 @@
 from telegram import KeyboardButton
 
-from bot.models import  User
+from bot.models import User
 from geopy.geocoders import Nominatim
 from data.filial.models import Filial
 
@@ -14,7 +14,8 @@ from tg_bot.constants import (
     CART_TIME_LATER_TIME,
     CTX,
     DELIVERY_LOCATION,
-    UPD, CART_PROMOCODE,
+    UPD,
+    CART_PROMOCODE,
 )
 from utils import ReplyKeyboardMarkup, distribute, get_later_times
 
@@ -191,13 +192,10 @@ class CartBack:
 
         await tg_user.send_message(
             i18n.data.comment.ask(),
-            reply_markup=ReplyKeyboardMarkup(
-                [[KeyboardButton(i18n.buttons.phone_number(), request_contact=True)]]
-            ),
-            parse_mode="HTML"
+            reply_markup=ReplyKeyboardMarkup([[KeyboardButton(i18n.buttons.skip())]]),
+            parse_mode="HTML",
         )
         return CART_COMMENT
-
 
     async def back_from_cart_confirm(self, update: UPD, context: CTX):
         tg_user, user, temp, i18n = User.get(update)
@@ -205,7 +203,7 @@ class CartBack:
         await tg_user.send_message(
             i18n.order.promocode.ask(),
             reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
-            parse_mode="HTML"
+            parse_mode="HTML",
         )
 
         return CART_PROMOCODE

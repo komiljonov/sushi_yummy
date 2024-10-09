@@ -61,6 +61,7 @@ class Cart(TimeStampModel):
             ("ORDERING", "Buyurtma berilmoqda"),
             ("PENDING_PAYMENT", "To'lov kutilmoqda"),
             ("PENDING", "Kutilmoqda"),
+            
             ("PENDING_KITCHEN", "Tayyorlanishi kutilmoqda"),
             ("PREPARING", "Tayyorlanmoqda"),
             ("DELIVERING", "Yetkazilmoqda"),
