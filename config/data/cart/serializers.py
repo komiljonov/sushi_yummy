@@ -178,6 +178,7 @@ class CreateOrderSerializer(serializers.Serializer):
                 else None
             ),
             order_time=now(),
+            status="PENDING_KITCHEN"
         )
 
         for item in validated_data.get("items"):
