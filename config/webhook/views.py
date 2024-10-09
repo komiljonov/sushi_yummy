@@ -33,9 +33,8 @@ class IikoOrderUpdateAPIView(APIView):
             if event.eventType != "DeliveryOrderUpdate":
                 continue
 
-
             order = Cart.objects.filter(iiko_id=event.eventInfo.id).first()
-            
+
             print(order, event.eventInfo.id)
 
             if order is None:
@@ -45,7 +44,7 @@ class IikoOrderUpdateAPIView(APIView):
 
                 order.status = "PENDING_KITCHEN"
                 order.save()
-                
+
                 print("Send Message", TOKEN)
 
                 bot.send_message(
@@ -56,14 +55,25 @@ class IikoOrderUpdateAPIView(APIView):
 
                 order.status == "PREPARING"
                 order.save()
-                
+
                 print("Send Message Started", TOKEN)
 
                 bot.send_message(
                     order.user.chat_id,
                     "Sizning buyurtmangiz tayyorlanmoqda.\n\nTez orada yetkaziladi.",
                 )
-                
+
+            if event.eventInfo.order.status == "Cancelled":
+                order.status = "CANCELLED"
+                order.save()
+
+                print("Send Message Cancellled", TOKEN)
+
+                bot.send_message(
+                    order.user.chat_id,
+                    "Sizning buyurtmangiz bekor qilindi.",
+                )
+
             print(f"Status: {event.eventInfo.order.status} {TOKEN}")
 
         return Response(data)
