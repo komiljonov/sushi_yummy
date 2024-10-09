@@ -35,7 +35,7 @@ def generate_excel_from_orders(order_list: List[Cart], res: HttpResponse):
                 "Mahsulot narxi": item.price,
                 "Mahsulot soni": item.count,
                 "Mahsulot jami narxi": (item.price * item.count),
-                "Mahsulot qo'shilgan vaqti": order.time,
+                "Mahsulot qo'shilgan vaqti": order.time.strftime("%d/%m/%Y, %H:%M:%S"),
             }
             # Append the row to the list
             rows.append(row)
