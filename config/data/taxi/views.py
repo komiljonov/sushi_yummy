@@ -18,7 +18,7 @@ class CalculateDeliveryPriceAPIView(APIView):
 
     def post(self, request: HttpRequest | Request):
 
-        serializer = CalculateDeliverySerializer(request.data)
+        serializer = CalculateDeliverySerializer(data=request.data)
 
         serializer.is_valid(raise_exception=True)
 
