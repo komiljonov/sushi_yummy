@@ -272,7 +272,7 @@ class Iiko:
 
         cart.save()
 
-        return _order.json()
+        return _order
 
     def get_terminal_id(self, organization: Organization):
 
