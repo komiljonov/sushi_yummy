@@ -38,7 +38,7 @@ class IikoOrderUpdateAPIView(APIView):
             order = Cart.objects.filter(iiko_id=event.eventInfo.id).first()
 
             if order is None:
-                pass
+                continue
 
             if event.eventInfo.order.status == "WaitCooking":
 
