@@ -263,10 +263,9 @@ class Iiko:
         cart.save()
 
         if not success:
-            print(_order.text)
-
             cart.correlation_id = _order.json()["correlationId"]
             cart.save()
+            
             return None
 
         sleep(2)

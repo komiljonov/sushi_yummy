@@ -4,6 +4,7 @@ from typing import Sequence
 from telegram import ReplyKeyboardMarkup as RKM
 from telegram._keyboardbutton import KeyboardButton
 from typing import TypeVar
+from datetime import datetime, timedelta
 
 
 T = TypeVar("T")
@@ -78,9 +79,22 @@ def format_number_with_emojis(number):
         "7": "7️⃣",
         "8": "8️⃣",
         "9": "9️⃣",
-        "0": "0️⃣"
+        "0": "0️⃣",
     }
 
     # Convert the number to a string and replace each digit with the corresponding emoji
-    formatted_number = ''.join([numbers[digit] for digit in str(number) if digit in numbers])
+    formatted_number = "".join(
+        [numbers[digit] for digit in str(number) if digit in numbers]
+    )
     return formatted_number
+
+
+def after_minutes(minutes=20):
+
+    # Get the current datetime and add 20 minutes
+    new_time = datetime.now() + timedelta(minutes=minutes)
+
+    # Format the datetime as 'YYYYMMDDHHMMSS'
+    formatted_time = new_time.strftime("%Y%m%d%H%M%S")
+
+    return formatted_time

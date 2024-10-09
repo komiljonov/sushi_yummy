@@ -1,11 +1,14 @@
-from dataclasses import dataclass
-import hashlib
-from time import sleep
-from urllib.parse import urlencode
-import httpx
+try:
+    import hashlib
+    from time import sleep
+    from urllib.parse import urlencode
+    import httpx
 
-from bot.models import Location
-from data.taxi.models import Taxi
+    from bot.models import Location
+    from data.taxi.models import Taxi
+    from utils import after_minutes
+except Exception as e:
+    print(e)
 
 
 class Millenium:
@@ -35,7 +38,12 @@ class Millenium:
         # Return the MD5 hash of the combined string
         return self.md5(string_to_hash)
 
-    def _create_order(self, phone: str, filial: Location, clientaddress: Location):
+    def get_query_string(self, data: dict):
+        return "&".join(f"{key}={value}" for key, value in data.items())
+
+    def _create_order(
+        self, phone: str, filial: "Location", clientaddress: "Location", address: str
+    ):
         """Constructs the URL for creating an order, sends the request, and returns the response."""
 
         # Data to be included in the URL and for the secret generation
@@ -46,9 +54,9 @@ class Millenium:
             "source_lon": filial.longitude,
             "dest_lat": clientaddress.latitude,
             "dest_lon": clientaddress.longitude,
-            "source_time": "20240926200351",  # Example time format
+            "source_time": after_minutes(20),
             "customer": "10",
-            "comment": "Salom",  # Change comment as needed
+            "comment": "Salom",
             "crew_group_id": "27",
         }
 
@@ -56,7 +64,8 @@ class Millenium:
         secret = self.getSecret(data)
 
         # Manually build the query string using a for loop
-        query_string = "&".join(f"{key}={value}" for key, value in data.items())
+        # query_string = "&".join(f"{key}={value}" for key, value in data.items())
+        query_string = self.get_query_string(data)
 
         # Full URL
         full_url = f"{self.host}/create_order?{query_string}"
@@ -92,7 +101,9 @@ class Millenium:
         # Return the response object (or response text)
         return response
 
-    def create_order(self, phone: str, filial: Location, clientaddress: Location):
+    def create_order(
+        self, phone: str, filial: "Location", clientaddress: "Location", address: str
+    ):
 
         order = self._create_order(phone, filial, clientaddress)
 
@@ -100,16 +111,15 @@ class Millenium:
             return None
 
         order_data = order.json()
-        
-        
+
         sleep(5)
 
-        # state = self.get_order_state(order_data["data"]["order_id"])
-        state = self.get_order_state(1168813)
+        state = self.get_order_state(order_data["data"]["order_id"])
+        # state = self.get_order_state(1168813)
 
         data: dict = state.json()["data"]
-        
-        
+
+        driver_data = self.get_driver_info(data["driver_id"])
 
         new_taxi = Taxi.objects.create(
             order_id=data["order_id"],
@@ -131,10 +141,33 @@ class Millenium:
             car_model=data.get("car_model"),
             car_color=data.get("car_color"),
             car_number=data.get("car_number"),
-            driver_phone_number=data.get("phone_to_dial"),
+            driver_phone_number=driver_data.get("phone_number"),
         )
 
         return new_taxi
+
+    def get_driver_info(self, driver_id: int):
+
+        data = {"driver_id": driver_id}
+
+        secret = self.getSecret(data)
+
+        query_string = self.get_query_string(data)
+
+        full_url = f"{self.host}/get_driver_info?{query_string}"
+
+        response = self.client.get(
+            full_url, headers={"Signature": secret, "X-User-Id": "10"}
+        )
+
+        data = response.json()["data"]
+
+        return {
+            "name": data.get("name"),
+            "balance": data.get("balance"),
+            "phone_number": data.get("mobile_phone"),
+            "passport": data.get("passport"),
+        }
 
 
 # # Example usage
