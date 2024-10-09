@@ -163,10 +163,6 @@ class Menu(MenuBack, CommonKeysMixin):
 
     #     location = update.message.location
 
-    #     nominatim = Nominatim(user_agent="Google")
-
-    #     address = nominatim.reverse(f"{location.latitude},{location.longitude}")
-
     #     new_location = user.locations.create(
     #         name=str(address),
     #         latitude=location.latitude,

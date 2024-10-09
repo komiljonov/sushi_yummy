@@ -18,6 +18,7 @@ from tg_bot.constants import (
     CART_PROMOCODE,
 )
 from utils import ReplyKeyboardMarkup, distribute, get_later_times
+from utils.geocoder import reverse_geocode
 
 
 class CartBack:
@@ -69,11 +70,9 @@ class CartBack:
         cart = user.cart
 
         if cart.delivery == "DELIVER":
-            nominatim = Nominatim(user_agent="Google")
-
-            address = nominatim.reverse(
-                f"{cart.location.latitude},{cart.location.longitude}"
-            )
+            
+            address = reverse_geocode(cart.location.latitude, cart.location.longitude)
+            
             await tg_user.send_message(
                 i18n.deliver.location.confirm(address=address),
                 reply_markup=ReplyKeyboardMarkup(

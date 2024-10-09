@@ -3,7 +3,6 @@ import base64
 from datetime import date, datetime, timedelta
 from typing import Callable, Coroutine
 
-from geopy.geocoders import Nominatim
 
 from django.utils import timezone
 from redis import Redis
@@ -44,6 +43,7 @@ from tg_bot.constants import (
 )
 from tg_bot.redis_conversation import ConversationHandler
 from utils import ReplyKeyboardMarkup, distribute, get_later_times
+from utils.geocoder import reverse_geocode
 from utils.language import multilanguage
 from tg_bot.common_file import CommonKeysMixin
 
@@ -414,9 +414,8 @@ class TgBotCart(CartBack, CommonKeysMixin):
 
         location = update.message.location
 
-        nominatim = Nominatim(user_agent="Google")
-
-        address = nominatim.reverse(f"{location.latitude},{location.longitude}")
+        
+        address = reverse_geocode(location.latitude, location.longitude)
 
         new_location = user.locations.create(
             name=str(address),
