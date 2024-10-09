@@ -47,7 +47,6 @@ class Millenium:
     def _create_order(self, cart: "Cart"):
         """Constructs the URL for creating an order, sends the request, and returns the response."""
 
-        # Data to be included in the URL and for the secret generation
         data = {
             "tariff_id": 47,
             "phone": cart.phone_number.replace("+", ""),
@@ -59,7 +58,12 @@ class Millenium:
             "dest_lat": cart.location.latitude,
             "dest_lon": cart.location.longitude,
             "source_time": after_minutes(20),
-            "comment": f"Sushi Yummy\n\nBuyurtma raqami: {cart.order_id}\n",
+            "comment": (
+                f"Sushi Yummy\n\n"
+                f"Buyurtma raqami: {cart.order_id}\n"
+                f"To'lov turi: {cart.payment.provider}\n"
+                f"Buyurtma narxi: {cart.price}\n"
+            ),
         }
 
         # Generate the secret
