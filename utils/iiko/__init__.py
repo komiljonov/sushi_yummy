@@ -179,7 +179,7 @@ class Iiko:
         )
 
         print(res.text)
-        
+
         if res.status_code != 200:
             return False
 
