@@ -75,6 +75,14 @@ class Millenium:
         response = self.client.post(
             full_url, headers={"Signature": secret, "X-User-Id": "10"}
         )
+        
+        print(response.text)
+        
+        try:
+            with open("taxi.txt", "w") as f:
+                f.write(response.text)
+        except Exception as e:
+            print(e)
 
         # Return the response object (or response text)
         return response
