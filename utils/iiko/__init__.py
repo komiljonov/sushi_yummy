@@ -228,7 +228,7 @@ class Iiko:
                 (
                     {
                         "paymentTypeId": payment_type.iiko_id,
-                        "sum": cart.payment.amount,
+                        "sum": cart.payment.amount / 100,
                         "isProcessedExternally": True,
                         "isPrepay": True,
                     }
