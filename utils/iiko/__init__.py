@@ -210,6 +210,7 @@ class Iiko:
                         "isPublic": True,
                     }
                 ],
+                "sourceKey": "Sector Soft"
             },
         }
 
