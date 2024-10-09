@@ -4,6 +4,7 @@ from django.http import HttpRequest, HttpResponse
 from rest_framework.views import APIView
 from rest_framework.request import Request
 
+from api.serializers import CartFilterSerializer
 from api.xlsx import generate_excel_from_orders
 from bot.models import User
 from data.cart.models import Cart
@@ -91,16 +92,20 @@ class StatisticsAPIView(APIView):
 
 class XlsxAPIView(APIView):
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request: HttpRequest | Request, *args, **kwargs):
+        serializer = CartFilterSerializer(data=request.data)
+        if serializer.is_valid():
+            orders = serializer.filter_orders()
 
-        response = HttpResponse(
-            content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
-        response["Content-Disposition"] = (
-            "attachment; filename=user_cart_statistics.xlsx"
-        )
+            response = HttpResponse(
+                content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
+            response["Content-Disposition"] = (
+                "attachment; filename=user_cart_statistics.xlsx"
+            )
 
-        # Save the workbook to the response
-        generate_excel_from_orders(Cart.objects.all(), response)
+            # Save the workbook to the response
+            generate_excel_from_orders(orders, response)
 
-        return response
+            return response
+        return Response(serializer.errors, status=400)
