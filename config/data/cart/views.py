@@ -1,12 +1,12 @@
 from django.http import HttpRequest
-from django.shortcuts import render
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.views import APIView
 from data.cart.models import Cart
-from data.cart.serializers import OrderSerializer
+from data.cart.serializers import CreateOrderSerializer, OrderSerializer
 from django.db.models import Q
 from rest_framework.request import Request
 from rest_framework.exceptions import NotFound, bad_request
+from rest_framework.generics import CreateAPIView
 
 from data.taxi.serializers import TaxiSerializer
 from utils.millenium import Millenium
@@ -51,3 +51,10 @@ class OrderCallTaxiAPIView(APIView):
         order.save()
 
         return Response(TaxiSerializer(taxi).data)
+
+
+class OrderCreateAPIVIew(CreateAPIView):
+    
+    
+    
+    serializer_class = CreateOrderSerializer

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from bot.models import Location
+from bot.models import Location, User
 from bot.serializers import LocationSerializer
 from data.cart.models import Cart
 from data.cartitem.serializers import CartItemSerializer
@@ -8,6 +8,7 @@ from data.filial.serializers import FilialSerializer
 from data.payment.serializers import PaymentSerializer
 from django.db.models import Sum
 
+from data.product.models import Product
 from data.promocode.serializers import PromocodeSerializer
 from data.taxi.serializers import TaxiSerializer
 from data.users.serializers import UserSerializer
@@ -17,7 +18,7 @@ class CartSerializer(serializers.ModelSerializer):
     location = LocationSerializer()
 
     payment = PaymentSerializer()
-    
+
     taxi = TaxiSerializer()
 
     class Meta:
@@ -29,13 +30,17 @@ class OrderSerializer(serializers.ModelSerializer):
     products_count = serializers.SerializerMethodField()
     payment = PaymentSerializer()
 
-    promocode = PromocodeSerializer(remove_fields=["orders",])
+    promocode = PromocodeSerializer(
+        remove_fields=[
+            "orders",
+        ]
+    )
 
     filial = FilialSerializer()
     location = LocationSerializer()
 
     user = UserSerializer()
-    
+
     taxi = TaxiSerializer()
 
     items = CartItemSerializer(many=True)
@@ -61,7 +66,7 @@ class OrderSerializer(serializers.ModelSerializer):
             "payment",
             "filial",
             "location",
-            "taxi"
+            "taxi",
         ]
 
     def get_products_count(self, obj: Cart):
@@ -78,3 +83,31 @@ class OrderSerializer(serializers.ModelSerializer):
             # Remove the fields from the serializer
             for field in fields_to_remove:
                 self.fields.pop(field, None)
+
+
+class CreateOrderItemSerializer(serializers.Serializer):
+
+    product = serializers.PrimaryKeyRelatedField(
+        queryset=Product.objects.all(), required=True
+    )
+
+    quantity = serializers.IntegerField(required=True)
+
+
+class CreateOrderSerializer(serializers.Serializer):
+
+    user = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(), null=True, blank=True
+    )
+    comment = serializers.CharField()
+    phone = serializers.CharField()
+    time = serializers.TimeField()
+
+    delivery = serializers.ChoiceField(
+        choices=[
+            ("DELIVERY", "Yetkazib berish"),
+            ("PICKUP", "Olib ketish"),
+        ]
+    )
+
+    items = serializers.ListSerializer(CreateOrderItemSerializer)

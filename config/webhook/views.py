@@ -59,28 +59,31 @@ class IikoOrderUpdateAPIView(APIView):
 
                 print("Send Message Started", TOKEN)
 
-                millenium = Millenium("3E8EA3F2-4776-4E1C-9A97-E4C13C5AEF1C")
-
-                taxi = millenium.create_order(order)
-
-                order.taxi = taxi
-
-                order.save()
-
                 bot.send_message(
                     order.user.chat_id,
                     f"Sizning buyurtmangiz tayyorlanmoqda.\n\nTez orada yetkaziladi.\n\n",
                 )
 
-                bot.send_message(
-                    order.user.chat_id,
-                    f"Sizning taxiingiz chaqirildi.\n\n"
-                    f"Mashina raqami: {taxi.car_number}\n"
-                    f"Mashina modeli: {taxi.car_model}\n"
-                    f"Mashina rusmi: {taxi.car_mark}\n"
-                    f"Mashina rangi: {taxi.car_color}\n"
-                    f"Haydovchi telefon raqami: {taxi.driver_phone_number}",
-                )
+                if order.delivery == "DELIVER":
+
+                    millenium = Millenium("3E8EA3F2-4776-4E1C-9A97-E4C13C5AEF1C")
+
+                    taxi = millenium.create_order(order)
+
+                    order.taxi = taxi
+
+                    order.save()
+
+                    bot.send_message(
+                        order.user.chat_id,
+                        f"Sizning taxiingiz chaqirildi.\n\n"
+                        f"Mashina raqami: {taxi.car_number}\n"
+                        f"Mashina modeli: {taxi.car_model}\n"
+                        f"Mashina rusmi: {taxi.car_mark}\n"
+                        f"Mashina rangi: {taxi.car_color}\n"
+                        f"Haydovchi telefon raqami: {taxi.driver_phone_number}"
+                        f"Yetkazib berish narxi: {taxi.total_sum}",
+                    )
 
             if event.eventInfo.order.status == "Cancelled":
                 order.status = "CANCELLED"
