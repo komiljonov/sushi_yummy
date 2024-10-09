@@ -50,6 +50,7 @@ class Millenium:
         data = {
             "phone": phone,
             "source": 1,
+            "is_prior": True,
             "source_lat": filial.latitude,
             "source_lon": filial.longitude,
             "dest_lat": clientaddress.latitude,
