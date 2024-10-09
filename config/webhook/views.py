@@ -44,6 +44,8 @@ class IikoOrderUpdateAPIView(APIView):
 
                 order.status = "PENDING_KITCHEN"
                 order.save()
+                
+                print("Send Message", TOKEN)
 
                 bot.send_message(
                     order.user.chat_id, "Sizning buyurtmangiz tayyorlanishi kutilmoqda."
@@ -53,10 +55,14 @@ class IikoOrderUpdateAPIView(APIView):
 
                 order.status == "PREPARING"
                 order.save()
+                
+                print("Send Message Started", TOKEN)
 
                 bot.send_message(
                     order.user.chat_id,
                     "Sizning buyurtmangiz tayyorlanmoqda.\n\nTez orada yetkaziladi.",
                 )
+                
+            print(f"Status: {event.eventInfo.order.status} {TOKEN}")
 
         return Response(data)
