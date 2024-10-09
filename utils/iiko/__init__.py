@@ -224,8 +224,9 @@ class Iiko:
         }
 
         print(payment_type, cart.payment)
+        
         if payment_type:
-            data["order"]["payment"] = [
+            data["order"]["payments"] = [
                 (
                     {
                         "paymentTypeId": payment_type.iiko_id,
