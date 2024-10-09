@@ -33,9 +33,10 @@ class IikoOrderUpdateAPIView(APIView):
             if event.eventType != "DeliveryOrderUpdate":
                 continue
 
-            print(event)
 
             order = Cart.objects.filter(iiko_id=event.eventInfo.id).first()
+            
+            print(order, event.eventInfo.id)
 
             if order is None:
                 continue
