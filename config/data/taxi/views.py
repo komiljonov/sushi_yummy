@@ -25,8 +25,8 @@ class CalculateDeliveryPriceAPIView(APIView):
         data = serializer.validated_data
 
         loc = Location(
-            latitude=serializer.get("latitude"),
-            longitude=serializer.get("longitude"),
+            latitude=data.get("latitude"),
+            longitude=data.get("longitude"),
         )
 
         filial = Filial.get_nearest_filial(loc)
