@@ -4,6 +4,7 @@ from django.http import HttpRequest, HttpResponse
 from rest_framework.views import APIView
 from rest_framework.request import Request
 
+from api.xlsx import generate_excel_from_orders
 from bot.models import User
 from data.cart.models import Cart
 from rest_framework.response import Response
@@ -91,13 +92,7 @@ class StatisticsAPIView(APIView):
 class XlsxAPIView(APIView):
 
     def post(self, request, *args, **kwargs):
-        # Get all users with related carts
-        users = User.objects.prefetch_related("carts").all()
 
-        # Generate the XLSX file
-        wb = self.generate_user_cart_statistics(users)
-
-        # Prepare the response with the XLSX file
         response = HttpResponse(
             content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
@@ -106,88 +101,6 @@ class XlsxAPIView(APIView):
         )
 
         # Save the workbook to the response
-        wb.save(response)
+        generate_excel_from_orders(Cart.objects.all(), response)
 
         return response
-
-    def generate_user_cart_statistics(self, users: list[User]):
-        # Create a workbook and select the active sheet
-        wb = openpyxl.Workbook()
-        sheet = wb.active
-        sheet.title = "Statistika"
-
-        # Add headers (customize based on your uploaded file)
-        headers = [
-            "Foydalanuvchi",
-            "Foydalanuvchi ma'lumotlari",
-            "Birinchi start bosgan sanasi",
-            "Buyurtma idsi",
-            "Buyurtma holati",
-            "Tan narxi",
-            "Chegirma",
-            "Ohirgi narxi",
-            "Yetkazib berish turi",
-            "Joylashuv",
-            "TO'lov holati",
-            "Taomlar",
-        ]
-        sheet.append(headers)
-
-        row_num = 2  # Starting row (after headers)
-
-        for idx, user in enumerate(users, start=1):
-            # Write user header
-            sheet[f"A{row_num}"] = f"{idx}. User"
-            sheet[f"B{row_num}"] = (
-                f"{user.name or 'No Name'} - {user.number or 'No Number'}"
-            )
-            sheet[f"B{row_num}"].alignment = Alignment(horizontal="left")
-            sheet[f"C{row_num}"] = user.created_at.strftime("%d/%m/%Y, %H:%M:%S")
-
-            row_num += 1  # Move to the next row
-
-            # Write cart data for the user
-            for cart in user.carts.all():
-                sheet[f"D{row_num}"] = cart.order_id  # Order ID
-                sheet[f"E{row_num}"] = cart.status  # Order Status
-                sheet[f"F{row_num}"] = cart.price  # Total Price
-                sheet[f"G{row_num}"] = cart.saving  # Discount
-                sheet[f"H{row_num}"] = cart.discount_price  # Final Price
-                sheet[f"I{row_num}"] = "Yetkazib berish" if cart.delivery == "DELIVER" else "Olib ketish"   # Delivery Method
-                sheet[f"J{row_num}"] = (
-                    cart.location.name if cart.location else "N/A"
-                )
-                sheet[f"K{row_num}"] = (
-                    cart.payment.status if cart.payment else "To'lanmagan"
-                )
-
-            
-                ordered_items = ", ".join(
-                    [
-                        f"{item.product.name_uz if item.product else ""} (x {item.count}, {item.price})"
-                        for item in cart.items.all()
-                    ]
-                )
-                sheet[f"L{row_num}"] = (
-                    ordered_items if ordered_items else "No items ordered"
-                )
-
-                # Align all data cells
-                for col in range(4, 13):  # From columns D to L
-                    sheet[f"{get_column_letter(col)}{row_num}"].alignment = Alignment(
-                        horizontal="left"
-                    )
-
-                row_num += 1
-
-            # Add an empty row after each user's data
-            row_num += 1
-
-        # Adjust column width for readability
-        for col in range(1, sheet.max_column + 1):
-            column_letter = get_column_letter(col)
-            sheet.column_dimensions[column_letter].width = (
-                25  # Set width for each column
-            )
-
-        return wb
