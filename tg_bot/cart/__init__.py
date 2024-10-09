@@ -871,7 +871,7 @@ class TgBotCart(CartBack, CommonKeysMixin):
                 reply_markup=InlineKeyboardMarkup([[
                     InlineKeyboardButton("To'lash",pay=True)
                 ],[
-                    InlineKeyboardButton(i18n.buttons.back(),callback_data="back")
+                    InlineKeyboardButton(i18n.buttons.back(),callback_data=f"back:{cart.id}")
                 ]])
             )
             return CART_PAYMENT

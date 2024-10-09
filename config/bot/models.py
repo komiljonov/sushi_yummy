@@ -31,15 +31,14 @@ class User(TimeStampModel):
     lang = models.CharField(max_length=255, null=True, blank=True)
 
     referral: "Referral" = models.ForeignKey(
-        'referral.Referral',
+        "referral.Referral",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="users"
+        related_name="users",
     )
-    
-    
-    last_update = models.DateTimeField(null=True,blank=True)
+
+    last_update = models.DateTimeField(null=True, blank=True)
 
     carts: "models.QuerySet[Cart]"
     locations: "models.QuerySet[Location]"
@@ -67,7 +66,7 @@ class User(TimeStampModel):
 
     @property
     def cart(self):
-        return self.carts.get_or_create(status="ORDERING")[0]
+        return self.carts.get_or_create(status__in=["ORDERING", "PENDING_PAYMENT"])[0]
 
 
 class UserTemp(TimeStampModel):
