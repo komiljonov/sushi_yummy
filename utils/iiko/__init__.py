@@ -219,7 +219,11 @@ class Iiko:
             data["order"]["payments"] = [
                 (
                     {
-                        "paymentTypeKind": "Card" if cart.payment.provider in ["PAYME","CLICK"] else "Cash",
+                        "paymentTypeKind": (
+                            "Card"
+                            if cart.payment.provider in ["PAYME", "CLICK"]
+                            else "Cash"
+                        ),
                         "paymentTypeId": payment_type.iiko_id,
                         "sum": cart.payment.amount / 100,
                         "isExternal": True,
@@ -265,7 +269,7 @@ class Iiko:
         if not success:
             cart.correlation_id = _order.json()["correlationId"]
             cart.save()
-            
+
             return None
 
         sleep(2)

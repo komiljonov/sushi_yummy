@@ -67,6 +67,11 @@ class IikoOrderUpdateAPIView(APIView):
                     order.location,
                     order.location.address,
                 )
+                
+                
+                order.taxi = taxi
+                
+                order.save()
 
                 bot.send_message(
                     order.user.chat_id,
