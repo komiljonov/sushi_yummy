@@ -97,7 +97,7 @@ class CreateOrderItemSerializer(serializers.Serializer):
 class CreateOrderSerializer(serializers.Serializer):
 
     user = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects.all(), null=True, blank=True
+        queryset=User.objects.all(), required=False
     )
     comment = serializers.CharField()
     phone = serializers.CharField()
