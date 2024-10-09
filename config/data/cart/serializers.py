@@ -161,7 +161,7 @@ class CreateOrderSerializer(serializers.Serializer):
 
         new_cart = Cart.objects.create(
             user=validated_data.get("user"),
-            phone=validated_data.get("phone"),
+            phone_number=validated_data.get("phone"),
             promocode=validated_data.get("promocode"),
             delivery=validated_data.get("delivery"),
             time=validated_data.get("time"),
