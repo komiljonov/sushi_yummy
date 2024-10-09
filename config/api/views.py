@@ -94,7 +94,8 @@ class XlsxAPIView(APIView):
 
     def post(self, request: HttpRequest | Request, *args, **kwargs):
         serializer = CartFilterSerializer(data=request.data)
-        if serializer.is_valid():
+        
+        if serializer.is_valid(raise_exception=True):
             orders = serializer.filter_orders()
 
             response = HttpResponse(
@@ -108,4 +109,5 @@ class XlsxAPIView(APIView):
             generate_excel_from_orders(orders, response)
 
             return response
+        
         return Response(serializer.errors, status=400)
