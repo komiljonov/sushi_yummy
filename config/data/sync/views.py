@@ -91,11 +91,11 @@ class SyncAPIView(APIView):
 
     def _sync_products(self, filial: Filial) -> None:
 
-        nomenclatures: list[NomenclatureProduct] = self.iiko_manager.get_nomenclatures(
-            filial.iiko_id
-        )
+        nomenclatures = self.iiko_manager.get_nomenclatures(filial.iiko_id)
 
-        for product in nomenclatures:
+        # list[NomenclatureProduct]
+
+        for product in nomenclatures.products:
             if product.price == 0:
                 continue
 
