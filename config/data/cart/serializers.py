@@ -4,6 +4,7 @@ from bot.models import Location, User
 from bot.serializers import LocationSerializer
 from data.cart.models import Cart
 from data.cartitem.serializers import CartItemSerializer
+from data.filial.models import Filial
 from data.filial.serializers import FilialSerializer
 from data.payment.serializers import PaymentSerializer
 from django.db.models import Sum
@@ -92,6 +93,12 @@ class CreateOrderItemSerializer(serializers.Serializer):
     quantity = serializers.IntegerField(required=True)
 
 
+class CreateOrderLocationSerializer(serializers.Serializer):
+
+    latitude = serializers.FloatField()
+    longitude = serializers.FloatField()
+
+
 class CreateOrderSerializer(serializers.Serializer):
     user = serializers.PrimaryKeyRelatedField(
         queryset=User.objects.all(), required=False
@@ -99,6 +106,10 @@ class CreateOrderSerializer(serializers.Serializer):
     comment = serializers.CharField()
     phone = serializers.CharField()
     time = serializers.TimeField()
+
+    location = CreateOrderLocationSerializer()
+
+    filial = serializers.PrimaryKeyRelatedField(queryset=Filial.objects.all())
 
     delivery = serializers.ChoiceField(
         choices=[
@@ -110,3 +121,18 @@ class CreateOrderSerializer(serializers.Serializer):
     items = serializers.ListSerializer(
         child=CreateOrderItemSerializer(), allow_empty=False
     )
+
+    def validate(self, data):
+        delivery_type = data.get("delivery")
+
+        if delivery_type == "DELIVERY" and not data.get("location"):
+            raise serializers.ValidationError(
+                {"location": "Location is required for delivery orders."}
+            )
+
+        if delivery_type == "PICKUP" and not data.get("filial"):
+            raise serializers.ValidationError(
+                {"filial": "Filial is required for pickup orders."}
+            )
+
+        return data
