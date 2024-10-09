@@ -1,3 +1,4 @@
+from datetime import datetime
 from rest_framework import serializers
 
 from bot.models import Location, User
@@ -164,7 +165,7 @@ class CreateOrderSerializer(serializers.Serializer):
             phone_number=validated_data.get("phone"),
             promocode=validated_data.get("promocode"),
             delivery=validated_data.get("delivery"),
-            time=validated_data.get("time"),
+            time=datetime.combine(now(), validated_data.get("time")),
             filial=validated_data.get("filial"),
             location=(
                 Location.objects.create(
