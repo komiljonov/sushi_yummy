@@ -224,7 +224,7 @@ class Iiko:
         }
 
         print(payment_type, cart.payment)
-        
+
         if payment_type:
             data["order"]["payments"] = [
                 (
@@ -247,6 +247,7 @@ class Iiko:
                 "externalCartographyId": str(cart.location.id),
             }
 
+        print(data)
         res = requests.post(
             f"{self.BASE_URL}deliveries/create",
             json=data,
