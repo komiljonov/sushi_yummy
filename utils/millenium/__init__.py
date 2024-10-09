@@ -1,4 +1,7 @@
+# import urllib
 from data.cart.models import Cart
+
+import urllib.parse
 
 
 try:
@@ -41,8 +44,14 @@ class Millenium:
         # Return the MD5 hash of the combined string
         return self.md5(string_to_hash)
 
+    # def get_query_string(self, data: dict):
+    #     return "&".join(f"{key}={value}" for key, value in data.items())
+
     def get_query_string(self, data: dict):
-        return "&".join(f"{key}={value}" for key, value in data.items())
+        return "&".join(
+            f"{key}={urllib.parse.quote_plus(str(value))}"
+            for key, value in data.items()
+        )
 
     def _create_order(self, cart: "Cart"):
         """Constructs the URL for creating an order, sends the request, and returns the response."""
