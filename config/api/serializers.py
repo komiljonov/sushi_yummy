@@ -7,10 +7,10 @@ class CartFilterSerializer(serializers.Serializer):
     start_date = serializers.DateField(required=False, allow_null=True)
     end_date = serializers.DateField(required=False, allow_null=True)
     delivery = serializers.ChoiceField(
-        choices=["DELIVERY", "PICKUP"], required=False, allow_null=True
+        choices=["ALL","DELIVERY", "PICKUP"], required=False, allow_null=True
     )
     payment_type = serializers.ChoiceField(
-        choices=["CLICK", "PAYME", "CASH"],
+        choices=["ALL","CLICK", "PAYME", "CASH"],
         required=False,
         allow_null=True,
         allow_blank=True,
