@@ -91,6 +91,15 @@ class DeliveryPoint:
 
 @dataclass
 class Customer:
+    id: Optional[str] = None
+    name: Optional[str] = None
+    surname: Optional[str] = None
+    comment: Optional[str] = None
+    gender: Optional[str] = None
+    inblacklist: Optional[bool] = False
+    blacklistReason: Optional[str] = None
+    birthdate: Optional[str] = None
+
     type: Optional[str] = None
 
     @classmethod
