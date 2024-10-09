@@ -263,57 +263,57 @@ class DeliveryOrderUpdate:
         )
 
 
-DeliveryOrderUpdate(
-    eventType="DeliveryOrderUpdate",
-    eventTime="2024-10-09 07:19:46.350",
-    organizationId="e0e4f953-50b9-487d-8479-ec0220a85f9c",
-    correlationId="c84fd645-c448-47c4-9cfd-01c5ddad173a",
-    eventInfo=EventInfo(
-        id="719685ca-b346-4e2e-a230-f058bb349704",
-        posId="8a29705c-aa55-44db-88c6-8a39c50a1b7a",
-        externalNumber="111516",
-        organizationId="e0e4f953-50b9-487d-8479-ec0220a85f9c",
-        timestamp=1728458386329,
-        creationStatus="Success",
-        errorInfo=None,
-        order=Order(
-            parentDeliveryId=None,
-            customer=Customer(
-                id="01ff6700-c042-fd4c-0191-e1c0c6979e5b",
-                name="Муминов Тохиржон Бурханович",
-                surname=None,
-                comment=None,
-                gender="NotSpecified",
-                inBlacklist=False,
-                blacklistReason=None,
-                birthdate="1991-09-01 00:00:00.000",
-                type="regular",
-            ),
-            phone="+998997777676",
-            deliveryPoint=DeliveryPoint(
-                coordinates=Coordinates(latitude=41.306021, longitude=69.278087),
-                address=Address(
-                    street=Street(
-                        id="95f5a00d-f20f-4f38-9782-c8892d2e2f85",
-                        name="Доставка",
-                        city=City(
-                            id="b090de0b-8550-6e17-70b2-bbba152bcbd3", name="Ташкент"
-                        ),
-                    ),
-                    index="",
-                    house="1",
-                    building="",
-                    flat="",
-                    entrance="",
-                    floor="",
-                    doorphone="",
-                    region=None,
-                    line1=None,
-                ),
-                externalCartographyId=None,
-                comment="АО Узавтосаноат, 13, Амира Темура проспект, Шараф Рашидов, Мирабадский район",
-            ),
-            status="CookingStarted",
-        ),
-    ),
-)
+# DeliveryOrderUpdate(
+#     eventType="DeliveryOrderUpdate",
+#     eventTime="2024-10-09 07:19:46.350",
+#     organizationId="e0e4f953-50b9-487d-8479-ec0220a85f9c",
+#     correlationId="c84fd645-c448-47c4-9cfd-01c5ddad173a",
+#     eventInfo=EventInfo(
+#         id="719685ca-b346-4e2e-a230-f058bb349704",
+#         posId="8a29705c-aa55-44db-88c6-8a39c50a1b7a",
+#         externalNumber="111516",
+#         organizationId="e0e4f953-50b9-487d-8479-ec0220a85f9c",
+#         timestamp=1728458386329,
+#         creationStatus="Success",
+#         errorInfo=None,
+#         order=Order(
+#             parentDeliveryId=None,
+#             customer=Customer(
+#                 id="01ff6700-c042-fd4c-0191-e1c0c6979e5b",
+#                 name="Муминов Тохиржон Бурханович",
+#                 surname=None,
+#                 comment=None,
+#                 gender="NotSpecified",
+#                 inBlacklist=False,
+#                 blacklistReason=None,
+#                 birthdate="1991-09-01 00:00:00.000",
+#                 type="regular",
+#             ),
+#             phone="+998997777676",
+#             deliveryPoint=DeliveryPoint(
+#                 coordinates=Coordinates(latitude=41.306021, longitude=69.278087),
+#                 address=Address(
+#                     street=Street(
+#                         id="95f5a00d-f20f-4f38-9782-c8892d2e2f85",
+#                         name="Доставка",
+#                         city=City(
+#                             id="b090de0b-8550-6e17-70b2-bbba152bcbd3", name="Ташкент"
+#                         ),
+#                     ),
+#                     index="",
+#                     house="1",
+#                     building="",
+#                     flat="",
+#                     entrance="",
+#                     floor="",
+#                     doorphone="",
+#                     region=None,
+#                     line1=None,
+#                 ),
+#                 externalCartographyId=None,
+#                 comment="АО Узавтосаноат, 13, Амира Темура проспект, Шараф Рашидов, Мирабадский район",
+#             ),
+#             status="CookingStarted",
+#         ),
+#     ),
+# )
