@@ -119,7 +119,8 @@ class SyncAPIView(APIView):
 
             pt, created = PaymentType.objects.get_or_create(
                 iiko_id=payment_type.id,
-                defaults=dict(
-                    name=payment_type.name, code=payment_type.code, filial=filial
-                ),
+                defaults=dict(name=payment_type.name, code=payment_type.code),
             )
+
+            pt.filials.add(filial)
+            pt.save()

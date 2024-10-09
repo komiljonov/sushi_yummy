@@ -20,16 +20,11 @@ class PaymentType(TimeStampModel):
 
     iiko_id = models.CharField(max_length=255)
 
-    filial: "Filial" = models.ForeignKey(
-        "filial.Filial",
-        on_delete=models.SET_NULL,
-        null=True,
-        related_name="payment_types",
-    )
+    filials = models.ManyToManyField("filial.Filial", blank=True)
 
     def __str__(self):
 
-        return f"{self.name} {self.code}"
+        return f"{self.name} {self.code} "
 
 
 class Payment(TimeStampModel):
