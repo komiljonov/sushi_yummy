@@ -178,6 +178,8 @@ class Iiko:
             headers={"Authorization": f"Bearer {self.token}"},
         )
 
+        print(res.text)
+        
         if res.status_code != 200:
             return False
 
@@ -267,7 +269,7 @@ class Iiko:
 
         cart.save()
 
-        return _order
+        return _order.json()
 
     def get_terminal_id(self, organization: Organization):
 

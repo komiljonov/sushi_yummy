@@ -61,7 +61,6 @@ class Cart(TimeStampModel):
             ("ORDERING", "Buyurtma berilmoqda"),
             ("PENDING_PAYMENT", "To'lov kutilmoqda"),
             ("PENDING", "Kutilmoqda"),
-            
             ("PENDING_KITCHEN", "Tayyorlanishi kutilmoqda"),
             ("PREPARING", "Tayyorlanmoqda"),
             ("DELIVERING", "Yetkazilmoqda"),
@@ -161,7 +160,7 @@ class Cart(TimeStampModel):
         return self.price - self.discount_price
 
     def order(self, manager: "Iiko"):
-        
+
         success = manager.create_order(self)
-        
+
         return True
