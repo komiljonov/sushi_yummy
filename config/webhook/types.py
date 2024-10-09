@@ -171,6 +171,11 @@ class MarketingSource:
 
 @dataclass
 class Order:
+    sum: float
+    number: int
+    
+    
+    
     parentDeliveryId: Optional[str] = None
     customer: Optional[Customer] = None
     phone: Optional[str] = None
@@ -180,8 +185,7 @@ class Order:
     completeBefore: Optional[str] = None
     comment: Optional[str] = None
     
-    sum: float
-    number: int
+    
 
     operator: Optional[Operator] = None
 
