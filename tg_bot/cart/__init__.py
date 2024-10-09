@@ -709,62 +709,63 @@ class TgBotCart(CartBack, CommonKeysMixin):
 
         return CART_PROMOCODE
 
-    async def cart_promocode(self, update: UPD, context: CTX, _promocode: "Promocode"=None):
+    async def cart_promocode(self, update: UPD, context: CTX, _promocode: "Promocode"=-1):
         tg_user, user, temp, i18n = User.get(update)
 
         cart = user.cart
 
-        if update.message.text != i18n.buttons.skip() or _promocode != None:
+        if update.message.text != i18n.buttons.skip() or _promocode != -1:
 
             promocode = _promocode or Promocode.objects.filter(code__iexact=update.message.text,
                                                  end_date__gte=timezone.now()
                                                  ).first()
-
-            if promocode is None:
+            if promocode is None and _promocode != -1:
                 await tg_user.send_message(
                     i18n.order.promocode.not_found(),
                     reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
                     parse_mode="HTML"
                 )
                 return CART_PROMOCODE
+            
+            else:
 
-            used = user.carts.filter(promocode=promocode).exists()
+                used = user.carts.filter(promocode=promocode).exists()
 
-            if used:
-                await tg_user.send_message(
-                    i18n.order.promocode.used(),
-                    reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
-                    parse_mode="HTML"
-                )
-                return CART_PROMOCODE
+                if used:
+                    await tg_user.send_message(
+                        i18n.order.promocode.used(),
+                        reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
+                        parse_mode="HTML"
+                    )
+                    return CART_PROMOCODE
 
-            if promocode.orders.count() >= promocode.count:
-                await tg_user.send_message(
-                    i18n.order.promocode.ended(),
-                    reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
-                    parse_mode="HTML"
-                )
+                if promocode.orders.count() >= promocode.count:
+                    await tg_user.send_message(
+                        i18n.order.promocode.ended(),
+                        reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
+                        parse_mode="HTML"
+                    )
 
-                return CART_PROMOCODE
+                    return CART_PROMOCODE
 
-            if promocode.min_amount > 0 and promocode.min_amount > cart.price:
-                await tg_user.send_message(
-                    i18n.order.promocode.min_amount(amount=promocode.min_amount),
-                    reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
-                    parse_mode="HTML"
-                )
-                return CART_PROMOCODE
+                if promocode.min_amount > 0 and promocode.min_amount > cart.price:
+                    await tg_user.send_message(
+                        i18n.order.promocode.min_amount(amount=promocode.min_amount),
+                        reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
+                        parse_mode="HTML"
+                    )
+                    return CART_PROMOCODE
 
-            if 0 < promocode.max_amount < cart.price:
-                await tg_user.send_message(
-                    i18n.order.promocode.min_amount(amount=promocode.max_amount),
-                    reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
-                    parse_mode="HTML"
-                )
-                return CART_PROMOCODE
+                if 0 < promocode.max_amount < cart.price:
+                    await tg_user.send_message(
+                        i18n.order.promocode.min_amount(amount=promocode.max_amount),
+                        reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
+                        parse_mode="HTML"
+                    )
+                    return CART_PROMOCODE
 
-            cart.promocode = promocode
-            cart.save()
+                cart.promocode = promocode
+                cart.save()
 
         products_text = []
 
