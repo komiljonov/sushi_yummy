@@ -4,5 +4,5 @@ from .views import CalculateDeliveryPriceAPIView
 
 
 urlpatterns = [
-    path("calculate", CalculateDeliveryPriceAPIView.as_view())
+    path("/calculate", CalculateDeliveryPriceAPIView.as_view())
 ]
