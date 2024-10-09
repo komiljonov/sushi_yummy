@@ -27,6 +27,10 @@ class PaymentType(TimeStampModel):
         related_name="payment_types",
     )
 
+    def __str__(self):
+
+        return f"{self.name} {self.code}"
+
 
 class Payment(TimeStampModel):
     user = models.ForeignKey(
