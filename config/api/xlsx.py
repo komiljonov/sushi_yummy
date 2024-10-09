@@ -13,7 +13,7 @@ def generate_excel_from_orders(order_list: List[Cart], res: HttpResponse):
 
     for i, order in enumerate(order_list, 1):
 
-        for j, item in enumerate(order.items, 1):
+        for j, item in enumerate(order.items.all(), 1):
 
             row = {
                 "№": order.order_id if j == 1 else "",
