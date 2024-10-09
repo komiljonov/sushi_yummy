@@ -164,3 +164,17 @@ class Cart(TimeStampModel):
         success = manager.create_order(self)
 
         return True
+
+    def get_payment_type(self):
+
+        if self.payment is None:
+            return None
+
+        if self.payment.provider == "CLICK":
+            return self.filial.click_payment_type
+
+        if self.payment.provider == "PAYME":
+            return self.filial.payme_payment_type
+
+        if self.payment.provider == "CASH":
+            return self.filial.cash_payment_type

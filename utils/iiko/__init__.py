@@ -188,6 +188,7 @@ class Iiko:
         return res.json().get("state") == "Success"
 
     def _creat_order(self, cart: "Cart"):
+        payment_type = cart.get_payment_type()
         data = {
             "organizationId": cart.filial.iiko_id,
             "terminalGroupIds": cart.filial.terminal_id,
@@ -221,6 +222,18 @@ class Iiko:
                 ],
             },
         }
+
+        if payment_type:
+            data["order"]["payment"] = [
+                (
+                    {
+                        "paymentTypeId": payment_type.iiko_id,
+                        "sum": cart.payment.amount,
+                        "isProcessedExternally": True,
+                        "isPrepay": True,
+                    }
+                )
+            ]
 
         # Conditionally add the Address key if the delivery is not "DELIVER"
         if cart.delivery == "DELIVER":
