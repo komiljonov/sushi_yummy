@@ -1,6 +1,6 @@
 # import urllib
-from data.cart.models import Cart
 
+from datetime import datetime, timedelta
 import urllib.parse
 
 
@@ -13,8 +13,20 @@ try:
     from bot.models import Location
     from data.taxi.models import Taxi
     from utils import after_minutes
+    from data.cart.models import Cart
 except Exception as e:
     print(e)
+
+
+def after_minutes(minutes=20):
+
+    # Get the current datetime and add 20 minutes
+    new_time = datetime.now() + timedelta(minutes=minutes)
+
+    # Format the datetime as 'YYYYMMDDHHMMSS'
+    formatted_time = new_time.strftime("%Y%m%d%H%M%S")
+
+    return formatted_time
 
 
 class Millenium:
@@ -188,28 +200,53 @@ class Millenium:
             "passport": data.get("passport"),
         }
 
+    def analyze_route(self, loc1: "Location", loc2: "Location"):
 
-# # Example usage
-# millenium = Millenium(token="3E8EA3F2-4776-4E1C-9A97-E4C13C5AEF1C")
+        data = {
+            "tariff_id": 47,
+            "source_lat": 41.2714904,
+            "source_lon": 69.2316963,
+            "dest_lat": 41.312343,
+            "dest_lon": 69.1645997,
+        }
 
-# # Sample locations for filial and client address
-# filial = Location(latitude=41.2714904, longitude=69.2316963)
-# clientaddress = Location(latitude=41.312343, longitude=69.1645997)
+        querystring = urlencode(data)
 
-# # Call the create_order method
-# order = millenium._create_order(
-#     phone="998909755211", filial=filial, clientaddress=clientaddress
-# )
+        secret = self.getSecret(querystring)
 
+        full_url = f"{self.host}/analyze_route?{querystring}"
 
-# # Output the response content
-# print("Response Status Code:", order.status_code)
-# print("Response Text:", order.text)
+        response = self.client.get(
+            full_url, headers={"Signature": secret, "X-User-Id": "10"}
+        )
 
+        data = response.json()["data"]
 
-# sleep(3)
-# state = millenium.get_order_state(order.json()["data"]["order_id"])
-# # state = millenium.get_order_state(1168813)
+        return data
 
+    def calc_order_cost(self, loc1: "Location", loc2: "Location"):
 
-# print(state.text)
+        analyze = self.analyze_route(loc1, loc2)
+
+        data = {
+            "tariff_id": 47,
+            "is_prior": True,
+            "source_time": after_minutes(),
+            "distance_city": analyze["city_dist"],
+            "source_zone_id": analyze["source_zone_id"],
+            "dest_zone_id": analyze["dest_zone_id"],
+        }
+
+        querystring = urlencode(data)
+
+        secret = self.getSecret(querystring)
+
+        full_url = f"{self.host}/calc_order_cost?{querystring}"
+
+        response = self.client.get(
+            full_url, headers={"Signature": secret, "X-User-Id": "10"}
+        )
+
+        data = response.json()["data"]
+
+        return data
