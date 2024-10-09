@@ -79,7 +79,8 @@ class Millenium:
 
         # Manually build the query string using a for loop
         # query_string = "&".join(f"{key}={value}" for key, value in data.items())
-        query_string = self.get_query_string(data)
+        # query_string = self.get_query_string(data)
+        query_string = urlencode(data)
 
         # Generate the secret
         secret = self.getSecret(query_string)
@@ -104,11 +105,12 @@ class Millenium:
         # Data to include in the URL
         data = {"order_id": order_id}
 
-        # Generate the secret
-        secret = self.getSecret(data)
-
         # Full URL with query parameters
         query_string = urlencode(data)
+
+        # Generate the secret
+        secret = self.getSecret(query_string)
+
         full_url = f"{self.host}/get_order_state?{query_string}"
         print(full_url)
 
@@ -167,9 +169,9 @@ class Millenium:
 
         data = {"driver_id": driver_id}
 
-        secret = self.getSecret(data)
-
         query_string = self.get_query_string(data)
+
+        secret = self.getSecret(query_string)
 
         full_url = f"{self.host}/get_driver_info?{query_string}"
 
