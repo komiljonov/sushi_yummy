@@ -55,7 +55,7 @@ class OrderCallTaxiAPIView(APIView):
 
 
 class OrderCreateAPIVIew(CreateAPIView):
-    
+
     serializer_class = CreateOrderSerializer
 
     request: HttpRequest | Request

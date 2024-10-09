@@ -122,7 +122,7 @@ class Cart(TimeStampModel):
     #     super(Cart, self).save(*args, **kwargs)
 
     def __str__(self) -> str:
-        return f"Cart( {self.user.tg_name} )"
+        return f"Cart( {self.user.tg_name if self.user else "Anonym"} )"
 
     class Meta:
         ordering = ["-created_at"]
