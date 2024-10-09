@@ -336,5 +336,7 @@ class Iiko:
             },
             headers={"Authorization": f"Bearer {self.token}"},
         )
+        
+        print(req.text)
 
         return req.json()["orders"][0]
