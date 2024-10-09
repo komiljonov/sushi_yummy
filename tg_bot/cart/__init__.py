@@ -898,7 +898,7 @@ class TgBotCart(CartBack, CommonKeysMixin):
         print(update)
         
         try:
-            await update.message.delete()
+            await update.callback_query.message.delete()
         except Exception as e:
             print(e)
             pass
