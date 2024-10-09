@@ -107,9 +107,9 @@ class CreateOrderSerializer(serializers.Serializer):
     phone = serializers.CharField()
     time = serializers.TimeField()
 
-    location = CreateOrderLocationSerializer()
+    location = CreateOrderLocationSerializer(required=False)
 
-    filial = serializers.PrimaryKeyRelatedField(queryset=Filial.objects.all())
+    filial = serializers.PrimaryKeyRelatedField(queryset=Filial.objects.all(),required=False)
 
     delivery = serializers.ChoiceField(
         choices=[
