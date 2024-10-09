@@ -25,8 +25,12 @@ def generate_excel_from_orders(order_list: List[Cart], res: HttpResponse):
                 "Buyurtma narxi": order.price if j == 1 else "",
                 "Yetkazib berish narxi": None if j == 1 else "",
                 "Jami narxi": order.price if j == 1 else "",
-                "Bitirgan vaqti": order.time.strftime("%d/%m/%Y, %H:%M:%S") if j == 1 else "",
-                "Tasdiqlangan vaqti": order.order_time.strftime("%d/%m/%Y, %H:%M:%S") if j == 1 else "",
+                "Bitirgan vaqti": (
+                    order.time.strftime("%d/%m/%Y, %H:%M:%S") if j == 1 else ""
+                ),
+                "Tasdiqlangan vaqti": (
+                    order.order_time.strftime("%d/%m/%Y, %H:%M:%S") if j == 1 else ""
+                ),
                 "To'lov turi": "Not available" if j == 1 else "",
                 "Promocode": order.promocode.code if order.promocode and j == 1 else "",
                 "Yetkazib berish turi": "Not available" if j == 1 else "",
@@ -35,14 +39,15 @@ def generate_excel_from_orders(order_list: List[Cart], res: HttpResponse):
                 "Mahsulot narxi": item.price,
                 "Mahsulot soni": item.count,
                 "Mahsulot jami narxi": (item.price * item.count),
-                "Mahsulot qo'shilgan vaqti": order.time.strftime("%d/%m/%Y, %H:%M:%S"),
+                "Mahsulot qo'shilgan vaqti": item.created_at.strftime(
+                    "%d/%m/%Y, %H:%M:%S"
+                ),
             }
             # Append the row to the list
             rows.append(row)
 
     # Create a DataFrame from the rows
     df = pd.DataFrame(rows)
-
 
     # Save the DataFrame to an Excel file
     df.to_excel(res, index=False)
