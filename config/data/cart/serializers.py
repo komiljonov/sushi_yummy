@@ -148,7 +148,7 @@ class CreateOrderSerializer(serializers.Serializer):
 
         return data
 
-    def _create(self, validated_data: dict):
+    def create(self, validated_data: dict):
 
         location = (
             [
