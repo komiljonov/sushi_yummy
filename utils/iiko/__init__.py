@@ -1,3 +1,4 @@
+from time import sleep
 from typing import TYPE_CHECKING
 from datetime import datetime, timedelta
 import requests
@@ -257,6 +258,8 @@ class Iiko:
             cart.correlation_id = _order.json()["correlationId"]
             cart.save()
             return None
+
+        sleep(2)
 
         state = self.get_request_state(cart.filial, _order["correlationId"])
 
