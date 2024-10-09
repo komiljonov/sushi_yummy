@@ -6,7 +6,7 @@ from typing import Callable, Coroutine
 
 from django.utils import timezone
 from redis import Redis
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, LabeledPrice, Message
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, LabeledPrice, Message, ReplyKeyboardRemove
 from telegram.ext import MessageHandler
 from telegram.ext import filters, CallbackQueryHandler,CommandHandler
 
@@ -859,6 +859,8 @@ class TgBotCart(CartBack, CommonKeysMixin):
         if method in [CLICK, PAYME]:
             cart.status = "PENDING_PAYMENT"
             cart.save()
+            await tg_user.send_message("To'lovni amalga oshiring.",reply_markup=ReplyKeyboardRemove())
+            
             await tg_user.send_invoice(
                 i18n.payment.title(),
                 i18n.payment.description(),
@@ -882,11 +884,6 @@ class TgBotCart(CartBack, CommonKeysMixin):
             
             order = cart.order(self.iiko_manager)
             
-            # if order:
-            #     await tg_user.send_message("Buyurtma iikoga yuborildi.")
-            # else:
-            #     await tg_user.send_message("Buyurtma iikoga yuborilmadi.")
-            
             
             await tg_user.send_message(i18n.payment.done(), parse_mode="HTML")
             
@@ -898,6 +895,7 @@ class TgBotCart(CartBack, CommonKeysMixin):
     async def back_from_cart_payment(self, update: UPD, context: CTX):
         tgUser, user, temp, i18n = User.get(update)
         
+        print(update)
         
         try:
             await update.message.delete()

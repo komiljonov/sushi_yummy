@@ -80,10 +80,7 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
         )
 
     def _main_conversation(self):
-        
-        
-        
-        
+
         return ConversationHandler(
             "MainConversation",
             [
@@ -102,7 +99,6 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
                     self.back(self.back_from_register_phone_number),
                 ],
                 MAIN_MENU: [
-                    
                     MessageHandler(
                         filters.Text(multilanguage.get_all("main_menu.contact")),
                         self.contact,
@@ -180,9 +176,8 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
                 reply_markup=ReplyKeyboardMarkup([[UZ, RU], [EN]], False),
             )
             return LANG
-        
-        
-        self.redis.hdel("CartConversation",update.effective_user.id)
+
+        self.redis.hdel("CartConversation", update.effective_user.id)
 
         keyboard = await self.main_menu_keyboard(update, context)
 
@@ -365,7 +360,6 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
         )
 
         print(carts)
-
 
         for cart in carts:
             products_text = []
