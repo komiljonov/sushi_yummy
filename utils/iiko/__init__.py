@@ -282,7 +282,7 @@ class Iiko:
             return None
 
         cart.iiko_id = _order["orderInfo"]["id"]
-        cart.order_id = _order["number"]
+        cart.order_id = _order["orderInfo"]["number"]
 
         cart.save()
 
