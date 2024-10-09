@@ -4,11 +4,11 @@ from data.cart.models import Cart
 
 
 class CartFilterSerializer(serializers.Serializer):
-    start_date = serializers.DateField(required=False)
-    end_date = serializers.DateField(required=False)
-    delivery = serializers.ChoiceField(choices=["DELIVERY", "PICKUP"], required=False)
+    start_date = serializers.DateField(required=False, null=True)
+    end_date = serializers.DateField(required=False,null=True)
+    delivery = serializers.ChoiceField(choices=["DELIVERY", "PICKUP"], required=False, null=True)
     payment_type = serializers.ChoiceField(
-        choices=["CLICK", "PAYME", "CASH"], required=False
+        choices=["CLICK", "PAYME", "CASH"], required=False, null=True
     )
 
     def filter_orders(self):
