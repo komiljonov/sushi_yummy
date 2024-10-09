@@ -159,7 +159,10 @@ class TgBotCart(CartBack, CommonKeysMixin):
                     )
                 ],
                 PAYMENT_METHOD: [
-                    MessageHandler(filters.Text(multilanguage.get_all("payment.click","payment.payme","payment.cash")) & EXCLUDE, self.cart_payment_method)
+                    MessageHandler(filters.Text(multilanguage.get_all("payment.click","payment.payme","payment.cash")) & EXCLUDE, self.cart_payment_method),
+                    self.back(
+                        self.back_from_payment_method
+                    )
                 ],
                 CART_PAYMENT: [
                     CallbackQueryHandler(self.back_from_cart_payment, pattern="back")
@@ -706,14 +709,14 @@ class TgBotCart(CartBack, CommonKeysMixin):
 
         return CART_PROMOCODE
 
-    async def cart_promocode(self, update: UPD, context: CTX):
+    async def cart_promocode(self, update: UPD, context: CTX, _promocode: "Promocode"=None):
         tg_user, user, temp, i18n = User.get(update)
 
         cart = user.cart
 
-        if update.message.text != i18n.buttons.skip():
+        if update.message.text != i18n.buttons.skip() or _promocode != None:
 
-            promocode = Promocode.objects.filter(code__iexact=update.message.text,
+            promocode = _promocode or Promocode.objects.filter(code__iexact=update.message.text,
                                                  end_date__gte=timezone.now()
                                                  ).first()
 
