@@ -113,7 +113,7 @@ class Millenium:
         self, phone: str, filial: "Location", clientaddress: "Location", address: str
     ):
 
-        order = self._create_order(phone, filial, clientaddress)
+        order = self._create_order(phone, filial, clientaddress,address)
 
         if order.status_code != 200:
             return None
