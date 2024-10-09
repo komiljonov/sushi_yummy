@@ -96,7 +96,7 @@ class Customer:
     surname: Optional[str] = None
     comment: Optional[str] = None
     gender: Optional[str] = None
-    inblacklist: Optional[bool] = False
+    inBlacklist: Optional[bool] = False
     blacklistReason: Optional[str] = None
     birthdate: Optional[str] = None
 
