@@ -331,7 +331,7 @@ class Iiko:
         req = requests.post(
             f"{self.BASE_URL}deliveries/by_id",
             json={
-                "organizationIds": [cart.filial.iiko_id],
+                "organizationId": cart.filial.iiko_id,
                 "OrderIds": [cart.iiko_id],
             },
             headers={"Authorization": f"Bearer {self.token}"},
