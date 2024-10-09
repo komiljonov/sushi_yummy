@@ -282,8 +282,11 @@ class Iiko:
             return None
 
         cart.iiko_id = _order["orderInfo"]["id"]
-        cart.order_id = _order["orderInfo"]["number"]
+        cart.save()
 
+        order_info = self.get_order_info(cart)
+
+        cart.order_id = order_info['order']['number']
         cart.save()
 
         return _order
@@ -323,3 +326,15 @@ class Iiko:
             )
 
         return payment_types
+
+    def get_order_info(self, cart: "Cart"):
+        req = requests.post(
+            f"{self.BASE_URL}deliveries/by_id",
+            json={
+                "organizationIds": [cart.filial.iiko_id],
+                "OrderIds": [cart.iiko_id],
+            },
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+
+        return req.json()["orders"][0]
