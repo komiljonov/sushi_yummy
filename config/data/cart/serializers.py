@@ -185,3 +185,6 @@ class CreateOrderSerializer(serializers.Serializer):
             new_cart.items.create(
                 product=product, price=product.price, count=item.get("quantity")
             )
+
+    
+        return new_cart
