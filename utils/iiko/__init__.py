@@ -223,6 +223,7 @@ class Iiko:
             },
         }
 
+        print(payment_type, cart.payment)
         if payment_type:
             data["order"]["payment"] = [
                 (
