@@ -3,14 +3,15 @@ from typing import TYPE_CHECKING
 from django.db import models
 
 from common.models import TimeStampModel
-from django.db.models import Func
 
-from data.category.models import Category
+from django.db.models import Func
 from django.contrib import admin
 
 
 if TYPE_CHECKING:
     from bot.models import Location
+    from data.payment.models import PaymentType
+    from data.category.models import Category
 
 
 class Radians(Func):
@@ -47,16 +48,28 @@ class Filial(TimeStampModel):
         "bot.Location", on_delete=models.SET_NULL, null=True, blank=True
     )
 
-    click_payment_type = models.ForeignKey(
-        "payment.PaymentType", on_delete=models.SET_NULL, null=True, blank=True
+    click_payment_type: "PaymentType" = models.ForeignKey(
+        "payment.PaymentType",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="filial_click",
     )
 
-    payme_payment_type = models.ForeignKey(
-        "payment.PaymentType", on_delete=models.SET_NULL, null=True, blank=True
+    payme_payment_type: "PaymentType" = models.ForeignKey(
+        "payment.PaymentType",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="filial_payme",
     )
 
-    cash_payment_type = models.ForeignKey(
-        "payment.PaymentType", on_delete=models.SET_NULL, null=True, blank=True
+    cash_payment_type: "PaymentType" = models.ForeignKey(
+        "payment.PaymentType",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="filial_cash",
     )
 
     active = models.BooleanField(default=True)
