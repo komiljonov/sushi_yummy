@@ -23,10 +23,10 @@ class IikoOrderUpdateAPIView(APIView):
     def post(self, request: HttpRequest | Request):
 
         data = request.data
-        
+
         print(data)
 
-        events = [DeliveryOrderUpdate(**event) for event in data]
+        events = [DeliveryOrderUpdate.from_dict(event) for event in data]
 
         for event in events:
 
