@@ -709,18 +709,18 @@ class TgBotCart(CartBack, CommonKeysMixin):
 
         return CART_PROMOCODE
 
-    async def cart_promocode(self, update: UPD, context: CTX, _promocode: "Promocode"=-1):
+    async def cart_promocode(self, update: UPD, context: CTX, _promocode: "Promocode"=0):
         tg_user, user, temp, i18n = User.get(update)
 
         cart = user.cart
 
-        if update.message.text != i18n.buttons.skip() or _promocode != -1:
+        if update.message.text != i18n.buttons.skip() or _promocode != 0:
 
             promocode = _promocode or Promocode.objects.filter(code__iexact=update.message.text,
                                                  end_date__gte=timezone.now()
                                                  ).first()
-            if promocode is None:
-                if _promocode != -1:
+            if promocode == None:
+                if _promocode != 0:
                     await tg_user.send_message(
                         i18n.order.promocode.not_found(),
                         reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),

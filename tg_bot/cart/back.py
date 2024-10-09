@@ -210,4 +210,4 @@ class CartBack:
     async def back_from_payment_method(self, update: UPD, context: CTX):
         tgUser, user, temp, i18n = User.get(update)
 
-        return await self.cart_promocode(update, context, user.cart.promocode or -1)
+        return await self.cart_promocode(update, context, user.cart.promocode or 0)
