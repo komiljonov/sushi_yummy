@@ -219,7 +219,7 @@ class Iiko:
             data["order"]["payments"] = [
                 (
                     {
-                        "paymentTypeKind": "Card",
+                        "paymentTypeKind": "Card" if cart.payment.provider in ["PAYME","CLICK"] else "Cash",
                         "paymentTypeId": payment_type.iiko_id,
                         "sum": cart.payment.amount / 100,
                         "isExternal": True,
