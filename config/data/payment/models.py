@@ -3,11 +3,29 @@ from django.db import models
 from common.models import TimeStampModel
 from django.contrib import admin
 
+
 if TYPE_CHECKING:
     from data.cart.models import Cart
+    from data.filial.models import Filial
 
 
 # Create your models here.
+
+
+class PaymentType(TimeStampModel):
+
+    code = models.CharField(max_length=255)
+
+    name = models.CharField(max_length=255)
+
+    iiko_id = models.CharField(max_length=255)
+
+    filial: "Filial" = models.ForeignKey(
+        "filial.Filial",
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="payment_types",
+    )
 
 
 class Payment(TimeStampModel):

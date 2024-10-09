@@ -1,0 +1,225 @@
+{
+    "correlationId": "61fc8c49-fad2-4906-b371-16b8aeceee8e",
+    "paymentTypes": [
+        {
+            "id": "09322f46-578a-d210-add7-eec222a08871",
+            "code": "CASH",
+            "name": "Наличные",
+            "comment": "",
+            "combinable": true,
+            "externalRevision": 3102953,
+            "applicableMarketingCampaigns": [],
+            "isDeleted": false,
+            "printCheque": true,
+            "paymentProcessingType": "Both",
+            "paymentTypeKind": "Cash",
+            "terminalGroups": [
+                {
+                    "id": "1a94bced-1d93-69ad-0175-30ebccab00ce",
+                    "organizationId": "e0e4f953-50b9-487d-8479-ec0220a85f9c",
+                    "name": "Sushi Yummy",
+                    "address": "",
+                    "timeZone": "05:00:00"
+                }
+            ]
+        },
+        {
+            "id": "0c407562-7540-4add-8a0b-1aa6125e650c",
+            "code": "PAYME",
+            "name": "PAYME",
+            "comment": "",
+            "combinable": true,
+            "externalRevision": 2957576,
+            "applicableMarketingCampaigns": [],
+            "isDeleted": false,
+            "printCheque": true,
+            "paymentProcessingType": "Both",
+            "paymentTypeKind": "Card",
+            "terminalGroups": [
+                {
+                    "id": "1a94bced-1d93-69ad-0175-30ebccab00ce",
+                    "organizationId": "e0e4f953-50b9-487d-8479-ec0220a85f9c",
+                    "name": "Sushi Yummy",
+                    "address": "",
+                    "timeZone": "05:00:00"
+                }
+            ]
+        },
+        {
+            "id": "380ec8a1-b3d6-4d90-8f46-afdf47336b35",
+            "code": "КЭШ",
+            "name": "Карта 2",
+            "comment": "",
+            "combinable": true,
+            "externalRevision": 1001939,
+            "applicableMarketingCampaigns": [],
+            "isDeleted": true,
+            "printCheque": false,
+            "paymentProcessingType": "Both",
+            "paymentTypeKind": "Cash",
+            "terminalGroups": [
+                {
+                    "id": "1a94bced-1d93-69ad-0175-30ebccab00ce",
+                    "organizationId": "e0e4f953-50b9-487d-8479-ec0220a85f9c",
+                    "name": "Sushi Yummy",
+                    "address": "",
+                    "timeZone": "05:00:00"
+                }
+            ]
+        },
+        {
+            "id": "3bf99e39-0b7f-4cf5-ba43-92eb362458fd",
+            "code": "1CASH",
+            "name": "-Наличные",
+            "comment": "",
+            "combinable": true,
+            "externalRevision": 2679929,
+            "applicableMarketingCampaigns": [],
+            "isDeleted": true,
+            "printCheque": false,
+            "paymentProcessingType": "Both",
+            "paymentTypeKind": "Cash",
+            "terminalGroups": [
+                {
+                    "id": "1a94bced-1d93-69ad-0175-30ebccab00ce",
+                    "organizationId": "e0e4f953-50b9-487d-8479-ec0220a85f9c",
+                    "name": "Sushi Yummy",
+                    "address": "",
+                    "timeZone": "05:00:00"
+                }
+            ]
+        },
+        {
+            "id": "eda4d24f-1dad-4c10-8994-f174221617dd",
+            "code": "CLICK",
+            "name": "Click",
+            "comment": "",
+            "combinable": true,
+            "externalRevision": 3058289,
+            "applicableMarketingCampaigns": [],
+            "isDeleted": false,
+            "printCheque": true,
+            "paymentProcessingType": "Both",
+            "paymentTypeKind": "Card",
+            "terminalGroups": [
+                {
+                    "id": "1a94bced-1d93-69ad-0175-30ebccab00ce",
+                    "organizationId": "e0e4f953-50b9-487d-8479-ec0220a85f9c",
+                    "name": "Sushi Yummy",
+                    "address": "",
+                    "timeZone": "05:00:00"
+                }
+            ]
+        },
+        {
+            "id": "09322f46-578a-d210-add7-eec222a08871",
+            "code": "CASH",
+            "name": "Наличные",
+            "comment": "",
+            "combinable": true,
+            "externalRevision": 579571,
+            "applicableMarketingCampaigns": [],
+            "isDeleted": false,
+            "printCheque": true,
+            "paymentProcessingType": "Both",
+            "paymentTypeKind": "Cash",
+            "terminalGroups": [
+                {
+                    "id": "336d8d3a-2762-4d5f-a3d5-a663682e7e1d",
+                    "organizationId": "9fa9f86a-5cc5-40d6-bb13-323754a592ba",
+                    "name": "Sushi Yummy (Мукими)",
+                    "address": "",
+                    "timeZone": "05:00:00"
+                }
+            ]
+        },
+        {
+            "id": "0c407562-7540-4add-8a0b-1aa6125e650c",
+            "code": "PAYME",
+            "name": "PAYME",
+            "comment": "",
+            "combinable": true,
+            "externalRevision": 447386,
+            "applicableMarketingCampaigns": [],
+            "isDeleted": false,
+            "printCheque": true,
+            "paymentProcessingType": "Both",
+            "paymentTypeKind": "Card",
+            "terminalGroups": [
+                {
+                    "id": "336d8d3a-2762-4d5f-a3d5-a663682e7e1d",
+                    "organizationId": "9fa9f86a-5cc5-40d6-bb13-323754a592ba",
+                    "name": "Sushi Yummy (Мукими)",
+                    "address": "",
+                    "timeZone": "05:00:00"
+                }
+            ]
+        },
+        {
+            "id": "380ec8a1-b3d6-4d90-8f46-afdf47336b35",
+            "code": "КЭШ",
+            "name": "Карта 2",
+            "comment": "",
+            "combinable": true,
+            "externalRevision": 29,
+            "applicableMarketingCampaigns": [],
+            "isDeleted": true,
+            "printCheque": false,
+            "paymentProcessingType": "Both",
+            "paymentTypeKind": "Cash",
+            "terminalGroups": [
+                {
+                    "id": "336d8d3a-2762-4d5f-a3d5-a663682e7e1d",
+                    "organizationId": "9fa9f86a-5cc5-40d6-bb13-323754a592ba",
+                    "name": "Sushi Yummy (Мукими)",
+                    "address": "",
+                    "timeZone": "05:00:00"
+                }
+            ]
+        },
+        {
+            "id": "3bf99e39-0b7f-4cf5-ba43-92eb362458fd",
+            "code": "1CASH",
+            "name": "-Наличные",
+            "comment": "",
+            "combinable": true,
+            "externalRevision": 212465,
+            "applicableMarketingCampaigns": [],
+            "isDeleted": true,
+            "printCheque": false,
+            "paymentProcessingType": "Both",
+            "paymentTypeKind": "Cash",
+            "terminalGroups": [
+                {
+                    "id": "336d8d3a-2762-4d5f-a3d5-a663682e7e1d",
+                    "organizationId": "9fa9f86a-5cc5-40d6-bb13-323754a592ba",
+                    "name": "Sushi Yummy (Мукими)",
+                    "address": "",
+                    "timeZone": "05:00:00"
+                }
+            ]
+        },
+        {
+            "id": "eda4d24f-1dad-4c10-8994-f174221617dd",
+            "code": "CLICK",
+            "name": "Click",
+            "comment": "",
+            "combinable": true,
+            "externalRevision": 535168,
+            "applicableMarketingCampaigns": [],
+            "isDeleted": false,
+            "printCheque": true,
+            "paymentProcessingType": "Both",
+            "paymentTypeKind": "Card",
+            "terminalGroups": [
+                {
+                    "id": "336d8d3a-2762-4d5f-a3d5-a663682e7e1d",
+                    "organizationId": "9fa9f86a-5cc5-40d6-bb13-323754a592ba",
+                    "name": "Sushi Yummy (Мукими)",
+                    "address": "",
+                    "timeZone": "05:00:00"
+                }
+            ]
+        }
+    ]
+}

@@ -47,6 +47,18 @@ class Filial(TimeStampModel):
         "bot.Location", on_delete=models.SET_NULL, null=True, blank=True
     )
 
+    click_payment_type = models.ForeignKey(
+        "payment.PaymentType", on_delete=models.SET_NULL, null=True, blank=True
+    )
+
+    payme_payment_type = models.ForeignKey(
+        "payment.PaymentType", on_delete=models.SET_NULL, null=True, blank=True
+    )
+
+    cash_payment_type = models.ForeignKey(
+        "payment.PaymentType", on_delete=models.SET_NULL, null=True, blank=True
+    )
+
     active = models.BooleanField(default=True)
 
     categories: models.QuerySet["Category"]
