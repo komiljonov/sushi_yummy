@@ -57,7 +57,7 @@ class Millenium:
             "source_time": after_minutes(20),
             "customer": "10",
             "comment": "Salom",
-            "crew_group_id": "27",
+            # "crew_group_id": "27",
         }
 
         # Generate the secret
