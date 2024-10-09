@@ -86,16 +86,13 @@ class OrderSerializer(serializers.ModelSerializer):
 
 
 class CreateOrderItemSerializer(serializers.Serializer):
-
     product = serializers.PrimaryKeyRelatedField(
         queryset=Product.objects.all(), required=True
     )
-
     quantity = serializers.IntegerField(required=True)
 
 
 class CreateOrderSerializer(serializers.Serializer):
-
     user = serializers.PrimaryKeyRelatedField(
         queryset=User.objects.all(), required=False
     )
@@ -110,4 +107,4 @@ class CreateOrderSerializer(serializers.Serializer):
         ]
     )
 
-    items = serializers.ListSerializer(CreateOrderItemSerializer)
+    items = serializers.ListSerializer(child=CreateOrderItemSerializer())
