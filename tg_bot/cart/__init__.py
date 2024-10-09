@@ -719,13 +719,14 @@ class TgBotCart(CartBack, CommonKeysMixin):
             promocode = _promocode or Promocode.objects.filter(code__iexact=update.message.text,
                                                  end_date__gte=timezone.now()
                                                  ).first()
-            if promocode is None and _promocode != -1:
-                await tg_user.send_message(
-                    i18n.order.promocode.not_found(),
-                    reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
-                    parse_mode="HTML"
-                )
-                return CART_PROMOCODE
+            if promocode is None:
+                if _promocode != -1:
+                    await tg_user.send_message(
+                        i18n.order.promocode.not_found(),
+                        reply_markup=ReplyKeyboardMarkup([[i18n.buttons.skip()]]),
+                        parse_mode="HTML"
+                    )
+                    return CART_PROMOCODE
             
             else:
 
