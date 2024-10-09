@@ -204,10 +204,10 @@ class Millenium:
 
         data = {
             "tariff_id": 47,
-            "source_lat": 41.2714904,
-            "source_lon": 69.2316963,
-            "dest_lat": 41.312343,
-            "dest_lon": 69.1645997,
+            "source_lat": loc1.latitude,
+            "source_lon": loc1.longitude,
+            "dest_lat": loc2.latitude,
+            "dest_lon": loc2.longitude,
         }
 
         querystring = urlencode(data)
