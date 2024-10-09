@@ -29,12 +29,14 @@ class Millenium:
         """Helper method to calculate MD5 hash."""
         return hashlib.md5(string.encode()).hexdigest()
 
-    def getSecret(self, data: dict) -> str:
+    def getSecret(self, data: str) -> str:
         """Generates a secret based on the data and the token."""
         # Create a string from the data dictionary (concatenate key-value pairs)
-        data_string = "".join(
-            f"{key}={str(value)}&" for key, value in data.items()
-        ).rstrip("&")
+        # data_string = "".join(
+        #     f"{key}={str(value)}&" for key, value in data.items()
+        # ).rstrip("&")
+
+        data_string = data
 
         print(data_string)
 
@@ -75,12 +77,12 @@ class Millenium:
             ),
         }
 
-        # Generate the secret
-        secret = self.getSecret(data)
-
         # Manually build the query string using a for loop
         # query_string = "&".join(f"{key}={value}" for key, value in data.items())
         query_string = self.get_query_string(data)
+
+        # Generate the secret
+        secret = self.getSecret(query_string)
 
         # Full URL
         full_url = f"{self.host}/create_order?{query_string}"
