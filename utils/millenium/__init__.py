@@ -1,3 +1,6 @@
+from data.cart.models import Cart
+
+
 try:
     import hashlib
     from time import sleep
@@ -41,24 +44,22 @@ class Millenium:
     def get_query_string(self, data: dict):
         return "&".join(f"{key}={value}" for key, value in data.items())
 
-    def _create_order(
-        self, phone: str, filial: "Location", clientaddress: "Location", address: str
-    ):
+    def _create_order(self, cart: "Cart"):
         """Constructs the URL for creating an order, sends the request, and returns the response."""
 
         # Data to be included in the URL and for the secret generation
         data = {
-            "phone": phone,
+            "tariff_id": 47,
+            "phone": cart.phone_number.replace("+", ""),
             "source": 1,
-            "is_prior": True,
-            "source_lat": filial.latitude,
-            "source_lon": filial.longitude,
-            "dest_lat": clientaddress.latitude,
-            "dest_lon": clientaddress.longitude,
+            "customer": 10,
+            "is_prior": "true",
+            "source_lat": cart.filial.location.latitude,
+            "source_lon": cart.filial.location.longitude,
+            "dest_lat": cart.location.latitude,
+            "dest_lon": cart.location.longitude,
             "source_time": after_minutes(20),
-            "customer": "10",
-            "comment": "Salom",
-            # "crew_group_id": "27",
+            "comment": f"Sushi Yummy\n\nBuyurtma raqami: {cart.order_id}\n",
         }
 
         # Generate the secret
@@ -78,12 +79,6 @@ class Millenium:
         )
 
         print(response.text)
-
-        try:
-            with open("taxi.txt", "w") as f:
-                f.write(response.text)
-        except Exception as e:
-            print(e)
 
         # Return the response object (or response text)
         return response
@@ -110,11 +105,9 @@ class Millenium:
         # Return the response object (or response text)
         return response
 
-    def create_order(
-        self, phone: str, filial: "Location", clientaddress: "Location", address: str
-    ):
+    def create_order(self, cart: "Cart"):
 
-        order = self._create_order(phone, filial, clientaddress,address)
+        order = self._create_order(cart)
 
         if order.status_code != 200:
             return None

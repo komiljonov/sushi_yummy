@@ -42,9 +42,7 @@ class OrderCallTaxiAPIView(APIView):
 
         millenium = Millenium("3E8EA3F2-4776-4E1C-9A97-E4C13C5AEF1C")
 
-        taxi = millenium.create_order(
-            order.phone_number.replace("+", ""), order.filial.location, order.location, order.location.address
-        )
+        taxi = millenium.create_order(order)
 
         if taxi is None:
             return bad_request(request, None)

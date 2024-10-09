@@ -61,23 +61,17 @@ class IikoOrderUpdateAPIView(APIView):
 
                 millenium = Millenium("3E8EA3F2-4776-4E1C-9A97-E4C13C5AEF1C")
 
-                taxi = millenium.create_order(
-                    order.phone_number.replace("+", ""),
-                    order.filial.location,
-                    order.location,
-                    order.location.address,
-                )
-                
-                
+                taxi = millenium.create_order(order)
+
                 order.taxi = taxi
-                
+
                 order.save()
 
                 bot.send_message(
                     order.user.chat_id,
                     f"Sizning buyurtmangiz tayyorlanmoqda.\n\nTez orada yetkaziladi.\n\n",
                 )
-                
+
                 bot.send_message(
                     order.user.chat_id,
                     f"Sizning taxiingiz chaqirildi.\n\n"
@@ -85,7 +79,7 @@ class IikoOrderUpdateAPIView(APIView):
                     f"Mashina modeli: {taxi.car_model}\n"
                     f"Mashina rusmi: {taxi.car_mark}\n"
                     f"Mashina rangi: {taxi.car_color}\n"
-                    f"Haydovchi telefon raqami: {taxi.phone}"
+                    f"Haydovchi telefon raqami: {taxi.driver_phone_number}",
                 )
 
             if event.eventInfo.order.status == "Cancelled":

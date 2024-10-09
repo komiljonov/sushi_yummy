@@ -103,23 +103,23 @@ class Cart(TimeStampModel):
 
     items: "models.QuerySet[CartItem]"
 
-    def save(self, *args, **kwargs):
-        if self.order_id is None:
-            # Fetch the last entry with a valid (non-None) order_id
-            last_entry = (
-                Cart.all_objects.exclude(order_id__isnull=True)
-                .order_by("-order_id")
-                .first()
-            )
+    # def save(self, *args, **kwargs):
+    #     if self.order_id is None:
+    #         # Fetch the last entry with a valid (non-None) order_id
+    #         last_entry = (
+    #             Cart.all_objects.exclude(order_id__isnull=True)
+    #             .order_by("-order_id")
+    #             .first()
+    #         )
 
-            if last_entry:
-                # If there is a valid order_id, increment from the last one
-                self.order_id = last_entry.order_id + 1
-            else:
-                # If no valid order_id found, start from 111111
-                self.order_id = 111111
+    #         if last_entry:
+    #             # If there is a valid order_id, increment from the last one
+    #             self.order_id = last_entry.order_id + 1
+    #         else:
+    #             # If no valid order_id found, start from 111111
+    #             self.order_id = 111111
 
-        super(Cart, self).save(*args, **kwargs)
+    #     super(Cart, self).save(*args, **kwargs)
 
     def __str__(self) -> str:
         return f"Cart( {self.user.tg_name} )"
