@@ -12,6 +12,7 @@ from telegram.ext import filters, CallbackQueryHandler,CommandHandler
 
 from bot.models import User
 from data.filial.models import Filial
+from data.payment.models import Payment
 from data.promocode.models import Promocode
 from tg_bot.cart.back import CartBack
 from tg_bot.constants import (
@@ -885,6 +886,14 @@ class TgBotCart(CartBack, CommonKeysMixin):
             cart.status = "PENDING"
             cart.save()
             
+            new_payment = Payment.objects.create(
+                user=user,
+                provider="CASH",
+                amount=cart.price*100,
+            )
+            
+            cart.payment = new_payment
+            cart.save() 
             
             
             order = cart.order(self.iiko_manager)
