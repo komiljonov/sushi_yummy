@@ -9,6 +9,7 @@ from .types import (
     Organization,
     NomenclaturesResponse,
     NomenclatureGroup,
+    PaymentType,
 )
 
 if TYPE_CHECKING:
@@ -284,3 +285,28 @@ class Iiko:
 
         print(res, res.text)
         return res.json()["terminalGroups"][0]["items"][0]["id"]
+
+    def get_payment_types(self, organization_id: str):
+
+        req = requests.post(
+            f"{self.BASE_URL}payment_types",
+            json={"organizationIds": [organization_id]},
+            headers={"Authorization": f"Bearer {self.token}"},
+        )
+
+        data = req.json()
+
+        payment_types: list[PaymentType] = []
+
+        for payment_type in data["paymentTypes"]:
+
+            payment_types.append(
+                PaymentType(
+                    id=payment_type["id"],
+                    name=payment_type["name"],
+                    code=payment_type["code"],
+                    organization_id=payment_type["terminalGroups"][0]["organizationId"],
+                )
+            )
+
+        return payment_types

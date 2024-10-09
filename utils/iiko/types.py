@@ -48,12 +48,9 @@ class NomenclatureProduct:
     type: str
     productCategoryId: str
     price: float
-    
+
     # sizePrices: list
     isDeleted: bool
-    
-    
-    
 
 
 @dataclass
@@ -64,3 +61,13 @@ class NomenclaturesResponse:
 
     products: list[NomenclatureProduct] = None
     productCategories: Optional[dict] = None
+
+
+@dataclass
+class PaymentType:
+
+    id: str
+    code: str
+    name: str
+
+    organization_id: str
