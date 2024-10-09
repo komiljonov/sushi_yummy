@@ -210,7 +210,7 @@ class Iiko:
                         "isPublic": True,
                     }
                 ],
-                "sourceKey": "Sector Soft"
+                "sourceKey": "Sector Soft",
             },
         }
 
@@ -265,6 +265,7 @@ class Iiko:
         success, _order = self._creat_order(cart)
 
         cart.correlation_id = _order["correlationId"]
+
         cart.save()
 
         if not success:
@@ -272,6 +273,9 @@ class Iiko:
             cart.save()
 
             return None
+
+        cart.iiko_id = _order["orderInfo"]["id"]
+        cart.save()
 
         sleep(2)
 
@@ -282,12 +286,9 @@ class Iiko:
         if not state:
             return None
 
-        cart.iiko_id = _order["orderInfo"]["id"]
-        cart.save()
-
         order_info = self.get_order_info(cart)
 
-        cart.order_id = order_info['order']['number']
+        cart.order_id = order_info["order"]["number"]
         cart.save()
 
         return _order
@@ -337,7 +338,7 @@ class Iiko:
             },
             headers={"Authorization": f"Bearer {self.token}"},
         )
-        
+
         print(req.text)
 
         return req.json()["orders"][0]
