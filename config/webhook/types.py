@@ -39,6 +39,13 @@ class Street:
 
 
 @dataclass
+class Region:
+
+    id: Optional[str] = None
+    name: Optional[str] = None
+
+
+@dataclass
 class Address:
     street: Optional[Street] = None
     index: Optional[str] = None
@@ -48,7 +55,7 @@ class Address:
     entrance: Optional[str] = None
     floor: Optional[str] = None
     doorphone: Optional[str] = None
-    region: Optional[Dict[str, str]] = field(default_factory=dict)
+    region: Optional[Region] = None
     line1: Optional[str] = None
 
     @classmethod
@@ -108,15 +115,78 @@ class Customer:
 
 
 @dataclass
+class CancelCause:
+    id: Optional[str] = None
+    name: Optional[str] = None
+
+
+@dataclass
+class CancelInfo:
+    whenCancelled: Optional[str] = None
+    cause: Optional[CancelCause] = None
+    comment: Optional[str] = None
+
+
+@dataclass
+class CourierInfoCourier:
+    id: Optional[str] = None
+    name: Optional[str] = None
+    phone: Optional[str] = None
+
+
+@dataclass
+class CourierInfo:
+    courier: Optional[CourierInfoCourier] = None
+    name: Optional[str] = None
+    phone: Optional[str] = None
+    isCourierSelectedManually: Optional[bool] = False
+
+
+@dataclass
+class Problem:
+    hasProblem: Optional[bool] = False
+    description: Optional[str] = None
+
+
+@dataclass
+class Operator:
+    id: Optional[str] = None
+    name: Optional[str] = None
+    phone: Optional[str] = None
+    
+    @classmethod
+    def from_dict(cls, data: Dict[str, dict | str | None]):
+        return cls(
+            id=data.get('id'),
+            name=data.get('name'),
+            phone=data.get('phone'),
+        )
+
+
+@dataclass
+class MarketingSource:
+    id: Optional[str] = None
+    name: Optional[str] = None
+
+
+@dataclass
 class Order:
     parentDeliveryId: Optional[str] = None
     customer: Optional[Customer] = None
     phone: Optional[str] = None
     deliveryPoint: Optional[DeliveryPoint] = None
     status: Optional[str] = None
+    cancelInfo: Optional[CancelInfo] = None
+    completeBefore: Optional[str] = None
+    comment: Optional[str] = None
+    
+    sum: float
+    number: int
+
+    operator: Optional[Operator] = None
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]):
+    def from_dict(cls, data: Dict[str, dict | str | None]):
         customer_data = data.get("customer")
         delivery_point_data = data.get("deliveryPoint")
         return cls(
@@ -129,6 +199,17 @@ class Order:
                 else None
             ),
             status=data.get("status"),
+            comment=data.get("comment"),
+            completeBefore=data.get("completeBefore"),
+            sum=data.get('sum'),
+            number=data.get('number'),
+            operator=(
+                Operator.from_dict(
+                    operator_data
+                )
+                if (operator_data := data.get("operator"))
+                else None
+            ),
         )
 
 
@@ -176,3 +257,59 @@ class DeliveryOrderUpdate:
             correlationId=data.get("correlationId"),
             eventInfo=EventInfo.from_dict(event_info_data) if event_info_data else None,
         )
+
+
+DeliveryOrderUpdate(
+    eventType="DeliveryOrderUpdate",
+    eventTime="2024-10-09 07:19:46.350",
+    organizationId="e0e4f953-50b9-487d-8479-ec0220a85f9c",
+    correlationId="c84fd645-c448-47c4-9cfd-01c5ddad173a",
+    eventInfo=EventInfo(
+        id="719685ca-b346-4e2e-a230-f058bb349704",
+        posId="8a29705c-aa55-44db-88c6-8a39c50a1b7a",
+        externalNumber="111516",
+        organizationId="e0e4f953-50b9-487d-8479-ec0220a85f9c",
+        timestamp=1728458386329,
+        creationStatus="Success",
+        errorInfo=None,
+        order=Order(
+            parentDeliveryId=None,
+            customer=Customer(
+                id="01ff6700-c042-fd4c-0191-e1c0c6979e5b",
+                name="Муминов Тохиржон Бурханович",
+                surname=None,
+                comment=None,
+                gender="NotSpecified",
+                inBlacklist=False,
+                blacklistReason=None,
+                birthdate="1991-09-01 00:00:00.000",
+                type="regular",
+            ),
+            phone="+998997777676",
+            deliveryPoint=DeliveryPoint(
+                coordinates=Coordinates(latitude=41.306021, longitude=69.278087),
+                address=Address(
+                    street=Street(
+                        id="95f5a00d-f20f-4f38-9782-c8892d2e2f85",
+                        name="Доставка",
+                        city=City(
+                            id="b090de0b-8550-6e17-70b2-bbba152bcbd3", name="Ташкент"
+                        ),
+                    ),
+                    index="",
+                    house="1",
+                    building="",
+                    flat="",
+                    entrance="",
+                    floor="",
+                    doorphone="",
+                    region=None,
+                    line1=None,
+                ),
+                externalCartographyId=None,
+                comment="АО Узавтосаноат, 13, Амира Темура проспект, Шараф Рашидов, Мирабадский район",
+            ),
+            status="CookingStarted",
+        ),
+    ),
+)
