@@ -456,19 +456,19 @@ class TgBotCart(CartBack, CommonKeysMixin):
         cart.save()
         
 
-        # await tg_user.send_message(
-        #     i18n.time.deliver(),
-        #     reply_markup=ReplyKeyboardMarkup(
-        #         [
-        #             [
-        #                 i18n.time.asap(),
-        #             ],
-        #             [i18n.time.later()],
-        #         ]
-        #     ),
-        #     parse_mode="HTML",
-        # )
-        # return CART_TIME
+        await tg_user.send_message(
+            i18n.time.deliver(),
+            reply_markup=ReplyKeyboardMarkup(
+                [
+                    [
+                        i18n.time.asap(),
+                    ],
+                    [i18n.time.later()],
+                ]
+            ),
+            parse_mode="HTML",
+        )
+        return CART_TIME
 
         # await tg_user.send_message(
         #     i18n.menu.welcome(),
