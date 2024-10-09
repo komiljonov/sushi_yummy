@@ -10,9 +10,14 @@ from data.payment.serializers import PaymentSerializer
 from django.db.models import Sum
 
 from data.product.models import Product
+from data.promocode.models import Promocode
 from data.promocode.serializers import PromocodeSerializer
 from data.taxi.serializers import TaxiSerializer
 from data.users.serializers import UserSerializer
+
+from django.utils.timezone import now
+
+from utils.geocoder import reverse_geocode
 
 
 class CartSerializer(serializers.ModelSerializer):
@@ -107,9 +112,15 @@ class CreateOrderSerializer(serializers.Serializer):
     phone = serializers.CharField()
     time = serializers.TimeField()
 
+    promocode = serializers.PrimaryKeyRelatedField(
+        queryset=Promocode.objects.all(), required=False
+    )
+
     location = CreateOrderLocationSerializer(required=False)
 
-    filial = serializers.PrimaryKeyRelatedField(queryset=Filial.objects.all(),required=False)
+    filial = serializers.PrimaryKeyRelatedField(
+        queryset=Filial.objects.all(), required=False
+    )
 
     delivery = serializers.ChoiceField(
         choices=[
@@ -136,3 +147,40 @@ class CreateOrderSerializer(serializers.Serializer):
             )
 
         return data
+
+    def _create(self, validated_data: dict):
+
+        location = (
+            [
+                validated_data.get("location").get("latitude"),
+                validated_data.get("location").get("longitude"),
+            ]
+            if validated_data.get("location")
+            else None
+        )
+
+        new_cart = Cart.objects.create(
+            user=validated_data.get("user"),
+            phone=validated_data.get("phone"),
+            promocode=validated_data.get("promocode"),
+            delivery=validated_data.get("delivery"),
+            time=validated_data.get("time"),
+            filial=validated_data.get("filial"),
+            location=(
+                Location.objects.create(
+                    user=validated_data.get("user"),
+                    latitude=location[0],
+                    longitude=location[1],
+                    address=reverse_geocode(*location),
+                )
+                if location
+                else None
+            ),
+            order_time=now(),
+        )
+
+        for item in validated_data.get("items"):
+            product: "Product" = item.get("product")
+            new_cart.items.create(
+                product=product, price=product.price, count=item.get("quantity")
+            )

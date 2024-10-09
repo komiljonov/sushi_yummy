@@ -53,8 +53,25 @@ class OrderCallTaxiAPIView(APIView):
         return Response(TaxiSerializer(taxi).data)
 
 
-class OrderCreateAPIVIew(CreateAPIView):
-    
-    
-    
+class OrderCreateView(CreateAPIView):
     serializer_class = CreateOrderSerializer
+
+    request: HttpRequest | Request
+
+    def perform_create(self, serializer):
+        # Create the order using the validated data
+        self.order = serializer.save()
+
+    def post(self, request: HttpRequest | Request, *args, **kwargs):
+        # Use CreateOrderSerializer for input validation
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        # Perform the creation logic and save the order
+        self.perform_create(serializer)
+
+        # Use OrderResponseSerializer to format the response
+        response_serializer = OrderSerializer(self.order)
+
+        # Return the response with the newly created data
+        return Response(response_serializer.data, status=status.HTTP_201_CREATED)
