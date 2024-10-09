@@ -65,16 +65,6 @@ class Iiko:
 
         orgs = [org["id"] for org in data["organizations"]]
 
-        # for org in data["organizations"]:
-        #     orgs.append(
-        #         Organization(
-        #             id=org["id"],
-        #             name=org["name"],
-        #             responseType=org["responseType"],
-        #             code=org["code"],
-        #         )
-        #     )
-
         return self.get_organizations_data(orgs)
 
     def get_organizations_data(self, organizations: list[str]):
@@ -229,10 +219,12 @@ class Iiko:
             data["order"]["payments"] = [
                 (
                     {
+                        "paymentTypeKind": "Card",
                         "paymentTypeId": payment_type.iiko_id,
                         "sum": cart.payment.amount / 100,
-                        "isProcessedExternally": True,
-                        "isPrepay": True,
+                        "isExternal": True,
+                        "isProcessedExternally": False,
+                        "isPrepay": False,
                     }
                 )
             ]
@@ -245,6 +237,7 @@ class Iiko:
                     "longitude": cart.location.longitude,
                 },
                 "externalCartographyId": str(cart.location.id),
+                "comment": cart.location.address,
             }
 
         print(data)
