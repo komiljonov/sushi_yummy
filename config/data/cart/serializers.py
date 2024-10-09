@@ -107,4 +107,6 @@ class CreateOrderSerializer(serializers.Serializer):
         ]
     )
 
-    items = serializers.ListSerializer(child=CreateOrderItemSerializer(),allow_empty=False)
+    items = serializers.ListSerializer(
+        child=CreateOrderItemSerializer(), allow_empty=False
+    )
