@@ -75,8 +75,10 @@ class StatisticsAPIView(APIView):
         active_users = User.objects.filter(last_update__range=(today_start, today_end))
 
         most_sold_products = (
-            CartItem.objects.values("product__id", "product__name_uz", "product__price")
-            .annotate(total_count=Sum("count"))
+            CartItem.objects.values(
+                "product__id", "product__name_uz", "product__price", "product__visits"
+            )
+            .annotate(total_count=Sum("count"), visit_count=Sum("product__visits"))
             .order_by("-total_count")[:10]
         )
 
