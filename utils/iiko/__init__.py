@@ -274,10 +274,13 @@ class Iiko:
         print("ORder State Main State", res.status_code)
         print("ORder State Main", res.text)
 
+        
+        print(res.text)
+        
         if res.status_code == 200:
             return True, res.json()
 
-        return False, res
+        return False, res.json()
 
     def create_order(self, cart: "Cart"):
 
