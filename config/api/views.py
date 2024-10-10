@@ -109,7 +109,7 @@ class StatisticsAPIView(APIView):
             )
         ).order_by(
             "-sold_count"
-        )  # Order by sold_count, descending
+        )[:10]
 
         return Response(
             {
