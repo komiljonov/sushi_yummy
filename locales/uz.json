@@ -1,4 +1,14 @@
 {
+  "welcome": [
+    "👋 <b>Sushi Yummy botiga xush kelibsiz!</b>\n\n",
+    "🍣 Sizni ko'rib turganimizdan xursandmiz! Boshlash uchun quyidagi menyudan birini tanlang:\n\n",
+    "🍽 <b>Menyu:</b> Bizning mazali va yangi taomlarimizga buyurtma bering.\n\n",
+    "📖 <b>Buyurtmalar tarixi:</b> Oldingi buyurtmalaringizni ko'rib chiqing va ularni qaytadan osongina takrorlang!\n\n",
+    "✍️ <b>Fikr qoldirish:</b> Xizmatlarimiz haqida o'z fikringizni bildiring.\n\n",
+    "ℹ️ <b>Ma'lumotlar:</b> Bizning restoran haqida ko'proq bilib oling.\n\n",
+    "☎️ <b>Bog'lanish:</b> Savollaringiz bormi? Biz doimo aloqadamiz!\n\n",
+    "🌍 <b>Tilni o'zgartirish:</b> O'zingizga qulay tilni tanlang."
+  ],
   "order_history": {
     "info": [
       "📦 <b>Buyurtma raqami:</b> {order_id}\n",
