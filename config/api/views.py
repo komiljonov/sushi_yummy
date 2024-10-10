@@ -114,7 +114,7 @@ class StatisticsAPIView(APIView):
                         "product__name_uz": product.name_uz,
                         "product__price": product.price,
                         "total_count": product.get_sale_count(),
-                        "product__visists": product.visits.count(),
+                        "product__visits": product.visits.count(),
                     }
                     for product in annotated_products
                 ],
