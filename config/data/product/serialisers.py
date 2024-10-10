@@ -30,7 +30,7 @@ class ProductSerializer(ModelSerializer):
         return 0
 
     def get_sale_count(self, obj: Product):
-        # return 5
+        return 5
         return obj.cart_items.filter(cart__status__in=[
             "PENDING_PAYMENT",
             "PENDING",
