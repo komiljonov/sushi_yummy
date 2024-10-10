@@ -241,6 +241,25 @@ class Iiko:
                     "latitude": cart.location.latitude,
                     "longitude": cart.location.longitude,
                 },
+                "address": {
+                                "street": {
+                                    "id": "95f5a00d-f20f-4f38-9782-c8892d2e2f85",
+                                    "name": "Доставка",
+                                    "city": {
+                                        "id": "b090de0b-8550-6e17-70b2-bbba152bcbd3",
+                                        "name": "Ташкент"
+                                    }
+                                },
+                                "index": None,
+                                "house": "1",
+                                "building": None,
+                                "flat": None,
+                                "entrance": None,
+                                "floor": None,
+                                "doorphone": None,
+                                "region": None,
+                                "line1": None
+                            },
                 "externalCartographyId": str(cart.location.id),
                 "comment": cart.location.address,
             }

@@ -17,7 +17,7 @@ class Command(BaseCommand):
         "_ym_d": "1727868513",
         "was": "1",
         "PHPSESSID": "pkbptbgiojegs8ghoru0bdpet8",
-        "_csrf": 'a1db76f52d9bf7c72a6c39cf4c83873e519270432fc6d147d2f63836513fe3eca%3A2%3A%7Bi%3A0%3Bs%3A5%3A%22_csrf%22%3Bi%3A1%3Bs%3A32%3A%22cotzfZf9jnm_P4FdjufUbuoAP28CPHjV%22%3B%7D',
+        "_csrf": "a1db76f52d9bf7c72a6c39cf4c83873e519270432fc6d147d2f63836513fe3eca%3A2%3A%7Bi%3A0%3Bs%3A5%3A%22_csrf%22%3Bi%3A1%3Bs%3A32%3A%22cotzfZf9jnm_P4FdjufUbuoAP28CPHjV%22%3B%7D",
     }
 
     def handle(self, *args, **kwargs):
