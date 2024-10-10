@@ -41,10 +41,12 @@ class RetrieveUserSerializer(serializers.ModelSerializer):
     def get_current_order(self, obj: User):
         from data.cart.serializers import OrderSerializer
 
+        order = obj.carts.filter(
+            status__in=["PENDING", "PENDING_KITCHEN", "PREPARING", "DELIVERING"],
+            deleted_at=None,
+        ).last()
+
         return OrderSerializer(
-            obj.carts.filter(
-                status__in=["PENDING", "PENDING_KITCHEN", "PREPARING", "DELIVERING"],
-                deleted_at=None,
-            ).last(),
+            order,
             remove_fields=["user"],
-        ).data
+        ).data if order else None
