@@ -30,15 +30,15 @@ class ProductSerializer(ModelSerializer):
         return 0
 
     def get_sale_count(self, obj: Product):
-        return 5
-        return obj.cart_items.filter(cart__status__in=[
-            "PENDING_PAYMENT",
-            "PENDING",
-            "PENDING_KITCHEN",
-            "PREPARING",
-            "DELIVERING",
-            "DONE",
-        ]).count()
+        # return 5
+        # return obj.cart_items.filter(cart__status__in=[
+        #     "PENDING_PAYMENT",
+        #     "PENDING",
+        #     "PENDING_KITCHEN",
+        #     "PREPARING",
+        #     "DELIVERING",
+        #     "DONE",
+        # ]).count()
 
 
 class ProductCreateSerializer(ModelSerializer):
