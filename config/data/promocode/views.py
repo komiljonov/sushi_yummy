@@ -23,10 +23,12 @@ class PromocodeViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'], url_path='xlsx')
     def get(self, request: HttpRequest | Request, pk: str):
 
-        promocode = Promocode.objects.filter(id=pk).first()
+        # promocode = Promocode.objects.filter(id=pk).first()
 
-        if promocode is None:
-            raise NotFound("Promokod topilmadi.")
+        # if promocode is None:
+            # raise NotFound("Promokod topilmadi.")
+        
+        promocode: Promocode = self.get_object()
 
         orders = promocode.orders.all()
 

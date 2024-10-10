@@ -6,7 +6,6 @@ router = DefaultRouter()
 router.register(r"promocodes", PromocodeViewSet)
 
 
-
 urlpatterns = [
     path("", include(router.urls)),
 ]
