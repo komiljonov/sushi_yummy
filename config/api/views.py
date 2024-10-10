@@ -82,7 +82,7 @@ class StatisticsAPIView(APIView):
 
         distinct_products = CartItem.objects.filter(
             product__id=OuterRef("product__id")
-        ).values("product__id")
+        ).values("product__id").distinct('product_id')
 
         most_sold_products = (
             CartItem.objects.filter(product__id__in=Subquery(distinct_products))
