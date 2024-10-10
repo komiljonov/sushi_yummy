@@ -787,6 +787,7 @@ class TgBotCart(CartBack, CommonKeysMixin):
                 comment=i18n.order.info.comment(comment=cart.comment) if cart.comment else "",
                 promocode=i18n.order.info.promocode(name=cart.promocode.name, amount=cart.promocode.amount,
                                                     measurement="%" if cart.promocode.measurement == "PERCENT" else "so'm") if cart.promocode else "",
+                
                 filial=i18n.get_name(cart.filial),
                 total_price=cart.discount_price,
                 orders="\n".join(products_text),
