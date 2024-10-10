@@ -1,3 +1,4 @@
+import re
 from django.http import HttpRequest
 from rest_framework.request import Request
 
@@ -12,6 +13,22 @@ from utils.millenium import Millenium
 
 
 millenium = Millenium("3E8EA3F2-4776-4E1C-9A97-E4C13C5AEF1C")
+
+
+def extract_price(cost_str: str) -> float:
+    """
+    Extracts and converts the price from a string containing numbers and currency.
+
+    :param cost_str: The price string (e.g. "37000,00 сум").
+    :return: The extracted price as a float.
+    """
+    # Remove anything that's not a digit or comma
+    price = re.sub(r"[^\d,]", "", cost_str)
+
+    # Replace the comma with a dot and convert to float
+    price = float(price.replace(",", "."))
+
+    return price
 
 
 class CalculateDeliveryPriceAPIView(APIView):
@@ -35,4 +52,6 @@ class CalculateDeliveryPriceAPIView(APIView):
 
         address = reverse_geocode(loc.latitude, loc.longitude)
 
-        return Response({"address": address, "cost": cost["info"][-1]["sum"]})
+        return Response(
+            {"address": address, "cost": extract_price(cost["info"][-1]["sum"])}
+        )
