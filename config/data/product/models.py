@@ -4,6 +4,7 @@ from common.models import TimeStampModel
 from django.core.validators import MinValueValidator
 from django.contrib import admin
 
+from django.db.models import Sum
 
 if TYPE_CHECKING:
     from data.category.models import Category
@@ -68,3 +69,16 @@ class Product(TimeStampModel):
         list_filter = ["filials", "category"]
 
         search_fields = ["name_uz", "name_ru", "iiko_id"]
+
+    def get_sale_count(self):
+        # return 5
+        return self.cart_items.filter(
+            cart__status__in=[
+                "PENDING_PAYMENT",
+                "PENDING",
+                "PENDING_KITCHEN",
+                "PREPARING",
+                "DELIVERING",
+                "DONE",
+            ]
+        ).aggregate(total_count=Sum("count"))["total_count"]
