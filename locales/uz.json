@@ -29,7 +29,7 @@
   },
   "register": {
     "lang": {
-      "ask": "🌍 <b>Iltimos, o'zingizga mos tilni tanlang:</b>\n\n<b>🇷🇺 Выберите язык, пожалуйста:</b>\n\n<b>🇺🇸 Please choose your preferred language:</b>",
+      "ask": "🌍 <b>Iltimos, o'zingizga mos tilni tanlang:</b>\n\n<b>🇷🇺 Выберите язык, пожалуйста:</b>",
       "wrong": "❌ Kechirasiz, til topilmadi. Iltimos, quyidagi tillardan birini tanlang."
     },
     "name": {
@@ -73,7 +73,7 @@
     "info": "🛒 <b>Savat:</b>\n\n{products}\n\n🧾 <b>Jami:</b> {total_price} so'm",
     "item": "{i}. {product_name}\n\t\t\t\t{count} x {price} = {item_price} so'm\n\n",
     "empty": "😔 <b>Sizning savatingiz bo'sh!</b>",
-    "done": "✅ Savatni to’ldirdim!",
+    "done": "✅ Tasdiqlash!",
     "deliver": "🚙 Yetkazib berish",
     "take_away": "🏃 Olib ketish",
     "get_method": "Buyurtmani olib keting yoki yetkazib berishni tanlang"
@@ -124,7 +124,11 @@
         "💰 <b>Jami:</b> {total_price} so'm"
       ],
       "comment": "📝 <b>Izoh:</b> {comment}\n",
-      "promocode": "🎉 <b>Promokod:</b> {name} - {amount} {measurement} chegirma\n"
+      "promocode": "🎉 <b>Promokod:</b> {name} - {amount} {measurement} chegirma\n",
+      "delivery": {
+        "deliver": "Yetkazib berish",
+        "pickup": "Olib ketish"
+      }
     },
     "promocode": {
       "ask": "🎟 Agar kuponingiz bo'lsa, kiriting.",

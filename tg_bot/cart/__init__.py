@@ -783,7 +783,7 @@ class TgBotCart(CartBack, CommonKeysMixin):
             i18n.order.info.base(
                 name=user.name,
                 number=cart.phone_number,
-                delivery_method=cart.delivery,
+                delivery_method=i18n.order.info.delivery.deliver() if cart.delivery == "DELIVER" else i18n.order.info.delivery.pickup(),
                 comment=i18n.order.info.comment(comment=cart.comment) if cart.comment else "",
                 promocode=i18n.order.info.promocode(name=cart.promocode.name, amount=cart.promocode.amount,
                                                     measurement="%" if cart.promocode.measurement == "PERCENT" else "so'm") if cart.promocode else "",

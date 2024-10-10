@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 from django.db import models
 
 from bot.models import Location
@@ -71,7 +71,7 @@ class Cart(TimeStampModel):
         max_length=255,
     )
 
-    delivery = models.CharField(
+    delivery: Literal["DELIVER","TAKEAWAY"] = models.CharField(
         choices=[("DELIVER", "Yetkazib berish"), ("TAKEAWAY", "Olib ketish")],
         max_length=255,
         default="DELIVER",
