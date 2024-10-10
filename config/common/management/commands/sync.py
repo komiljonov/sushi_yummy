@@ -16,8 +16,8 @@ class Command(BaseCommand):
         "_ym_uid": "1727868513689657695",
         "_ym_d": "1727868513",
         "was": "1",
-        "PHPSESSID": "k0070f9lv6pm1a9aicsudkfo4m",
-        "_csrf": 'cf2558f629121dbe586f41b1c226d06dc2e62e64321d3c941200cfd3ec58e7f1a:2:{i:0;s:5:"_csrf";i:1;s:32:"151J5S1CfPpYaKXwE442XhOI4zZp72lY";}',
+        "PHPSESSID": "pkbptbgiojegs8ghoru0bdpet8",
+        "_csrf": 'a1db76f52d9bf7c72a6c39cf4c83873e519270432fc6d147d2f63836513fe3eca%3A2%3A%7Bi%3A0%3Bs%3A5%3A%22_csrf%22%3Bi%3A1%3Bs%3A32%3A%22cotzfZf9jnm_P4FdjufUbuoAP28CPHjV%22%3B%7D',
     }
 
     def handle(self, *args, **kwargs):
