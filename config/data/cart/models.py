@@ -137,7 +137,7 @@ class Cart(TimeStampModel):
     def price(self):
         return self.items.annotate(t_price=F("count") * F("price")).aggregate(
             total_price=Sum("t_price")
-        )["total_price"]
+        )["total_price"] or 0
 
     @property
     def discount_price(self):
