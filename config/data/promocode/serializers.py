@@ -35,6 +35,6 @@ class PromocodeSerializer(serializers.ModelSerializer):
             for field in fields_to_remove:
                 self.fields.pop(field, None)
 
-    def total_savings(self, obj: Promocode):
+    def get_total_savings(self, obj: Promocode):
 
         return sum([order.saving for order in obj.orders.all()])
