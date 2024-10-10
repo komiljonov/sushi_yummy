@@ -82,6 +82,7 @@ class StatisticsAPIView(APIView):
             CartItem.objects.values(
                 "product__id", "product__name_uz", "product__price", "product__visits"
             )
+            .distinct("product__id")
             .annotate(total_count=Sum("count"), visit_count=Count("product__visits"))
             .order_by("-total_count")[:10]
         )
