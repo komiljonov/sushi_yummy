@@ -361,8 +361,6 @@ class TgBotCart(CartBack, CommonKeysMixin):
 
         cart.promocode = None
         cart.time = None
-        cart.filial = None
-        cart.location = None
         cart.save()
 
         # await tg_user.send_message(
