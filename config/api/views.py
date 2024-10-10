@@ -105,11 +105,11 @@ class StatisticsAPIView(APIView):
                         "DELIVERING",
                         "DONE",
                     ]
-                ),  # Apply the status filter
+                ),
             )
         ).order_by(
             "-sold_count"
-        )[:10]
+        )
 
         return Response(
             {
