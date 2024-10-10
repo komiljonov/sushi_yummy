@@ -10,7 +10,7 @@ from bot.models import User
 from data.cart.models import Cart
 from rest_framework.response import Response
 from django.utils.timezone import make_aware
-from django.db.models import Sum
+from django.db.models import Sum, Count
 import openpyxl
 from openpyxl.utils import get_column_letter
 from openpyxl.styles import Alignment
@@ -78,7 +78,7 @@ class StatisticsAPIView(APIView):
             CartItem.objects.values(
                 "product__id", "product__name_uz", "product__price", "product__visits"
             )
-            .annotate(total_count=Sum("count"), visit_count=Sum("product__visits"))
+            .annotate(total_count=Sum("count"), visit_count=Count("product__visits"))
             .order_by("-total_count")[:10]
         )
 
