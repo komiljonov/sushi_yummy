@@ -111,10 +111,10 @@ class CreateOrderSerializer(serializers.Serializer):
     )
     comment = serializers.CharField()
     phone = serializers.CharField()
-    time = serializers.TimeField()
+    time = serializers.TimeField(required=False, allow_null=True)
 
     promocode = serializers.PrimaryKeyRelatedField(
-        queryset=Promocode.objects.all(), required=False
+        queryset=Promocode.objects.all(), required=False, allow_null=True
     )
 
     location = CreateOrderLocationSerializer(required=False)
