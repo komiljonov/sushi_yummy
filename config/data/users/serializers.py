@@ -46,7 +46,11 @@ class RetrieveUserSerializer(serializers.ModelSerializer):
             deleted_at=None,
         ).last()
 
-        return OrderSerializer(
-            order,
-            remove_fields=["user"],
-        ).data if order else None
+        return (
+            OrderSerializer(
+                order,
+                remove_fields=["user"],
+            ).data
+            if order
+            else None
+        )
