@@ -126,8 +126,8 @@
       "comment": "📝 <b>Izoh:</b> {comment}\n",
       "promocode": "🎉 <b>Promokod:</b> {name} - {amount} {measurement} chegirma\n",
       "delivery": {
-        "deliver": "Yetkazib berish",
-        "pickup": "Olib ketish"
+        "deliver": "🚙 Yetkazib berish",
+        "pickup": "🏃 Olib ketish"
       }
     },
     "promocode": {
