@@ -14,12 +14,12 @@ from django.db.models import Sum, Count
 import openpyxl
 from openpyxl.utils import get_column_letter
 from openpyxl.styles import Alignment
-from django.db.models import Subquery, OuterRef, Sum, Count
-
+from django.db.models import Subquery, OuterRef, Sum, Count, Q
 
 
 from data.cart.serializers import OrderSerializer
 from data.cartitem.models import CartItem
+from data.product.models import Product
 
 
 class StatisticsAPIView(APIView):
@@ -80,18 +80,36 @@ class StatisticsAPIView(APIView):
         # Active users today (based on last update)
         active_users = User.objects.filter(last_update__range=(today_start, today_end))
 
-        distinct_products = CartItem.objects.filter(
-            product__id=OuterRef("product__id")
-        ).values("product__id").distinct('product_id')
+        # distinct_products = CartItem.objects.filter(
+        #     product__id=OuterRef("product__id")
+        # ).values("product__id")
 
-        most_sold_products = (
-            CartItem.objects.filter(product__id__in=Subquery(distinct_products))
-            .values(
-                "product__id", "product__name_uz", "product__price", "product__visits"
+        # most_sold_products = (
+        #     CartItem.objects.filter(product__id__in=Subquery(distinct_products))
+        #     .values(
+        #         "product__id", "product__name_uz", "product__price", "product__visits"
+        #     )
+        #     .annotate(total_count=Sum("count"), visit_count=Count("product__visits"))
+        #     .order_by("-total_count")[:10]
+        # )
+
+        annotated_products = Product.objects.annotate(
+            sold_count=Sum(
+                "cartitem__count",  # Sum the 'count' field from related CartItem
+                filter=Q(
+                    cartitem__cart__status__in=[
+                        "PENDING_PAYMENT",
+                        "PENDING",
+                        "PENDING_KITCHEN",
+                        "PREPARING",
+                        "DELIVERING",
+                        "DONE",
+                    ]
+                ),  # Apply the status filter
             )
-            .annotate(total_count=Sum("count"), visit_count=Count("product__visits"))
-            .order_by("-total_count")[:10]
-        )
+        ).order_by(
+            "-sold_count"
+        )  # Order by sold_count, descending
 
         return Response(
             {
@@ -106,7 +124,16 @@ class StatisticsAPIView(APIView):
                 "active_users": active_users.count(),
                 "active_users_delta": 43,
                 "recent_orders": OrderSerializer(today_orders[:10], many=True).data,
-                "most_products": list(most_sold_products),
+                "most_products": [
+                    {
+                        "product__id": product.id,
+                        "product__name_uz": product.name_uz,
+                        "product__price": product.price,
+                        "total_count": product.sold_count,
+                        "product__visists": product.visits.count(),
+                    }
+                    for product in annotated_products
+                ],
             }
         )
 
