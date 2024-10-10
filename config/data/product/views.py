@@ -52,3 +52,9 @@ class ProductRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
         if self.request.method in ["PATCH", "PUT"]:
             return self.serializer_class_create
         return self.serializer_class
+
+    def perform_destroy(self, instance: Product):
+        # return super().perform_destroy(instance)
+
+        instance.category = None
+        instance.save()
