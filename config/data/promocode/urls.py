@@ -8,6 +8,6 @@ router.register(r"promocodes", PromocodeViewSet)
 
 
 urlpatterns = [
+    path("/<str:pk>/xlsx", PromocodeXlsxAPIView.as_view()),
     path("", include(router.urls)),
-    path("/<str:pk>/xlsx", PromocodeXlsxAPIView.as_view())
 ]
