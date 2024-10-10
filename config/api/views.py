@@ -95,7 +95,7 @@ class StatisticsAPIView(APIView):
 
         annotated_products = Product.objects.annotate(
             sold_count=Sum(
-                "cartitem__count",  # Sum the 'count' field from related CartItem
+                "cart_items__count",  # Sum the 'count' field from related CartItem
                 filter=Q(
                     cart_items__cart__status__in=[
                         "PENDING_PAYMENT",
