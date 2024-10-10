@@ -1,16 +1,20 @@
 from rest_framework import serializers
 
 from data.cart.models import Cart
+from data.filial.models import Filial
 
 
 class CartFilterSerializer(serializers.Serializer):
     start_date = serializers.DateField(required=False, allow_null=True)
     end_date = serializers.DateField(required=False, allow_null=True)
     delivery = serializers.ChoiceField(
-        choices=["ALL","DELIVERY", "PICKUP"], required=False, allow_null=True
+        choices=["ALL", "DELIVERY", "PICKUP"], required=False, allow_null=True
+    )
+    filial = serializers.PrimaryKeyRelatedField(
+        queryset=Filial.objects.all(), required=False
     )
     payment_type = serializers.ChoiceField(
-        choices=["ALL","CLICK", "PAYME", "CASH"],
+        choices=["ALL", "CLICK", "PAYME", "CASH"],
         required=False,
         allow_null=True,
         allow_blank=True,
