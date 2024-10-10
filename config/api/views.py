@@ -93,23 +93,7 @@ class StatisticsAPIView(APIView):
         #     .order_by("-total_count")[:10]
         # )
 
-        annotated_products = Product.objects.annotate(
-            sold_count=Sum(
-                "cart_items__count",  # Sum the 'count' field from related CartItem
-                filter=Q(
-                    cart_items__cart__status__in=[
-                        "PENDING_PAYMENT",
-                        "PENDING",
-                        "PENDING_KITCHEN",
-                        "PREPARING",
-                        "DELIVERING",
-                        "DONE",
-                    ]
-                ),
-            )
-        ).order_by(
-            "-sold_count"
-        )
+        annotated_products = Product.objects.all()
 
         return Response(
             {

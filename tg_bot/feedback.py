@@ -87,7 +87,9 @@ class TgBotFeedback(CommonKeysMixin):
         level = levels.get(update.message.text)
 
         if level is None:
-            await tg_user.send_message(i18n.feedback.star.not_found(), parse_mode="HTML")
+            await tg_user.send_message(
+                i18n.feedback.star.not_found(), parse_mode="HTML"
+            )
             return FEEDBACK_STAR
 
         temp.star = level
