@@ -14,6 +14,8 @@ from django.db.models import Sum, Count
 import openpyxl
 from openpyxl.utils import get_column_letter
 from openpyxl.styles import Alignment
+from django.db.models import Subquery, OuterRef, Sum, Count
+
 
 
 from data.cart.serializers import OrderSerializer
@@ -78,11 +80,15 @@ class StatisticsAPIView(APIView):
         # Active users today (based on last update)
         active_users = User.objects.filter(last_update__range=(today_start, today_end))
 
+        distinct_products = CartItem.objects.filter(
+            product__id=OuterRef("product__id")
+        ).values("product__id")
+
         most_sold_products = (
-            CartItem.objects.values(
+            CartItem.objects.filter(product__id__in=Subquery(distinct_products))
+            .values(
                 "product__id", "product__name_uz", "product__price", "product__visits"
             )
-            .distinct("product__id")
             .annotate(total_count=Sum("count"), visit_count=Count("product__visits"))
             .order_by("-total_count")[:10]
         )
