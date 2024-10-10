@@ -165,7 +165,7 @@ class CreateOrderSerializer(serializers.Serializer):
             phone_number=validated_data.get("phone"),
             promocode=validated_data.get("promocode"),
             delivery=validated_data.get("delivery"),
-            time=datetime.combine(now(), validated_data.get("time")),
+            time=datetime.combine(now(), validated_data.get("time")) if validated_data.get('time') else None,
             filial=validated_data.get("filial"),
             location=(
                 Location.objects.create(
