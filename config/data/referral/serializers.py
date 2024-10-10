@@ -28,13 +28,13 @@ class ReferralSerializer(serializers.ModelSerializer):
             start=base64.b64encode(f"{obj.id}".encode()).decode()
         )
 
-    def ordered_users_count(self, obj: Referral):
+    def get_ordered_users_count(self, obj: Referral):
         status__in = ["PENDING", "PENDING_KITCHEN", "PREPARING", "DELIVERING"]
         return obj.users.filter(
             carts__status__in=status__in
         ).distinct().count()
 
-    def not_ordered_users_count(self, obj: Referral):
+    def get_not_ordered_users_count(self, obj: Referral):
         status__in = ["PENDING", "PENDING_KITCHEN", "PREPARING", "DELIVERING"]
         return obj.users.exclude(
             carts__status__in=status__in
