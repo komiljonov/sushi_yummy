@@ -50,6 +50,7 @@ class StatisticsAPIView(APIView):
         today_orders = Cart.objects.exclude(
             status__in=["ORDERING", "PENDING_PAYMENT"]
         ).filter(created_at__range=(today_start, today_end))
+
         yesterday_orders = Cart.objects.exclude(
             status__in=["ORDERING", "PENDING_PAYMENT"]
         ).filter(created_at__range=(yesterday_start, yesterday_end))

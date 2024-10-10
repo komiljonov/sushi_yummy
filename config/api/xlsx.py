@@ -26,7 +26,9 @@ def generate_excel_from_orders(order_list: List[Cart], res: HttpResponse):
                 "Yetkazib berish narxi": None if j == 1 else "",
                 "Jami narxi": order.price if j == 1 else "",
                 "Bitirgan vaqti": (
-                    order.time.strftime("%d/%m/%Y, %H:%M:%S") if j == 1 else ""
+                    order.time.strftime("%d/%m/%Y, %H:%M:%S")
+                    if j == 1 and order.time
+                    else ""
                 ),
                 "Tasdiqlangan vaqti": (
                     order.order_time.strftime("%d/%m/%Y, %H:%M:%S") if j == 1 else ""
