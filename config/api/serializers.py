@@ -13,6 +13,7 @@ class CartFilterSerializer(serializers.Serializer):
     filial = serializers.PrimaryKeyRelatedField(
         queryset=Filial.objects.all(), required=False
     )
+    
     payment_type = serializers.ChoiceField(
         choices=["ALL", "CLICK", "PAYME", "CASH"],
         required=False,
@@ -26,9 +27,12 @@ class CartFilterSerializer(serializers.Serializer):
         # Filter by created_at range
         start_date = self.validated_data.get("start_date")
         end_date = self.validated_data.get("end_date")
+        filial = self.validated_data.get("filial")
 
         if start_date and end_date:
             queryset = queryset.filter(created_at__range=[start_date, end_date])
+        if filial:
+            queryset = queryset.filter(filial=filial)
         elif start_date:
             queryset = queryset.filter(created_at__gte=start_date)
         elif end_date:
