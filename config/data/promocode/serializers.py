@@ -7,6 +7,7 @@ class PromocodeSerializer(serializers.ModelSerializer):
     orders = serializers.SerializerMethodField()
 
     total_savings = serializers.SerializerMethodField()
+    total_sold = serializers.SerializerMethodField()
 
     class Meta:
         model = Promocode
@@ -38,3 +39,7 @@ class PromocodeSerializer(serializers.ModelSerializer):
     def get_total_savings(self, obj: Promocode):
 
         return sum([order.saving for order in obj.orders.all()])
+
+    def get_total_sold(self, obj: Promocode):
+
+        return sum([order.price for order in obj.orders.all()])
