@@ -97,7 +97,7 @@ class StatisticsAPIView(APIView):
             sold_count=Sum(
                 "cartitem__count",  # Sum the 'count' field from related CartItem
                 filter=Q(
-                    cartitem__cart__status__in=[
+                    cart_items__cart__status__in=[
                         "PENDING_PAYMENT",
                         "PENDING",
                         "PENDING_KITCHEN",
