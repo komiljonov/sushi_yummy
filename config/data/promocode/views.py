@@ -8,6 +8,8 @@ from data.promocode.models import Promocode
 from .serializers import PromocodeSerializer
 from rest_framework.views import APIView
 from rest_framework.exceptions import NotFound
+from rest_framework.decorators import action
+
 
 # Create your views here.
 
@@ -16,10 +18,9 @@ class PromocodeViewSet(viewsets.ModelViewSet):
     queryset = Promocode.objects.all()
     serializer_class = PromocodeSerializer
     permission_classes = [IsAuthenticated]  # Add appropriate permissions as needed
-
-
-class PromocodeXlsxAPIView(APIView):
-
+    
+    
+    @action(detail=True, methods=['get'], url_path='xlsx')
     def get(self, request: HttpRequest | Request, pk: str):
 
         promocode = Promocode.objects.filter(id=pk).first()
@@ -39,3 +40,4 @@ class PromocodeXlsxAPIView(APIView):
         generate_excel_from_orders(orders, response)
 
         return response
+
