@@ -138,7 +138,7 @@ class TgBotFeedback(CommonKeysMixin):
 
         await tg_user.send_message(i18n.feedback.success(), parse_mode="HTML")
 
-        return -1
+        return await self.start(update, context)
 
     async def back_from_feedback_comment(self, update: UPD, context: CTX) -> str | None:
         tg_user, user, temp, i18n = User.get(update)
