@@ -4,6 +4,7 @@ from django.db import models
 from common.models import TimeStampModel
 from django.utils import timezone
 from datetime import timedelta
+from django.contrib import admin
 
 if TYPE_CHECKING:
     from bot.models import User
@@ -43,3 +44,14 @@ class ProductVisit(TimeStampModel):
         if not ProductVisit.objects.filter(user=self.user, product=self.product,
                                             created_at__gte=one_hour_ago).exists():
             super().save(*args, **kwargs)
+
+    
+    
+    class Admin(admin.ModelAdmin):
+        
+        
+        list_display = ["id","product","user"]
+        
+        list_filter = ["product","user"]
+        
+        search_fields = ["product__id"]
