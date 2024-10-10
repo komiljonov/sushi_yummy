@@ -43,7 +43,8 @@ class RetrieveUserSerializer(serializers.ModelSerializer):
 
         return OrderSerializer(
             obj.carts.filter(
-                status__in=["PENDING", "PENDING_KITCHEN", "PREPARING", "DELIVERING"]
+                status__in=["PENDING", "PENDING_KITCHEN", "PREPARING", "DELIVERING"],
+                deleted_at=None,
             ).last(),
             remove_fields=["user"],
         ).data
