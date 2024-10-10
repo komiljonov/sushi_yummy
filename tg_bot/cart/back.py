@@ -44,7 +44,7 @@ class CartBack:
             reply_markup=ReplyKeyboardMarkup(
                 [
                     [KeyboardButton(i18n.buttons.location(), request_location=True)],
-                    [i18n.buttons.my_locations()],
+                    # [i18n.buttons.my_locations()],
                 ]
             ),
             parse_mode="HTML",
