@@ -41,7 +41,7 @@ class ProductSerializer(ModelSerializer):
                 "DELIVERING",
                 "DONE",
             ]
-        ).aggregate(total_count=Sum("count"))
+        ).aggregate(total_count=Sum("count"))['total_count']
 
 
 class ProductCreateSerializer(ModelSerializer):
