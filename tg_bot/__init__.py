@@ -181,7 +181,7 @@ class Bot(Menu, TgBotCart, TgBotFeedback):
 
         keyboard = await self.main_menu_keyboard(update, context)
 
-        await tg_user.send_message("Menu", reply_markup=keyboard, parse_mode="HTML")
+        await tg_user.send_message(i18n.welcome(), reply_markup=keyboard, parse_mode="HTML")
 
         return MAIN_MENU
 
