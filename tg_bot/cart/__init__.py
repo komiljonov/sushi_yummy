@@ -454,6 +454,7 @@ class TgBotCart(CartBack, CommonKeysMixin):
         cart = user.cart
 
         cart.location = temp.location
+        cart.save()
         
         filial: Filial | None = Filial.get_nearest_filial(cart.location)
         cart.filial = filial
