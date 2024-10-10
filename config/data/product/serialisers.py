@@ -10,6 +10,7 @@ from data.category.models import Category
 from data.file.models import File
 from data.file.serializers import FileSerializer
 from data.product.models import Product
+from django.db.models import Sum
 
 
 class ProductSerializer(ModelSerializer):
@@ -31,14 +32,16 @@ class ProductSerializer(ModelSerializer):
 
     def get_sale_count(self, obj: Product):
         # return 5
-        return obj.cart_items.filter(cart__status__in=[
-            "PENDING_PAYMENT",
-            "PENDING",
-            "PENDING_KITCHEN",
-            "PREPARING",
-            "DELIVERING",
-            "DONE",
-        ]).count()
+        return obj.cart_items.filter(
+            cart__status__in=[
+                "PENDING_PAYMENT",
+                "PENDING",
+                "PENDING_KITCHEN",
+                "PREPARING",
+                "DELIVERING",
+                "DONE",
+            ]
+        ).aggregate(total_count=Sum("count"))
 
 
 class ProductCreateSerializer(ModelSerializer):
