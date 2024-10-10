@@ -17,6 +17,7 @@ from openpyxl.styles import Alignment
 
 
 from data.cart.serializers import OrderSerializer
+from data.cartitem.models import CartItem
 
 
 class StatisticsAPIView(APIView):
@@ -73,6 +74,12 @@ class StatisticsAPIView(APIView):
         # Active users today (based on last update)
         active_users = User.objects.filter(last_update__range=(today_start, today_end))
 
+        most_sold_products = (
+            CartItem.objects.values("product__id", "product__name_uz", "product__price")
+            .annotate(total_count=Sum("count"))
+            .order_by("-total_count")[:10]
+        )
+
         return Response(
             {
                 "user_count": users.count(),
@@ -86,6 +93,7 @@ class StatisticsAPIView(APIView):
                 "active_users": active_users.count(),
                 "active_users_delta": 43,
                 "recent_orders": OrderSerializer(today_orders[:10], many=True).data,
+                "most_products": list(most_sold_products),
             }
         )
 
@@ -94,7 +102,7 @@ class XlsxAPIView(APIView):
 
     def post(self, request: HttpRequest | Request, *args, **kwargs):
         serializer = CartFilterSerializer(data=request.data)
-        
+
         if serializer.is_valid(raise_exception=True):
             orders = serializer.filter_orders()
 
@@ -109,5 +117,5 @@ class XlsxAPIView(APIView):
             generate_excel_from_orders(orders, response)
 
             return response
-        
+
         return Response(serializer.errors, status=400)

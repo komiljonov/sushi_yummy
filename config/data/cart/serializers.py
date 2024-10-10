@@ -165,7 +165,11 @@ class CreateOrderSerializer(serializers.Serializer):
             phone_number=validated_data.get("phone"),
             promocode=validated_data.get("promocode"),
             delivery=validated_data.get("delivery"),
-            time=datetime.combine(now(), validated_data.get("time")) if validated_data.get('time') else None,
+            time=(
+                datetime.combine(now(), validated_data.get("time"))
+                if validated_data.get("time")
+                else None
+            ),
             filial=validated_data.get("filial"),
             location=(
                 Location.objects.create(
@@ -178,7 +182,7 @@ class CreateOrderSerializer(serializers.Serializer):
                 else None
             ),
             order_time=now(),
-            status="PENDING_KITCHEN"
+            status="PENDING_KITCHEN",
         )
 
         for item in validated_data.get("items"):
@@ -187,5 +191,4 @@ class CreateOrderSerializer(serializers.Serializer):
                 product=product, price=product.price, count=item.get("quantity")
             )
 
-    
         return new_cart
